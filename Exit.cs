@@ -8,5 +8,13 @@ namespace RogueMath
 {
     internal class Exit
     {
+        short x, y;
+        bool isFree;
+        short width;
+        bool isOpen;
+        public Exit() 
+        {
+            
+        }
     }
 }

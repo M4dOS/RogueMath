@@ -8,5 +8,12 @@ namespace RogueMath
 {
     internal class Tunel
     {
+        Exit exit1;
+        Exit exit2;
+        List<Lines> lines;
+        public Tunel() 
+        {
+
+        }
     }
 }
