@@ -12,7 +12,7 @@ namespace RogueMath
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            
         }
     }
 }

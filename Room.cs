@@ -8,12 +8,12 @@ namespace RogueMath
 {
     internal class Room
     {
-        short x,y;
-        Lines width;
-        Lines height;
-        List<Exit> exits;
-        bool isExplored;
-        RoomID roomType;
+        int x,y; //координаты
+        Lines width; //длина
+        Lines height; //ширина
+        List<Exit> exits; //выходы комнаты
+        bool isExplored; //исследована ли комната?
+        RoomID roomType; //id комнаты
         public Room() 
         {
 

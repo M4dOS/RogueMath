@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RogueMath
 {
-    enum RoomID
+    enum RoomID //id комнаты
     {
         Bonus = -2,
         Enemy = -1,
@@ -15,7 +15,7 @@ namespace RogueMath
         Shop = 2
     }
 
-    enum CellID
+    enum CellID //id клетки
     {
         None = 0,
         Wall = 1,

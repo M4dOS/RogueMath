@@ -8,22 +8,22 @@ namespace RogueMath
 {
     internal class Lines
     {
-        short xStart, yStart;
-        short xEnd, yEnd;
-        short length;
-        public Lines(short xStart, short yStart, short xEnd, short yEnd) 
-        {
+        int xStart, yStart; //координаты начала
+        int xEnd, yEnd; //координаты конца
+        int length; //длина отрезка
+        public Lines(int xStart, int yStart, int xEnd, int yEnd) 
+        {//конструктор
             this.xStart = xStart;
             this.yStart = yStart;
             this.xEnd = xEnd;
             this.yEnd = yEnd;
             if (xEnd == xStart)
             {
-                this.length = (short)(yEnd - yStart);
+                this.length = (yEnd - yStart);
             }
             else
             {
-                this.length = (short)(xEnd - xStart);
+                this.length = (xEnd - xStart);
             }
         }
     }

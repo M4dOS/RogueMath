@@ -8,10 +8,9 @@ namespace RogueMath
 {
     internal class Exit
     {
-        short x, y;
-        bool isFree;
-        short width;
-        bool isOpen;
+        int x, y; //координаты
+        int width; //ширина двери (вероятно не реализуется)
+        bool isOpen; //открыта ли дверь?
         public Exit() 
         {
             

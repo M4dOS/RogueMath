@@ -8,12 +8,12 @@ namespace RogueMath
 {
     internal class Map
     {
-        short maxX = 0;
-        short maxY = 0;
-        List<CellInfo> cellMap;
-        List<Room> rooms;
-        public void FindSize()
-        {
+        int maxX, maxY; //границы карты
+        CellInfo[,] cellMap; //карта "клеток" (вероятно будет двойным массивом(списком))
+        List<Room> rooms; //список комнат
+
+        /*public void FindSize()
+        { //находит размеры
             foreach (CellInfo axes in this.cellMap)
             {
                 if (axes.x > maxX)
@@ -25,48 +25,62 @@ namespace RogueMath
                     maxY = axes.y;
                 }
             }
-        }
+        }*/
 
-        public void SortCells()
-        {
-            List<CellInfo> sortedMap = new List<CellInfo>();
-            for (int i = 0; i < (int)this.maxX; ++i)
+       /* public void SortCells()
+        { //сортировка клеток
+            List<List<CellInfo>> sortedMap = new List<List<CellInfo>>();
+            for (int i = 0; i < this.maxX; ++i)
             {
-                for (int j = 0; i < (int)this.maxY; ++j)
+                for (int j = 0; i < this.maxY; ++j)
                 {
-                    foreach (CellInfo axes in this.cellMap)
+                    foreach (List<CellInfo> axes1 in this.cellMap)
                     {
-                        if(axes.x == i &&  axes.y == j)
+                        foreach (CellInfo axes in axes1)
                         {
-                            sortedMap.Add(axes);
-                            break;
+                            if (axes.x == i && axes.y == j)
+                            {
+                                sortedMap.Add(axes1);
+                                break;
+                            }
                         }
                     }
                 }
             }
 
             this.cellMap = sortedMap;
-        }
+        }*/
 
-        public void PrintMap()
+        public void GenerateMap(CellInfo[,] inputMap)
         {
-            for (int i = 0; i < (int)this.maxX;++i)
+            for (int i = 0; i < inputMap.GetLength(0); ++i)
             {
-                for(int j = 0; i < (int)this.maxY; ++j)
+                for (int j = 0; j < inputMap.GetLength(1); ++j)
                 {
-                    Console.WriteLine(this.cellMap[i].cellID);
+                    
                 }
             }
         }
-        public Map() 
-        {
 
+        public void PrintMap()
+        { //печать карты
+            for (int i = 0; i < this.maxX;++i)
+            {
+                for(int j = 0; i < this.maxY; ++j)
+                {
+                    Console.WriteLine(this.cellMap[i][j].cellID);
+                }
+            }
+        }
+        public Map(int maxX, int maxY) 
+        { //конструктор (under construction)
+            this.cellMap = new CellInfo[maxX][maxY];
         }
     }
 
     internal class CellInfo
-    {
-        public short x, y;
-        public CellID cellID;
+    { //информация по клетке
+        public int x, y; //координаты
+        public CellID cellID; //id клетки
     }
 }
