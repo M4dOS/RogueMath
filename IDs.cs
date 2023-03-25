@@ -17,9 +17,10 @@ namespace RogueMath
 
     enum CellID //id клетки
     {
-        None = 0,
-        Wall = 1,
-        Exit = 2,
+        Void = '?',
+        None = ' ',
+        Wall = '*',
+        Exit = '+',
         Enemy = 3,
         Chest = 4,
         Shop = 5

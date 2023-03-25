@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RogueMath
 {
@@ -12,8 +13,19 @@ namespace RogueMath
     {
         static void Main(string[] args)
         {
-            Map map = new Map(5,5);
-            CellInfo[,] myArray = new CellInfo[5, 5];
+
+            Console.OutputEncoding = Encoding.UTF8;
+
+            //задаём неизменные размеры окна
+            const int consoleX = 150;
+            const int consoleY = 50;
+            const int fontSize = 16;
+
+            //прописываем настройки консоли
+            Console.SetWindowSize(consoleX, consoleY);
+
+            Map map = new Map(consoleX, consoleY);
+            CellInfo[,] myArray = new CellInfo[25, 14];
 
             for(int i = 0; i < myArray.GetLength(0); i++)
             {
