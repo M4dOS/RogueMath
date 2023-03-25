@@ -8,16 +8,23 @@ namespace RogueMath
 {
     internal class Room
     {
-        int x,y; //координаты
-        Lines width; //длина
-        Lines height; //ширина
+        //координаты
+        public int x;
+        public int y;
+
+        public int wigth; //длина
+        public int height; //ширина
         List<Exit> exits; //выходы комнаты
         bool isExplored; //исследована ли комната?
         RoomID roomType; //id комнаты
         List<CellInfo> objects; //список доп. обьектов на карте
-        public Room() 
+        public Room(int x, int y, int wight, int height) 
         {
-
+            this.x = x;
+            this.y = y;
+            this.wigth = wight;
+            this.height = height;
+            this.isExplored = false;
         }
     }
 }

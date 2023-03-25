@@ -19,7 +19,10 @@ namespace RogueMath
     {
         Void = '?',
         None = ' ',
-        Wall = '*',
+        VWall = '1',
+        HWall = '2',
+        MainVSpot = '3',
+        SecondVSpot = '4',
         Exit = '+',
         Enemy = 3,
         Chest = 4,

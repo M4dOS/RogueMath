@@ -25,24 +25,14 @@ namespace RogueMath
             Console.SetWindowSize(consoleX, consoleY);
 
             Map map = new Map(consoleX, consoleY);
-            CellInfo[,] myArray = new CellInfo[25, 14];
+            Room room1 = new Room(4,6,23,15);
+            map.rooms.Add(room1);
 
-            for(int i = 0; i < myArray.GetLength(0); i++)
-            {
-                for(int j = 0; j < myArray.GetLength(1); j++)
-                {
-                    if (i==0 || j==0 || i==myArray.GetLength(0)-1 || j == myArray.GetLength(1)-1)
-                    {
-                        myArray[i,j] = new CellInfo(i,j,CellID.Wall);
-                    }
-                    else
-                    {
-                        myArray[i, j] = new CellInfo(i, j, CellID.None);
-                    }
-                }
-            }
+            Room room2 = new Room(28, 6, 10, 16);
+            map.rooms.Add(room2);
 
-            map.GenerateMap(myArray);
+
+            map.GenerateMap();
             map.PrintMap();
         }
     }

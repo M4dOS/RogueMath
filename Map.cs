@@ -8,9 +8,9 @@ namespace RogueMath
 {
     internal class Map
     {
-        protected int maxX, maxY; //границы карты
+        int maxX, maxY; //границы карты
         CellInfo[,] cellMap; //карта "клеток" (вероятно будет двойным массивом(списком))
-        List<Room> rooms; //список комнат
+        public List<Room> rooms; //список комнат
 
         /*public void FindSize()
         { //находит размеры
@@ -27,7 +27,7 @@ namespace RogueMath
             }
         }*/
 
-       /* public void SortCells()
+        /* public void SortCells()
         { //сортировка клеток
             List<List<CellInfo>> sortedMap = new List<List<CellInfo>>();
             for (int i = 0; i < this.maxX; ++i)
@@ -51,13 +51,65 @@ namespace RogueMath
             this.cellMap = sortedMap;
         }*/
 
-        public void GenerateMap(CellInfo[,] inputMap)
+        public void GenerateMap()
         {
-            for (int i = 0; i < inputMap.GetLength(0); ++i)
+            //первостепенная генерация крайних стен и пустот
+            for (int i = 0; i < this.maxY; i++)
             {
-                for (int j = 0; j < inputMap.GetLength(1); ++j)
+                for (int j = 0; j < this.maxX; j++)
                 {
-                    cellMap[i, j] = inputMap[i, j];
+                    if (j == this.maxX - 1 && i == 0 || i == this.maxY - 1 && j == 0) //углы побочной диагонали
+                    {
+                        cellMap[j, i] = new CellInfo(j, i, CellID.SecondVSpot);
+                    }
+                    else if (i == 0 && j == 0 || j == this.maxX - 1 && i == this.maxY - 1) //углы главной диагонали
+                    {
+                        cellMap[j, i] = new CellInfo(j, i, CellID.MainVSpot);
+                    }
+                    else if (i == this.maxY - 1 || i == 0) //горизонтальные стены
+                    {
+                        cellMap[j, i] = new CellInfo(j, i, CellID.HWall);
+                    }
+                    else if (j == this.maxX - 1 || j == 0) //вертикальные стены
+                    {
+                        cellMap[j, i] = new CellInfo(j, i, CellID.VWall);
+                    }
+                    else
+                    {
+                        cellMap[j, i] = new CellInfo(j, i, CellID.None);
+                    }
+                }
+            }
+
+            //генерация комнат
+
+            foreach (Room room in rooms)
+            {
+                for (int i = room.y; i < room.height+room.y; ++i)
+                {
+                    for (int j = room.x; j < room.wigth+room.x; ++j)
+                    {
+                        if (j == room.wigth + room.x - 1 && i == room.y || i == room.height + room.y - 1 && j == room.x) //углы побочной диагонали
+                        {
+                            cellMap[j, i] = new CellInfo(j, i, CellID.SecondVSpot);
+                        }
+                        else if (i == room.y && j == room.x || j == room.wigth + room.x - 1 && i == room.height + room.y - 1) //углы главной диагонали
+                        {
+                            cellMap[j, i] = new CellInfo(j, i, CellID.MainVSpot);
+                        }
+                        else if (i == room.height + room.y - 1 || i == room.y) //горизонтальные стены
+                        {
+                            cellMap[j, i] = new CellInfo(j, i, CellID.HWall);
+                        }
+                        else if (j == room.wigth + room.x - 1 || j == room.x) //вертикальные стены
+                        {
+                            cellMap[j, i] = new CellInfo(j, i, CellID.VWall);
+                        }
+                        else
+                        {
+                            cellMap[j, i] = new CellInfo(j, i, CellID.None);
+                        }
+                    }
                 }
             }
 
@@ -79,26 +131,7 @@ namespace RogueMath
             {
                 for(int i = 0; i < this.maxX; ++i)
                 {
-                    if (j == this.maxY - 1 && i == 0 || i == this.maxY - 1 && j == 0) //углы побочной диагонали
-                    {
-                        Console.Write("⋱");
-                    }
-                    else if (j == 0 && i == 0 || i == this.maxY - 1 && j == this.maxY - 1) //углы главной диагонали
-                    {
-                        Console.Write("⋰");
-                    }
-                    else if (j == this.maxY - 1 || j == 0) //горизонтальные стены
-                    {
-                        Console.Write("⋯");
-                    }
-                    else if (i == this.maxX - 1 || i == 0) //вертикальные стены
-                    {
-                        Console.Write("⋮");
-                    }
-                    else
-                    {
                         Console.Write((char)this.cellMap[i, j].cellID);
-                    }
                 }
                 Console.WriteLine();
             }
@@ -106,6 +139,7 @@ namespace RogueMath
         public Map(int maxX, int maxY) 
         { //конструктор (under construction)
             this.cellMap = new CellInfo[maxX,maxY];
+            this.rooms = new List<Room>();
             this.maxX = maxX;
             this.maxY = maxY;
         }
