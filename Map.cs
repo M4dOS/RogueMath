@@ -57,7 +57,7 @@ namespace RogueMath
             {
                 for (int j = 0; j < inputMap.GetLength(1); ++j)
                 {
-                    
+                    cellMap[i,j] = inputMap[i, j];
                 }
             }
         }
@@ -66,21 +66,30 @@ namespace RogueMath
         { //печать карты
             for (int i = 0; i < this.maxX;++i)
             {
-                for(int j = 0; i < this.maxY; ++j)
+                for(int j = 0; j < this.maxY; ++j)
                 {
-                    Console.WriteLine(this.cellMap[i][j].cellID);
+                    Console.Write((int)this.cellMap[i,j].cellID);
                 }
+                Console.WriteLine();
             }
         }
         public Map(int maxX, int maxY) 
         { //конструктор (under construction)
-            this.cellMap = new CellInfo[maxX][maxY];
+            this.cellMap = new CellInfo[maxX,maxY];
+            this.maxX = maxX;
+            this.maxY = maxY;
         }
     }
 
     internal class CellInfo
     { //информация по клетке
         public int x, y; //координаты
-        public CellID cellID; //id клетки
+        public CellID cellID { get; } //id клетки
+        public CellInfo (int x, int y, CellID cell) 
+        {
+            this.x = x;
+            this.y = y;
+            this.cellID = cell;
+        }
     }
 }
