@@ -17,15 +17,16 @@ namespace RogueMath
 
     enum CellID //id клетки
     {
-        Void = '?',
+        Void = '.',
         None = ' ',
-        VWall = '1',
-        HWall = '2',
-        MainVSpot = '3',
-        SecondVSpot = '4',
+        VWall = '|',
+        HWall = '-',
+        MainVSpot = '/',
+        SecondVSpot = '\\',
         Exit = '+',
         Enemy = 3,
         Chest = 4,
-        Shop = 5
+        Shop = 5,
+        Player = 6
     }
 }

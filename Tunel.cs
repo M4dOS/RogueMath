@@ -8,9 +8,9 @@ namespace RogueMath
 {
     internal class Tunel
     {
-        Exit exit1; //один конец
-        Exit exit2; //второй конец
-        List<Lines> lines; //система линий
+        protected Exit exit1; //один конец
+        protected Exit exit2; //второй конец
+        protected List<Line> lines; //система линий
         public Tunel() 
         {
 

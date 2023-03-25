@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace RogueMath
 {
-    internal class Lines
+    internal class Line
     {
-        int xStart, yStart; //координаты начала
-        int xEnd, yEnd; //координаты конца
+        int xStart;
+        int yStart; //координаты начала
+        int xEnd;
+        int yEnd; //координаты конца
         int length; //длина отрезка
-        public Lines(int xStart, int yStart, int xEnd, int yEnd) 
+        public Line(int xStart, int yStart, int xEnd, int yEnd) 
         {//конструктор
             this.xStart = xStart;
             this.yStart = yStart;

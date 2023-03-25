@@ -53,7 +53,7 @@ namespace RogueMath
 
         public void GenerateMap()
         {
-            //первостепенная генерация крайних стен и пустот
+            //генерация крайних стен и пустот
             for (int i = 0; i < this.maxY; i++)
             {
                 for (int j = 0; j < this.maxX; j++)
@@ -76,7 +76,7 @@ namespace RogueMath
                     }
                     else
                     {
-                        cellMap[j, i] = new CellInfo(j, i, CellID.None);
+                        cellMap[j, i] = new CellInfo(j, i, CellID.Void);
                     }
                 }
             }
@@ -109,17 +109,6 @@ namespace RogueMath
                         {
                             cellMap[j, i] = new CellInfo(j, i, CellID.None);
                         }
-                    }
-                }
-            }
-
-            for (int i = 0; i < this.cellMap.GetLength(0); ++i)
-            {
-                for (int j = 0; j < this.cellMap.GetLength(1); ++j)
-                {
-                    if (cellMap[i, j] == null)
-                    {
-                        cellMap[i, j] = new CellInfo(i, j, CellID.Void);
                     }
                 }
             }
