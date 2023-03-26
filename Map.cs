@@ -85,32 +85,59 @@ namespace RogueMath
 
             foreach (Room room in rooms)
             {
-                for (int i = room.y; i < room.height+room.y; ++i)
+                /*if (room.isExplored == false)
                 {
-                    for (int j = room.x; j < room.wigth+room.x; ++j)
+                    for (int i = room.y; i < room.height + room.y; ++i)
                     {
-                        if (j == room.wigth + room.x - 1 && i == room.y || i == room.height + room.y - 1 && j == room.x) //углы побочной диагонали
+                        for (int j = room.x; j < room.wigth + room.x; ++j)
                         {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.SecondVSpot);
-                        }
-                        else if (i == room.y && j == room.x || j == room.wigth + room.x - 1 && i == room.height + room.y - 1) //углы главной диагонали
-                        {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.MainVSpot);
-                        }
-                        else if (i == room.height + room.y - 1 || i == room.y) //горизонтальные стены
-                        {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.HWall);
-                        }
-                        else if (j == room.wigth + room.x - 1 || j == room.x) //вертикальные стены
-                        {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.VWall);
-                        }
-                        else
-                        {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.None);
+                            cellMap[j, i] = new CellInfo(j, i, CellID.Void);
                         }
                     }
-                }
+                }*/
+
+                /*else
+                {*/
+                    //генерация основания комнаты
+                    for (int i = room.y; i < room.height + room.y; ++i)
+                    {
+                        for (int j = room.x; j < room.wigth + room.x; ++j)
+                        {
+                            if (j == room.wigth + room.x - 1 && i == room.y || i == room.height + room.y - 1 && j == room.x) //углы побочной диагонали
+                            {
+                                cellMap[j, i] = new CellInfo(j, i, CellID.SecondVSpot);
+                            }
+                            else if (i == room.y && j == room.x || j == room.wigth + room.x - 1 && i == room.height + room.y - 1) //углы главной диагонали
+                            {
+                                cellMap[j, i] = new CellInfo(j, i, CellID.MainVSpot);
+                            }
+                            else if (i == room.height + room.y - 1 || i == room.y) //горизонтальные стены
+                            {
+                                cellMap[j, i] = new CellInfo(j, i, CellID.HWall);
+                            }
+                            else if (j == room.wigth + room.x - 1 || j == room.x) //вертикальные стены
+                            {
+                                cellMap[j, i] = new CellInfo(j, i, CellID.VWall);
+                            }
+                            else
+                            {
+                                cellMap[j, i] = new CellInfo(j, i, CellID.None);
+                            }
+                        }
+                    }
+
+                    //генерация выходов
+                    foreach (Exit exit in room.exits)
+                    {
+                        cellMap[exit.x, exit.y] = new CellInfo(exit.x, exit.x, CellID.Exit);
+                    }
+
+                    //генерация доп. предметов на карте
+                    foreach (CellInfo obj in room.objects)
+                    {
+                        cellMap[obj.x, obj.y] = new CellInfo(obj);
+                    }
+                /*}*/
             }
         }
 
@@ -131,28 +158,6 @@ namespace RogueMath
             this.rooms = new List<Room>();
             this.maxX = maxX;
             this.maxY = maxY;
-        }
-    }
-
-    internal class CellInfo
-    { //информация по клетке
-        public int x, y; //координаты
-        public CellID cellID { get; } //id клетки
-        public char cellName { get;  }
-        public CellInfo (int x, int y, CellID cell, char chr) 
-        {
-            this.x = x;
-            this.y = y;
-            this.cellID = cell;
-            this.cellName = chr;
-
-        }
-
-        public CellInfo(int x, int y, CellID cell)
-        {
-            this.x = x;
-            this.y = y;
-            this.cellID = cell;
         }
     }
 }
