@@ -152,6 +152,83 @@ namespace RogueMath
                 Console.WriteLine();
             }
         }
+        
+        public void RoomPlace()
+        {
+            Random rand = new Random();
+            List<Room> loc_rooms = new List<Room>();
+
+            int minRooms = 5;
+            int maxRooms = 8;
+
+            while(!(minRooms <= rooms.Count && rooms.Count <= maxRooms) )
+            {
+                for (int i = 0; i < 1500; ++i)
+                {
+                    Room room0 = new Room(rand.Next(5, maxX - 5 + 1), rand.Next(5, maxY - 10 + 1), rand.Next(15, 25 + 1), rand.Next(5, 20 + 1));
+                    room0.manual = false;
+                    if (room0.x + room0.wigth < maxX - 5 && room0.y + room0.height < maxY - 10)
+                    {
+                        loc_rooms.Add(room0);
+                    }
+                }
+
+                bool[,] mapplace = new bool[this.maxX, this.maxY];
+                List<bool> validID = new List<bool>();
+
+
+                foreach (Room manual_room in rooms)
+                {
+                    for (int y = manual_room.y - 5; y < manual_room.y + manual_room.height; ++y)
+                    {
+                        for (int x = manual_room.x - 5; x < manual_room.x + manual_room.wigth; x++)
+                        {
+                                mapplace[x, y] = true;
+                        }
+                    }
+                }
+
+                foreach (Room room in loc_rooms)
+                {
+                    bool isThird = false;
+                    for (int y = room.y - 5; y < room.y + room.height; ++y)
+                    {
+                        if (isThird) { break; }
+
+                        for (int x = room.x - 5; x < room.x + room.wigth; x++)
+                        {
+                            if (!mapplace[x, y])
+                            {
+                                mapplace[x, y] = true;
+                            }
+                            else
+                            {
+                                isThird = true;
+                            }
+                        }
+                    }
+                    validID.Add(!isThird);
+                }
+
+                for (int i = 0; i < validID.Count; ++i)
+                {
+                    if (validID[i]) { rooms.Add(loc_rooms[i]); }
+                }
+
+                if(rooms.Count > 8)
+                {
+                    while(rooms.Count > 8)
+                    {
+                        Room room_x = rooms[rand.Next(rooms.Count)];
+                        if (!room_x.manual)
+                        {
+                            rooms.Remove(room_x);
+                        }
+                    }
+                }
+            }
+        }
+            
         public Map(int maxX, int maxY) 
         { //конструктор (under construction)
             this.cellMap = new CellInfo[maxX,maxY];

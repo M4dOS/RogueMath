@@ -18,6 +18,7 @@ namespace RogueMath
         public bool isExplored; //исследована ли комната?
         RoomID roomType; //id комнаты
         public List<CellInfo> objects; //список доп. обьектов на карте
+        public bool manual;
         public Room(int x, int y, int wight, int height)
         {
             Random rand = new Random();
@@ -28,11 +29,13 @@ namespace RogueMath
             this.isExplored = false;
             this.objects = new List<CellInfo>();
             this.exits = new List<Exit>();
+            this.manual = true;
+
             while (exits.Count <= 1)
             {
                 List<Exit> loc_exits = new List<Exit>();
 
-                for(int i = 0; i < 50000; ++i) 
+                for(int i = 0; i < 15; ++i) 
                 {
                     Exit exit0 = new Exit(rand.Next(x, x + wight + 1), rand.Next(y, y + height + 1));
                     loc_exits.Add(exit0);
