@@ -24,9 +24,9 @@ namespace RogueMath
         MainVSpot = '0',
         SecondVSpot = '1',
         Exit = '+',
-        Enemy = 3,
-        Chest = 4,
-        Shop = 5,
-        Player = 6
+        Enemy = 'x',
+        Chest = '!',
+        Shop = '$',
+        Player = '@'
     }
 }

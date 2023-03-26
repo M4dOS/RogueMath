@@ -16,7 +16,7 @@ namespace RogueMath
 
             Console.OutputEncoding = Encoding.UTF8;
 
-            //задаём неизменные размеры окна
+            //задаём неизменные параметры
             const int consoleX = 150;
             const int consoleY = 50;
             const int fontSize = 16;
@@ -25,13 +25,13 @@ namespace RogueMath
             Console.SetWindowSize(consoleX, consoleY);
 
             Map map = new Map(consoleX, consoleY);
-            Room room1 = new Room(4,6,23,15);
+            /*Room room1 = new Room(4, 6, 23, 15);
             map.rooms.Add(room1);
 
-            Room room2 = new Room(28, 6, 10, 16);
-            map.rooms.Add(room2);
+            Room room2 = new Room(35, 7, 10, 16);
+            map.rooms.Add(room2);*/
 
-
+            map.RoomPlace();
             map.GenerateMap();
             map.PrintMap();
         }

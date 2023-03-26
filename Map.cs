@@ -179,11 +179,11 @@ namespace RogueMath
 
                 foreach (Room manual_room in rooms)
                 {
-                    for (int y = manual_room.y - 5; y < manual_room.y + manual_room.height; ++y)
+                    for (int y = manual_room.y - 5; y < manual_room.y + manual_room.height + 5; ++y)
                     {
-                        for (int x = manual_room.x - 5; x < manual_room.x + manual_room.wigth; x++)
+                        for (int x = manual_room.x - 5; x < manual_room.x + manual_room.wigth + 5; x++)
                         {
-                                mapplace[x, y] = true;
+                            mapplace[x, y] = true;
                         }
                     }
                 }
@@ -191,23 +191,36 @@ namespace RogueMath
                 foreach (Room room in loc_rooms)
                 {
                     bool isThird = false;
-                    for (int y = room.y - 5; y < room.y + room.height; ++y)
+
+                    for (int y = room.y - 5; y < room.y + room.height + 5; ++y)
                     {
                         if (isThird) { break; }
-
-                        for (int x = room.x - 5; x < room.x + room.wigth; x++)
+                        for (int x = room.x - 5; x < room.x + room.wigth + 5; x++)
                         {
-                            if (!mapplace[x, y])
-                            {
-                                mapplace[x, y] = true;
-                            }
-                            else
+                            if (mapplace[x, y])
                             {
                                 isThird = true;
                             }
                         }
                     }
-                    validID.Add(!isThird);
+
+                    if (isThird)
+                    {
+                        validID.Add(!isThird);
+                    }
+
+                    else
+                    {
+                        for (int y = room.y - 5; y < room.y + room.height + 5; ++y)
+                        {
+                            for (int x = room.x - 5; x < room.x + room.wigth + 5; x++)
+                            {
+                                mapplace[x, y] = true;
+                            }
+                        }
+
+                        validID.Add(!isThird);
+                    }
                 }
 
                 for (int i = 0; i < validID.Count; ++i)
@@ -226,6 +239,20 @@ namespace RogueMath
                         }
                     }
                 }
+
+
+                //дебаг карты занятости
+
+                /*Console.Clear();
+                for (int i = 0; i < mapplace.GetLength(1); ++i)
+                {
+                    for (int j = 0; j < mapplace.GetLength(0); ++j)
+                    {
+                        Console.Write(mapplace[j,i] ? 1 : 0);
+                    }
+                    Console.WriteLine();
+                }
+                Thread.Sleep(200);*/
             }
         }
             
