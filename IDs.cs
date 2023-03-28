@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RogueMath
+﻿namespace RogueMath
 {
     enum RoomID //id комнаты
     {
@@ -27,6 +21,7 @@ namespace RogueMath
         Enemy = 'x',
         Chest = '!',
         Shop = '$',
-        Player = '@'
+        Player = '@',
+        Tunel = '#'
     }
 }

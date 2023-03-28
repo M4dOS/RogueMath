@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RogueMath
+﻿namespace RogueMath
 {
     internal class Line
     {
-        int xStart;
-        int yStart; //координаты начала
-        int xEnd;
-        int yEnd; //координаты конца
-        int length; //длина отрезка
-        public Line(int xStart, int yStart, int xEnd, int yEnd) 
+        public int xStart;
+        public int yStart; //координаты начала
+        public int xEnd;
+        public int yEnd; //координаты конца
+        public int length; //длина отрезка
+        public int mode;
+        public Line(int xStart, int yStart, int xEnd, int yEnd)
         {//конструктор
             this.xStart = xStart;
             this.yStart = yStart;
@@ -21,10 +16,12 @@ namespace RogueMath
             this.yEnd = yEnd;
             if (xEnd == xStart)
             {
+                this.mode = 1;
                 this.length = (yEnd - yStart);
             }
-            else
+            else if (yEnd == yStart)
             {
+                this.mode = 0;
                 this.length = (xEnd - xStart);
             }
         }
