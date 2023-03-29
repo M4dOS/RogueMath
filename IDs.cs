@@ -1,6 +1,6 @@
 ﻿namespace RogueMath
 {
-    enum RoomID //id комнаты
+    enum RoomType //id комнаты
     {
         Bonus = -2,
         Enemy = -1,
@@ -11,17 +11,24 @@
 
     enum CellID //id клетки
     {
+        //пустота
         Void = '.',
-        None = ' ',
+        
+        //стены
         VWall = '|',
         HWall = '-',
         MainVSpot = '0',
         SecondVSpot = '1',
-        Exit = '+',
+
+        //другие обьекты
+        None = ' ',
+        ExitOpen = '+',
+        ExitClose = '±',
+        Tunel = '#',
+
         Enemy = 'x',
         Chest = '!',
         Shop = '$',
         Player = '@',
-        Tunel = '#'
     }
 }

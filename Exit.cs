@@ -4,7 +4,7 @@
     {
         public int x, y; //координаты
         /*protected int width; //ширина двери (вероятно не реализуется)*/
-        protected bool isOpen; //открыта ли дверь?
+        public bool isOpen; //открыта ли дверь?
         protected bool isNone; //можно ли наступать на клетку? (1 для пустоты и туннелей, остальное редактируется отдельно)
         public bool isConnected;
         public int roomID;
@@ -16,6 +16,11 @@
             isOpen = true;
             isNone = true;
             isConnected = false;
+        }
+
+        public int Distance(Exit exitTo)
+        {
+            return (int)Math.Sqrt(Math.Pow((exitTo.x - this.x),2) + Math.Pow((exitTo.y - this.y),2));
         }
     }
 }

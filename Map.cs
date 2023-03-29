@@ -2,8 +2,9 @@
 {
     internal class Map
     {
-        int maxX, maxY; //границы карты
-        CellInfo[,] cellMap; //карта "клеток" (вероятно будет двойным массивом(списком))
+        protected int maxX, maxY; //границы карты
+        protected int edge; //расстояние от полей карты
+        protected CellInfo[,] cellMap; //карта "клеток" (вероятно будет двойным массивом(списком))
         public List<Room> rooms; //список комнат
 
 
@@ -46,9 +47,9 @@
             this.cellMap = sortedMap;
         }*/
 
-        bool[,] mapplace;
+        protected bool[,] mapplace;
 
-        public void GenerateMap()
+        protected void GenerateMap()
         {
             //генерация крайних стен и пустот
             for (int i = 0; i < this.maxY; i++)
@@ -113,11 +114,12 @@
                 //генерация выходов
                 foreach (Exit exit in room.exits)
                 {
-                    cellMap[exit.x, exit.y] = new CellInfo(exit.x, exit.y, CellID.Exit);
+                    if(exit.isOpen) cellMap[exit.x, exit.y] = new CellInfo(exit.x, exit.y, CellID.ExitOpen);
+                    else cellMap[exit.x, exit.y] = new CellInfo(exit.x, exit.y, CellID.ExitClose);
                 }
 
                 //генерация туннелей
-                foreach(Room room1 in rooms)
+                /*foreach(Room room1 in rooms)
                 {
                     foreach(Tunel tunel in room1.tunels)
                     {
@@ -132,7 +134,7 @@
                             }
                         }
                     }
-                }
+                }*/
 
                 //генерация доп. предметов на карте
                 foreach (CellInfo obj in room.objects)
@@ -154,38 +156,48 @@
             }
         }
 
-        public void RoomPlace()
+        private void RoomPlace()
         {
-            Random rand = new Random();
-            List<Room> loc_rooms = new List<Room>();
+            Random rand = new();
+            List<Room> loc_rooms = new();
 
             int minRooms = 5;
-            int maxRooms = 8;
+            int maxRooms = 12;
+
+            int minRoomX = 20;
+            int maxRoomX = 30;
+            
+            int minRoomY = 10;
+            int maxRoomY = 25;
 
             int tries = 0;
 
-            this.mapplace = new bool[maxX, maxY];
+            //this.mapplace = new bool[maxX, maxY];
+
 
             while (!(minRooms <= rooms.Count && rooms.Count <= maxRooms))
             {
                 for (int i = 0; i < 150; ++i)
                 {
-                    Room room0 = new Room(rand.Next(5, maxX - 5 + 1), rand.Next(5, maxY - 10 + 1), rand.Next(15, 25 + 1), rand.Next(5, 20 + 1));
-                    room0.manual = false;
-                    if (room0.x + room0.wigth < maxX - 5 && room0.y + room0.height < maxY - 10)
+                    Room room0 = new(rand.Next(edge, maxX - edge + 1), rand.Next(edge, maxY - 10 + 1), rand.Next(minRoomX, maxRoomX + 1), rand.Next(minRoomY, maxRoomY + 1))
+                    {
+                        manual = false
+                    };
+
+                    if (room0.x + room0.wigth < maxX - edge && room0.y + room0.height < maxY - 10)
                     {
                         loc_rooms.Add(room0);
                     }
                 }
 
-                List<bool> validID = new List<bool>();
+                List<bool> validID = new();
 
 
                 foreach (Room manual_room in rooms)
                 {
-                    for (int y = manual_room.y - 5; y < manual_room.y + manual_room.height + 5; ++y)
+                    for (int y = manual_room.y - edge; y < manual_room.y + manual_room.height + edge; ++y)
                     {
-                        for (int x = manual_room.x - 5; x < manual_room.x + manual_room.wigth + 5; x++)
+                        for (int x = manual_room.x - edge; x < manual_room.x + manual_room.wigth + edge; x++)
                         {
                             mapplace[x, y] = true;
                         }
@@ -196,10 +208,10 @@
                 {
                     bool isThird = false;
 
-                    for (int y = room.y - 5; y < room.y + room.height + 5; ++y)
+                    for (int y = room.y - edge; y < room.y + room.height + edge; ++y)
                     {
                         if (isThird) { break; }
-                        for (int x = room.x - 5; x < room.x + room.wigth + 5; x++)
+                        for (int x = room.x - edge; x < room.x + room.wigth + edge; x++)
                         {
                             if (mapplace[x, y])
                             {
@@ -215,9 +227,9 @@
 
                     else
                     {
-                        for (int y = room.y - 5; y < room.y + room.height + 5; ++y)
+                        for (int y = room.y - edge; y < room.y + room.height + edge; ++y)
                         {
-                            for (int x = room.x - 5; x < room.x + room.wigth + 5; x++)
+                            for (int x = room.x - edge; x < room.x + room.wigth + edge; x++)
                             {
                                 mapplace[x, y] = true;
                             }
@@ -257,42 +269,88 @@
                     }
                     Console.WriteLine("");
                 }
-                Thread.Sleep(2000);
+                Console.WriteLine("\n");
+                Thread.Sleep(20);
 #endif
 
-                if (tries == 2)
+                if (tries > 2)
                 {
-                    for (int i = 0; i < rooms.Count; i++)
+                    int manuals = 0;
+                    foreach (Room room in rooms)
                     {
-                        Room room = rooms[i];
-
-                        for (int y = room.y; y < room.y + room.height; ++y)
-                        {
-                            for (int x = room.x; x < room.x + room.wigth; ++x)
-                            {
-                                mapplace[x, y] = false;
-                            }
-                        }
-
                         if (!room.manual)
                         {
-                            rooms.Remove(room);
-                            CalibrateRoomIDs();
+                            for (int y = room.y - edge; y < room.y + room.height + edge; ++y)
+                            {
+                                for (int x = room.x - edge; x < room.x + room.wigth + edge; ++x)
+                                {
+                                    mapplace[x, y] = false;
+                                }
+                            }
                         }
+                        else ++manuals;
                     }
 
+                    while(rooms.Count > manuals)
+                    {
+                        for (int i = 0; i < rooms.Count; ++i)
+                        {
+                            if (!rooms[i].manual) {rooms.RemoveAt(i); break;}
+                        }
+                    }
+                    loc_rooms.Clear();
                     tries = 0;
                 }
-
-                CalibrateRoomIDs();
-
             }
+
+            CalibrateRoomIDs();
+
         }
 
-        public void CreateWeb()
+        private void CreateWeb()
         {
+            Exit exitFrom;
+            Exit exitTo;
 
+            List<Exit> exitList = new();
 
+            foreach(Room room in rooms)
+            {
+                foreach (Exit exit in room.exits)
+                {
+                    exitList.Add(exit);
+                }
+            }
+
+            int shortDestination = maxX + maxY + 1;
+
+            foreach(Exit dot in exitList)
+            {
+                exitFrom = dot;
+                exitTo = dot;
+
+                bool findConnect = false;
+
+                List<int> removeExitsID = new();
+
+                for(int indexOfExit = 0; indexOfExit < exitList.Count; indexOfExit++)
+                {
+                    if (exitList[indexOfExit] == dot || exitList[indexOfExit].isConnected) continue;
+                    foreach (int remove in removeExitsID){ if (indexOfExit == remove) continue; }
+
+                    if (dot.Distance(exitList[indexOfExit]) < shortDestination)
+                    {
+                        exitTo = exitList[indexOfExit];
+                        shortDestination = dot.Distance(exitTo);
+                    }
+                }
+                if(exitTo != exitFrom) findConnect = true;
+                if (!findConnect) {rooms[dot.roomID].exits.Remove(dot); exitList.IndexOf(dot); }
+
+                foreach (int remove in removeExitsID) exitList.RemoveAt(remove);
+
+                Drawer(exitFrom, exitTo);
+            }
             /*List<int> roomExitIDs = new List<int>();
             int ExitIDroom = -1;
 
@@ -368,38 +426,54 @@
 */
         }
 
-        public void CalibrateRoomIDs()
+        private void Drawer(Exit exitA, Exit exitB)
+        {
+            Line line0;
+            List<Line> lines = new();
+
+            if (exitA.mode == 0)
+            {
+
+            }
+        }
+        protected void CalibrateRoomIDs()
         {
             int i = 0;
             foreach (Room room in rooms)
             {
                 room.roomID = i;
-                ++i;
                 foreach (Exit exit in room.exits)
                 {
                     exit.roomID = i;
                 }
+                ++i;
             }
         }
 
-        public bool IsValidLine(Line line) 
+        protected bool IsValidLine(Line line) 
         {
             for(int y = line.yStart; y<Math.Abs(line.xStart - line.xEnd); ++y)
             {
                 for(int x = line.xStart; x<Math.Abs(line.yStart - line.yEnd); ++x)
                 {
-                    if (mapplace[x,y] || line.xStart<5 || line.yStart < 5) return false;
+                    if (mapplace[x,y] || line.xStart<edge || line.yStart < edge) return false;
                 }
             }
             return true;
         }
 
-        public Map(int maxX, int maxY)
+        public Map(int maxX, int maxY, int edge)
         { //конструктор (under construction)
             this.cellMap = new CellInfo[maxX, maxY];
-            this.rooms = new List<Room>();
+            this.rooms = new();
             this.maxX = maxX;
             this.maxY = maxY;
+            this.edge = edge;
+            this.mapplace = new bool[maxX, maxY];
+            RoomPlace();
+            //CreateWeb();
+            GenerateMap();
+            //PrintMap();
         }
     }
 }

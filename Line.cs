@@ -8,7 +8,8 @@
         public int yEnd; //координаты конца
         public int length; //длина отрезка
         public int mode;
-        public Line(int xStart, int yStart, int xEnd, int yEnd)
+
+/*        public Line(int xStart, int yStart, int xEnd, int yEnd)
         {//конструктор
             this.xStart = xStart;
             this.yStart = yStart;
@@ -23,6 +24,19 @@
             {
                 this.mode = 0;
                 this.length = (xEnd - xStart);
+            }
+        }*/
+
+        public Line(int xStart, int yStart, int mode, int lenght)
+        {
+            this.xStart = xStart;
+            this.yStart = yStart;
+            this.mode = mode;
+            this.length = lenght;
+            switch (mode)
+            {
+                case 0: this.xEnd = xStart + length; break;
+                case 1: this.yEnd = yStart + length; break;
             }
         }
     }
