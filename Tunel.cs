@@ -1,3 +1,4 @@
+
 ﻿namespace RogueMath
 {
     internal class Tunel
@@ -10,6 +11,7 @@
             this.exit1 = exit1;
             this.exit2 = exit2;
             this.lines = lines;
+
         }
     }
 }

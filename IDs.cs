@@ -1,4 +1,5 @@
-﻿namespace RogueMath
+
+namespace RogueMath
 {
     enum RoomType //id комнаты
     {

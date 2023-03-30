@@ -1,4 +1,4 @@
-﻿namespace RogueMath
+namespace RogueMath
 {
     internal class Item
     {

@@ -1,9 +1,12 @@
+
 ﻿using System.Diagnostics;
+
 
 namespace RogueMath
 {
     internal class Map
     {
+
         protected int maxX, maxY; //границы карты
         protected int edge; //расстояние от полей карты
         protected CellInfo[,] cellMap; //карта "клеток" (вероятно будет двойным массивом(списком))
@@ -25,7 +28,9 @@ namespace RogueMath
             }
         }*/
 
+
         /* public void SortCells()
+
         { //сортировка клеток
             List<List<CellInfo>> sortedMap = new List<List<CellInfo>>();
             for (int i = 0; i < this.maxX; ++i)
@@ -48,6 +53,7 @@ namespace RogueMath
 
             this.cellMap = sortedMap;
         }*/
+
 
         protected bool[,] mapplace;
 
@@ -167,21 +173,25 @@ namespace RogueMath
                 foreach (CellInfo obj in room.objects)
                 {
                     cellMap[obj.x, obj.y] = new CellInfo(obj);
+
                 }
             }
         }
 
         public void PrintMap()
         { //печать карты
+
             for (int j = 0; j < this.maxY; ++j)
             {
                 for (int i = 0; i < this.maxX; ++i)
                 {
                     Console.Write((char)this.cellMap[i, j].cellID);
+
                 }
                 Console.WriteLine();
             }
         }
+
 
         private void RoomPlace()
         {

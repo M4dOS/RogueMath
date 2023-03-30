@@ -1,3 +1,4 @@
+
 ﻿namespace RogueMath
 {
     internal class Room
@@ -110,5 +111,6 @@
             }
         }
         //public Room(int x, int y, int wight, int height, Player player) : this(x, y, wight, height) { }
+
     }
 }
