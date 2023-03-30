@@ -1,8 +1,13 @@
+
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using RogueMath;
+﻿using System.Text;
+using System;
+using System.Drawing;
+using System.Runtime.InteropServices;
+using Windows.UI.Text;
+using Windows.Networking;
 
 
 
@@ -26,6 +31,7 @@ public enum Race
 internal class Program
 {
     static void Main(string[] args)
+
     {
         Player a = new Player(1, Race.Human, 8, 8);
         Map map = new Map(10, 10);
@@ -51,9 +57,39 @@ internal class Program
         map.PrintMap();
         while (true) 
         {
+            
+            //задаём кодировку
+            Console.OutputEncoding = Encoding.UTF8;
+
+            //задаём неизменные параметры
+            const int consoleX = 165;
+            const int consoleY = 55;
+            const int edge = 4;
+            const int countBuferMaps = 5;
+
+            //const int fontSize = 16;
+
+            //для верхней панели
+            const string version = "v0.52b";
+            const string info = "RogueMath" + " " + version;
+
+            //прописываем настройки консоли
+            Console.SetWindowSize(consoleX, consoleY);
+            Console.SetBufferSize(consoleX, (consoleY + 1) * countBuferMaps);
+            Console.Title = info;
+
+            //генерация карты
+            Map map = new(consoleX, consoleY, edge);
+
             a.Movement( myArray );
             Console.Clear();
             map.PrintMap();
+
+            /*Room room1 = new Room(4, 6, 23, 15);
+            map.rooms.Add(room1);
+
+            Room room2 = new Room(35, 7, 10, 16);
+            map.rooms.Add(room2);*/
         }
         
     }

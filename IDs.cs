@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RogueMath
 {
-    enum RoomID //id комнаты
+    enum RoomType //id комнаты
     {
         Bonus = -2,
         Enemy = -1,
@@ -17,12 +12,24 @@ namespace RogueMath
 
     enum CellID //id клетки
     {
-        None = 0,
-        Wall = 1,
-        Exit = 2,
-        Enemy = 3,
-        Chest = 4,
-        Shop = 5,
-        Player = 6
+        //пустота
+        Void = '.',
+        
+        //стены
+        VWall = '│',
+        HWall = '—',
+        MainVSpot = '0',
+        SecondVSpot = '1',
+
+        //другие обьекты
+        None = ' ',
+        ExitOpen = '+',
+        ExitClose = '±',
+        Tunel = '#',
+
+        Enemy = 'x',
+        Chest = '!',
+        Shop = '$',
+        Player = '@',
     }
 }

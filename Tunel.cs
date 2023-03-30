@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace RogueMath
+﻿namespace RogueMath
 {
     internal class Tunel
     {
-        Exit exit1; //один конец
-        Exit exit2; //второй конец
-        List<Lines> lines; //система линий
-        public Tunel() 
+        protected Exit exit1; //один конец
+        protected Exit exit2; //второй конец
+        public List<Line> lines; //система линий
+        public Tunel(Exit exit1, Exit exit2, List<Line> lines)
         {
+            this.exit1 = exit1;
+            this.exit2 = exit2;
+            this.lines = lines;
 
         }
     }

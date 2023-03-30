@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,6 +45,7 @@ namespace RogueMath
             _def = _def + _lvl * 2;
         }
     }
+    
 
     internal class Player : Character
     {
@@ -119,5 +119,4 @@ namespace RogueMath
             }
         }
     }
-
 }
