@@ -15,8 +15,8 @@
         Void = '.',
         
         //стены
-        VWall = '|',
-        HWall = '-',
+        VWall = '│',
+        HWall = '—',
         MainVSpot = '0',
         SecondVSpot = '1',
 

@@ -13,7 +13,7 @@ class Programm
         {
 
             //задаём кодировку
-            Console.OutputEncoding = Encoding.Unicode;
+            Console.OutputEncoding = Encoding.UTF8;
 
             //задаём неизменные параметры
             const int consoleX = 165;
