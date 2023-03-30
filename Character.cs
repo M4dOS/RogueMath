@@ -13,10 +13,10 @@ namespace RogueMath
         protected int _def;
         protected int _atk;
         protected int _nerves;
-        protected Weapon? w;///
+        protected Weapon? w;
         protected int _lvl;
-        protected short x;
-        protected short y;
+        public int x;
+        public int y;
         protected List<Buff>? buffs;
         protected int _exp;
         protected int _gold;
@@ -49,7 +49,7 @@ namespace RogueMath
 
     internal class Player : Character
     {
-        public Player(int _lvl, Race r, short x, short y)
+        public Player(int _lvl, Race r, int x, int y)
         {
             switch (r) //добавить потом ещё расс врагов
             {
@@ -87,36 +87,51 @@ namespace RogueMath
             }
             get { return _exp; }
         }
-        public void Movement(CellInfo[,] myArray)
+        public void Movement(Map map)
         {
             ConsoleKeyInfo consoleKey = Console.ReadKey();
-            short temp_x = x;
-            short temp_y = y;
+            int temp_x = x;
+            int temp_y = y;
             switch (consoleKey.Key)
             {
+                case ConsoleKey.UpArrow:
                 case ConsoleKey.W:
                     --temp_y;
                     break;
 
+                case ConsoleKey.LeftArrow:
                 case ConsoleKey.A:
                     --temp_x;
                     break;
 
+                case ConsoleKey.DownArrow:
                 case ConsoleKey.S:
                     ++temp_y;
                     break;
 
+                case ConsoleKey.RightArrow:
                 case ConsoleKey.D:
                     ++temp_x;
                     break;
+
+                default: break;
             }
-            if (myArray[temp_y, temp_x].cellID != CellID.Wall)
+            if (map.cellMap[temp_x, temp_y].cellID != CellID.HWall
+                && map.cellMap[temp_x, temp_y].cellID != CellID.VWall
+                && map.cellMap[temp_x, temp_y].cellID != CellID.Void
+                && map.cellMap[temp_x, temp_y].cellID != CellID.ExitClose
+                && map.cellMap[temp_x, temp_y].cellID != CellID.Enemy
+                && map.cellMap[temp_x, temp_y].cellID != CellID.Chest
+                && map.cellMap[temp_x, temp_y].cellID != CellID.Shop
+                || (temp_x != x && temp_y != y) )
             {
-                myArray[y, x].cellID = CellID.None;
-                y = temp_y; 
+                
+                map.cellMap[x,y].cellID = map.cellMap[temp_x, temp_y].cellID;
+                y = temp_y;
                 x = temp_x;
-                myArray[y, x].cellID = CellID.Player;
+                map.cellMap[x,y].cellID = CellID.Player;
             }
+            else { }
         }
     }
 }

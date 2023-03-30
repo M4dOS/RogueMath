@@ -3,7 +3,7 @@
     internal class CellInfo
     { //информация по клетке
         public int x, y; //координаты
-        public CellID cellID { get; } //id клетки
+        public CellID cellID { get; set; } //id клетки
         public char cellName { get; }
         public CellInfo(int x, int y, CellID cell, char chr)
         {

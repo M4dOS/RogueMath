@@ -1,5 +1,5 @@
 
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 
 namespace RogueMath
@@ -9,54 +9,10 @@ namespace RogueMath
 
         protected int maxX, maxY; //границы карты
         protected int edge; //расстояние от полей карты
-        protected CellInfo[,] cellMap; //карта "клеток" (вероятно будет двойным массивом(списком))
+        public CellInfo[,] cellMap; //карта "клеток" (вероятно будет двойным массивом(списком))
         public List<Room> rooms; //список комнат
 
-
-        /*public void FindSize()
-        { //находит размеры
-            foreach (CellInfo axes in this.cellMap)
-            {
-                if (axes.x > maxX)
-                {
-                    maxX = axes.x;
-                }
-                if (axes.y > maxY)
-                {
-                    maxY = axes.y;
-                }
-            }
-        }*/
-
-
-        /* public void SortCells()
-
-        { //сортировка клеток
-            List<List<CellInfo>> sortedMap = new List<List<CellInfo>>();
-            for (int i = 0; i < this.maxX; ++i)
-            {
-                for (int j = 0; i < this.maxY; ++j)
-                {
-                    foreach (List<CellInfo> axes1 in this.cellMap)
-                    {
-                        foreach (CellInfo axes in axes1)
-                        {
-                            if (axes.x == i && axes.y == j)
-                            {
-                                sortedMap.Add(axes1);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            this.cellMap = sortedMap;
-        }*/
-
-
         protected bool[,] mapplace;
-
         protected void GenerateMap()
         {
             //генерация крайних стен и пустот
@@ -191,7 +147,6 @@ namespace RogueMath
                 Console.WriteLine();
             }
         }
-
 
         private void RoomPlace()
         {
@@ -385,7 +340,7 @@ namespace RogueMath
                 }
             }
 
-            int shortDestination = maxX + maxY + 1;
+            int intDestination = maxX + maxY + 1;
             List<int> removeExitsID = new();
 
             foreach (Exit dot in exitList)
@@ -400,10 +355,10 @@ namespace RogueMath
                     if (exitList[indexOfExit] == dot || exitList[indexOfExit].isConnected) continue;
                     foreach (int remove in removeExitsID){ if (indexOfExit == remove) continue; }
 
-                    if (dot.Distance(exitList[indexOfExit]) < shortDestination)
+                    if (dot.Distance(exitList[indexOfExit]) < intDestination)
                     {
                         exitTo = exitList[indexOfExit];
-                        shortDestination = dot.Distance(exitTo);
+                        intDestination = dot.Distance(exitTo);
                     }
                 }
 

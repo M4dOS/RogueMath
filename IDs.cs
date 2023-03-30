@@ -9,12 +9,18 @@ namespace RogueMath
         Mather = 1,
         Shop = 2
     }
+    public enum Race
+    {
+        Math = -1, //враг
+        Human = 0, // персонаж
+        Mather = 1 // босс
+    }
 
     enum CellID //id клетки
     {
         //пустота
         Void = '.',
-        
+
         //стены
         VWall = '│',
         HWall = '—',
@@ -32,4 +38,5 @@ namespace RogueMath
         Shop = '$',
         Player = '@',
     }
+    
 }

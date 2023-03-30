@@ -1,5 +1,5 @@
 
-﻿namespace RogueMath
+namespace RogueMath
 {
     internal class Tunel
     {

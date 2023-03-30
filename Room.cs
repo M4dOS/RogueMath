@@ -1,5 +1,5 @@
 
-﻿namespace RogueMath
+namespace RogueMath
 {
     internal class Room
     {
@@ -17,7 +17,7 @@
         public bool manual;
 
         /*public List<Tunel> tunels;*/
-
+        public void RoomPlacer() { }
         public Room(int x, int y, int wight, int height)
         {
             Random rand = new();
