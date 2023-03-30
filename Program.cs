@@ -19,6 +19,7 @@ class Programm
             const int consoleX = 165;
             const int consoleY = 55;
             const int edge = 4;
+            const int countBuferMaps = 5;
 
             //const int fontSize = 16;
 
@@ -28,11 +29,15 @@ class Programm
 
             //прописываем настройки консоли
             Console.SetWindowSize(consoleX, consoleY);
-            Console.SetBufferSize(consoleX, (consoleY + 1) * 5);
+            Console.SetBufferSize(consoleX, (consoleY + 1) * countBuferMaps);
             Console.Title = info;
 
+            //генерация карты
             Map map = new(consoleX, consoleY, edge);
+
+
             map.PrintMap();
+
             /*Room room1 = new Room(4, 6, 23, 15);
             map.rooms.Add(room1);
 

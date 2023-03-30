@@ -1,4 +1,6 @@
-﻿namespace RogueMath
+﻿using System.Diagnostics;
+
+namespace RogueMath
 {
     internal class Map
     {
@@ -52,29 +54,54 @@
         protected void GenerateMap()
         {
             //генерация крайних стен и пустот
-            for (int i = 0; i < this.maxY; i++)
+            for (int y = 0; y < this.maxY; y++)
             {
-                for (int j = 0; j < this.maxX; j++)
+                for (int x = 0; x < this.maxX; x++)
                 {
-                    if (j == this.maxX - 1 && i == 0 || i == this.maxY - 1 && j == 0) //углы побочной диагонали
+                    //прорисовка комнат
+                    if (x == this.maxX - 1 && y == 0 || y == this.maxY - 1 && x == 0) //углы побочной диагонали
                     {
-                        cellMap[j, i] = new CellInfo(j, i, CellID.SecondVSpot);
+                        cellMap[x, y] = new CellInfo(x, y, CellID.SecondVSpot);
                     }
-                    else if (i == 0 && j == 0 || j == this.maxX - 1 && i == this.maxY - 1) //углы главной диагонали
+                    else if (y == 0 && x == 0 || x == this.maxX - 1 && y == this.maxY - 1) //углы главной диагонали
                     {
-                        cellMap[j, i] = new CellInfo(j, i, CellID.MainVSpot);
+                        cellMap[x, y] = new CellInfo(x, y, CellID.MainVSpot);
                     }
-                    else if (i == this.maxY - 1 || i == 0) //горизонтальные стены
+                    else if (y == this.maxY - 1 || y == 0) //горизонтальные стены
                     {
-                        cellMap[j, i] = new CellInfo(j, i, CellID.HWall);
+                        cellMap[x, y] = new CellInfo(x, y, CellID.HWall);
                     }
-                    else if (j == this.maxX - 1 || j == 0) //вертикальные стены
+                    else if (x == this.maxX - 1 || x == 0) //вертикальные стены
                     {
-                        cellMap[j, i] = new CellInfo(j, i, CellID.VWall);
+                        cellMap[x, y] = new CellInfo(x, y, CellID.VWall);
                     }
+
+                    //прорисовка окошка для счётчиков
+                    else if (y == maxY - 4 - 1 && x == 3 || y == maxY - 2 - 1 && x == maxX - 3 - 1) //углы главной диагонали
+                    {
+                        cellMap[x, y] = new CellInfo(x, y, CellID.SecondVSpot);
+                    }
+                    else if (y == maxY - 4 - 1 && (x==3 || x == maxX - 3 - 1) || y == maxY - 2 - 1 && (x == 3 || x == maxX - 3 - 1)) //углы побочной диагонали
+                    {
+                        cellMap[x, y] = new CellInfo(x, y, CellID.MainVSpot);
+                    }
+                    else if (y > maxY - 4 - 1 && y < maxY - 2 - 1 && (x==3 || x== maxX - 3 - 1)) //вертикальные стены
+                    {
+                        cellMap[x, y] = new CellInfo(x, y, CellID.VWall);
+                    }
+                    else if( x>3 && x<maxX-3 - 1 && (y == maxY - 4- 1 || y==maxY - 2 - 1))
+                    {
+                        cellMap[x, y] = new CellInfo(x, y, CellID.HWall);
+                    }
+                    else if (x > 3 && x < maxX - 3 - 1 && y > maxY - 4 - 1 && y < maxY - 2 - 1)
+                    {
+                        cellMap[x, y] = new CellInfo(x, y, CellID.None);
+                    }
+
+                    //заполнение пустотой
                     else
                     {
-                        cellMap[j, i] = new CellInfo(j, i, CellID.Void);
+                        cellMap[x, y] = new CellInfo(x, y, CellID.Void);
                     }
                 }
             }
@@ -84,29 +111,29 @@
             foreach (Room room in rooms)
             {
                 //генерация основания комнаты
-                for (int i = room.y; i < room.height + room.y; ++i)
+                for (int y = room.y; y < room.height + room.y; ++y)
                 {
-                    for (int j = room.x; j < room.wigth + room.x; ++j)
+                    for (int x = room.x; x < room.wigth + room.x; ++x)
                     {
-                        if (j == room.wigth + room.x - 1 && i == room.y || i == room.height + room.y - 1 && j == room.x) //углы побочной диагонали
+                        if (x == room.wigth + room.x - 1 && y == room.y || y == room.height + room.y - 1 && x == room.x) //углы побочной диагонали
                         {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.SecondVSpot);
+                            cellMap[x, y] = new CellInfo(x, y, CellID.SecondVSpot);
                         }
-                        else if (i == room.y && j == room.x || j == room.wigth + room.x - 1 && i == room.height + room.y - 1) //углы главной диагонали
+                        else if (y == room.y && x == room.x || x == room.wigth + room.x - 1 && y == room.height + room.y - 1) //углы главной диагонали
                         {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.MainVSpot);
+                            cellMap[x, y] = new CellInfo(x, y, CellID.MainVSpot);
                         }
-                        else if (i == room.height + room.y - 1 || i == room.y) //горизонтальные стены
+                        else if (y == room.height + room.y - 1 || y == room.y) //горизонтальные стены
                         {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.HWall);
+                            cellMap[x, y] = new CellInfo(x, y, CellID.HWall);
                         }
-                        else if (j == room.wigth + room.x - 1 || j == room.x) //вертикальные стены
+                        else if (x == room.wigth + room.x - 1 || x == room.x) //вертикальные стены
                         {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.VWall);
+                            cellMap[x, y] = new CellInfo(x, y, CellID.VWall);
                         }
                         else
                         {
-                            cellMap[j, i] = new CellInfo(j, i, CellID.None);
+                            cellMap[x, y] = new CellInfo(x, y, CellID.None);
                         }
                     }
                 }
@@ -158,6 +185,8 @@
 
         private void RoomPlace()
         {
+            bool isDebug = true;
+
             Random rand = new();
             List<Room> loc_rooms = new();
 
@@ -179,7 +208,7 @@
             {
                 for (int i = 0; i < 150; ++i)
                 {
-                    Room room0 = new(rand.Next(edge, maxX - edge + 1), rand.Next(edge, maxY - 10 + 1), rand.Next(minRoomX, maxRoomX + 1), rand.Next(minRoomY, maxRoomY + 1))
+                    Room room0 = new(rand.Next(edge + 1, maxX - edge + 1), rand.Next(edge + 1, maxY - 10 + 1), rand.Next(minRoomX, maxRoomX + 1), rand.Next(minRoomY, maxRoomY + 1))
                     {
                         manual = false
                     };
@@ -259,20 +288,20 @@
 
                 ++tries;
 
-
-#if DEBUG       //дебаг карты занятости
-                for (int i = 0; i < mapplace.GetLength(1); ++i)
+                if (isDebug)
                 {
-                    for (int j = 0; j < mapplace.GetLength(0); ++j)
+                    for (int i = 0; i < mapplace.GetLength(1); ++i)
                     {
-                        Console.Write(mapplace[j, i] ? 1 : 0);
+                        for (int j = 0; j < mapplace.GetLength(0); ++j)
+                        {
+                            Console.Write(mapplace[j, i] ? 1 : 0);
+                        }
+                        Console.WriteLine("");
                     }
-                    Console.WriteLine("");
+                    Console.WriteLine("\n");
+                    Thread.Sleep(20);
                 }
-                Console.WriteLine("\n");
-                Thread.Sleep(20);
-#endif
-
+                
                 if (tries > 2)
                 {
                     int manuals = 0;
@@ -309,6 +338,8 @@
 
         private void CreateWeb()
         {
+            bool isDebug = false;
+
             Exit exitFrom;
             Exit exitTo;
 
@@ -316,6 +347,28 @@
 
             foreach(Room room in rooms)
             {
+                for(int y = room.y - edge; y<room.y + room.height + edge + 1; ++y)
+                {
+                    for(int x = room.x - edge;x<room.y+room.height + edge + 1; ++x)
+                    {
+                        mapplace[x,y] = false;
+                    }
+                }
+
+                if (isDebug)
+                {
+                    for (int i = 0; i < mapplace.GetLength(1); ++i)
+                    {
+                        for (int j = 0; j < mapplace.GetLength(0); ++j)
+                        {
+                            Console.Write(mapplace[j, i] ? 1 : 0);
+                        }
+                        Console.WriteLine("");
+                    }
+                    Console.WriteLine("\n");
+                    Thread.Sleep(20);
+                }
+
                 foreach (Exit exit in room.exits)
                 {
                     exitList.Add(exit);
@@ -323,15 +376,14 @@
             }
 
             int shortDestination = maxX + maxY + 1;
+            List<int> removeExitsID = new();
 
-            foreach(Exit dot in exitList)
+            foreach (Exit dot in exitList)
             {
                 exitFrom = dot;
                 exitTo = dot;
 
                 bool findConnect = false;
-
-                List<int> removeExitsID = new();
 
                 for(int indexOfExit = 0; indexOfExit < exitList.Count; indexOfExit++)
                 {
@@ -344,86 +396,13 @@
                         shortDestination = dot.Distance(exitTo);
                     }
                 }
-                if(exitTo != exitFrom) findConnect = true;
-                if (!findConnect) {rooms[dot.roomID].exits.Remove(dot); exitList.IndexOf(dot); }
 
-                foreach (int remove in removeExitsID) exitList.RemoveAt(remove);
+                if(exitTo != exitFrom) findConnect = true;
+                if (!findConnect) {rooms[dot.roomID].exits.Remove(dot); removeExitsID.Add(exitList.IndexOf(dot)); }
 
                 Drawer(exitFrom, exitTo);
             }
-            /*List<int> roomExitIDs = new List<int>();
-            int ExitIDroom = -1;
-
-            Random rand = new Random();
-            List<Exit> exits_web = new List<Exit>();
-
-
-            foreach (Room room in rooms)
-            {
-                foreach (Exit exit in room.exits)
-                {
-                    exits_web.Add(exit);
-                    ++ExitIDroom;
-                }
-                roomExitIDs.Add(ExitIDroom);
-            }
-
-            foreach(Exit exit in exits_web)
-            {
-                int roomIDfrom = exit.roomID;
-                int roomIDto = 0;
-                int exitID = 0;
-                int shortD = 9999;
-
-                for(int i = 0; i < exits_web.Count; ++i)
-                {
-                    if (exits_web[i] == exit)
-                    {
-                        continue;
-                    }
-
-                    if ((int)Math.Sqrt(Math.Pow(exits_web[i].x - exit.x, 2) + Math.Pow(exits_web[i].y - exit.y, 2)) < shortD)
-                    {
-                        shortD = (int)Math.Sqrt(Math.Pow(exits_web[i].x - exit.x, 2) + Math.Pow(exits_web[i].y - exit.y, 2));
-                        roomIDto = exits_web[i].roomID;
-                        exitID = i;
-                    }
-                }
-
-                Exit exitTo = exits_web[(int)exitID];
-
-                Exit exitIn = exits_web[(int)roomIDto];
-                Line line0 = new Line(0,0,0,0);
-
-                switch (exit.mode)
-                {
-                    case 1: line0 = new Line(exit.x, exit.y + 1, exit.x, exit.y + 1 + 2); break;
-                    case 2: line0 = new Line(exit.x, exit.y - 1, exit.x, exit.y - 1 - 2); break;
-                    case 3: line0 = new Line(exit.x + 1, exit.y, exit.x + 1 + 2, exit.y); break;
-                    case 4: line0 = new Line(exit.x - 1, exit.y, exit.x - 1 - 2, exit.y); break;
-                }
-
-                if (!IsValidLine(line0))
-                {
-                    foreach (int index in roomExitIDs)
-                    {
-                        if(exits_web.IndexOf(exit) < index)
-                        {
-                            rooms[index].exits.Remove(exit);
-                            break;
-                        }
-                    }
-                    continue;
-                }
-                else
-                {
-                    int cursorX = line0.xEnd;
-                    int cursorY = line0.yEnd;
-
-                }
-            }
-
-*/
+            foreach (int remove in removeExitsID) exitList.RemoveAt(remove);
         }
 
         private void Drawer(Exit exitA, Exit exitB)
@@ -456,7 +435,7 @@
             {
                 for(int x = line.xStart; x<Math.Abs(line.yStart - line.yEnd); ++x)
                 {
-                    if (mapplace[x,y] || line.xStart<edge || line.yStart < edge) return false;
+                    if (mapplace[x,y] || line.xStart < edge || line.yStart < edge) return false;
                 }
             }
             return true;

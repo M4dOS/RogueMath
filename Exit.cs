@@ -5,7 +5,7 @@
         public int x, y; //координаты
         /*protected int width; //ширина двери (вероятно не реализуется)*/
         public bool isOpen; //открыта ли дверь?
-        protected bool isNone; //можно ли наступать на клетку? (1 для пустоты и туннелей, остальное редактируется отдельно)
+        // protected bool isNone; //можно ли наступать на клетку? (1 для пустоты и туннелей, остальное редактируется отдельно)
         public bool isConnected;
         public int roomID;
         public int mode;
@@ -14,7 +14,7 @@
             this.x = x;
             this.y = y;
             isOpen = true;
-            isNone = true;
+            //isNone = true;
             isConnected = false;
         }
 
