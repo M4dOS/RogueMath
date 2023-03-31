@@ -3,9 +3,10 @@ namespace RogueMath
     internal class Exit
     {
         public int x, y; //координаты
-        /*protected int width; //ширина двери (вероятно не реализуется)*/
         public bool isOpen; //открыта ли дверь?
+
         // protected bool isNone; //можно ли наступать на клетку? (1 для пустоты и туннелей, остальное редактируется отдельно)
+
         public bool isConnected;
         public int roomID;
         public int mode;
@@ -20,7 +21,7 @@ namespace RogueMath
 
         public int Distance(Exit exitTo)
         {
-            return (int)Math.Sqrt(Math.Pow((exitTo.x - this.x),2) + Math.Pow((exitTo.y - this.y),2));
+            return (int)Math.Sqrt(Math.Pow(exitTo.x - x, 2) + Math.Pow(exitTo.y - y, 2));
 
         }
     }

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RogueMath
 {
     internal class Character
@@ -13,10 +7,10 @@ namespace RogueMath
         protected int _def;
         protected int _atk;
         protected int _nerves;
-        protected Weapon? w;///
+        protected Weapon? w;
         protected int _lvl;
-        protected short x;
-        protected short y;
+        public int x;
+        public int y;
         protected List<Buff>? buffs;
         protected int _exp;
         protected int _gold;
@@ -39,17 +33,17 @@ namespace RogueMath
             }
 
             this._lvl = _lvl;
-            _hp = _hp + _lvl * 3;
-            _nerves = _nerves + _lvl * 2;
-            _atk = _atk + _lvl * 5;
-            _def = _def + _lvl * 2;
+            _hp = _hp + (_lvl * 3);
+            _nerves = _nerves + (_lvl * 2);
+            _atk = _atk + (_lvl * 5);
+            _def = _def + (_lvl * 2);
         }
     }
-    
+
 
     internal class Player : Character
     {
-        public Player(int _lvl, Race r, short x, short y)
+        public Player(int _lvl, Race r, int x, int y)
         {
             switch (r) //добавить потом ещё расс врагов
             {
@@ -63,10 +57,10 @@ namespace RogueMath
                     break;
             }
             this._lvl = _lvl;
-            _hp = _hp + _lvl * 3;
-            _nerves = _nerves + _lvl * 2;
-            _atk = _atk + _lvl * 5;
-            _def = _def + _lvl * 2;
+            _hp = _hp + (_lvl * 3);
+            _nerves = _nerves + (_lvl * 2);
+            _atk = _atk + (_lvl * 5);
+            _def = _def + (_lvl * 2);
             this.x = x;
             this.y = y;
         }
@@ -87,36 +81,56 @@ namespace RogueMath
             }
             get { return _exp; }
         }
-        public void Movement(CellInfo[,] myArray)
+
+        CellID tempCell = CellID.None;
+        public bool Movement(Map map)
         {
-            ConsoleKeyInfo consoleKey = Console.ReadKey();
-            short temp_x = x;
-            short temp_y = y;
+            ConsoleKeyInfo consoleKey = Console.ReadKey(true);
+            int temp_x = x;
+            int temp_y = y;
+            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.UpArrow, ConsoleKey.W, ConsoleKey.DownArrow, ConsoleKey.S,
+                                                       ConsoleKey.LeftArrow, ConsoleKey.A, ConsoleKey.RightArrow, ConsoleKey.D };
+
+            List<CellID> cellIDs = new() { CellID.HWall, CellID.VWall, CellID.ExitClose, CellID.Void,
+                                           CellID.Enemy, CellID.Chest, CellID.Shop};
+
             switch (consoleKey.Key)
             {
+                case ConsoleKey.UpArrow:
                 case ConsoleKey.W:
                     --temp_y;
                     break;
 
+                case ConsoleKey.LeftArrow:
                 case ConsoleKey.A:
                     --temp_x;
                     break;
 
+                case ConsoleKey.DownArrow:
                 case ConsoleKey.S:
                     ++temp_y;
                     break;
 
+                case ConsoleKey.RightArrow:
                 case ConsoleKey.D:
                     ++temp_x;
                     break;
+
+                default: break;
             }
-            if (myArray[temp_y, temp_x].cellID != CellID.Wall)
+
+            if ((!cellIDs.Contains(map.cellMap[temp_x, temp_y].cellID)
+                && consoleKeysList.Contains(consoleKey.Key)) || (temp_x != x && temp_y != y))
             {
-                myArray[y, x].cellID = CellID.None;
-                y = temp_y; 
+                
+                map.cellMap[x, y].cellID = tempCell;
+                y = temp_y;
                 x = temp_x;
-                myArray[y, x].cellID = CellID.Player;
+                tempCell = map.cellMap[x, y].cellID;
+                map.cellMap[x, y].cellID = CellID.Player;
+                return true;
             }
+            else return false;
         }
     }
 }
