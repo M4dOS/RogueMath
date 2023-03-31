@@ -7,7 +7,7 @@ namespace RogueMath
     internal class Map
     {
 
-        protected int maxX, maxY; //границы карты
+        public int maxX, maxY; //границы карты
         protected int edge; //расстояние от полей карты
         public CellInfo[,] cellMap; //карта "клеток" (вероятно будет двойным массивом(списком))
         public List<Room> rooms; //список комнат
@@ -144,13 +144,14 @@ namespace RogueMath
                     Console.Write((char)this.cellMap[i, j].cellID);
 
                 }
-                Console.WriteLine();
+                if (j == this.maxY - 1) Console.Write("");
+                else Console.WriteLine();
             }
         }
 
         private void RoomPlace()
         {
-            bool isDebug = true;
+            bool isDebug = false;
 
             Random rand = new();
             List<Room> loc_rooms = new();
@@ -173,7 +174,7 @@ namespace RogueMath
             {
                 for (int i = 0; i < 150; ++i)
                 {
-                    Room room0 = new(rand.Next(edge + 1, maxX - edge + 1), rand.Next(edge + 1, maxY - 10 + 1), rand.Next(minRoomX, maxRoomX + 1), rand.Next(minRoomY, maxRoomY + 1))
+                    Room room0 = new(rand.Next(edge + 1 + 3, maxX - edge + 1 - 3), rand.Next(edge + 1, maxY - 10 + 1), rand.Next(minRoomX, maxRoomX + 1), rand.Next(minRoomY, maxRoomY + 1))
                     {
                         manual = false
                     };
@@ -353,7 +354,7 @@ namespace RogueMath
                 for(int indexOfExit = 0; indexOfExit < exitList.Count; indexOfExit++)
                 {
                     if (exitList[indexOfExit] == dot || exitList[indexOfExit].isConnected) continue;
-                    foreach (int remove in removeExitsID){ if (indexOfExit == remove) continue; }
+                    foreach (int remove in removeExitsID){ if (removeExitsID.Contains(indexOfExit)) continue; }
 
                     if (dot.Distance(exitList[indexOfExit]) < intDestination)
                     {
@@ -406,6 +407,13 @@ namespace RogueMath
             return true;
         }
 
+        public void Create()
+        {
+            RoomPlace();
+            //CreateWeb();
+            GenerateMap();
+        }
+
         public Map(int maxX, int maxY, int edge)
         { //конструктор (under construction)
             this.cellMap = new CellInfo[maxX, maxY];
@@ -414,10 +422,14 @@ namespace RogueMath
             this.maxY = maxY;
             this.edge = edge;
             this.mapplace = new bool[maxX, maxY];
-            RoomPlace();
-            //CreateWeb();
-            GenerateMap();
-            //PrintMap();
+        }
+        
+        public Map(int maxX, int maxY, int edge, List<Room> rooms): this(maxX, maxY, edge)
+        {
+            foreach (Room room in rooms)
+            {
+                this.rooms.Add(room);
+            }
         }
     }
 }

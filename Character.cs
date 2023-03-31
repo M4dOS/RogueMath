@@ -87,11 +87,17 @@ namespace RogueMath
             }
             get { return _exp; }
         }
-        public void Movement(Map map)
+        public bool Movement(Map map)
         {
-            ConsoleKeyInfo consoleKey = Console.ReadKey();
+            ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             int temp_x = x;
             int temp_y = y;
+            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.UpArrow, ConsoleKey.W, ConsoleKey.DownArrow, ConsoleKey.S, 
+                                                       ConsoleKey.LeftArrow, ConsoleKey.A, ConsoleKey.RightArrow, ConsoleKey.D };
+
+            List<CellID> cellIDs = new() { CellID.HWall, CellID.VWall, CellID.ExitClose, CellID.Void,
+                                           CellID.Enemy, CellID.Chest, CellID.Shop};
+
             switch (consoleKey.Key)
             {
                 case ConsoleKey.UpArrow:
@@ -116,22 +122,18 @@ namespace RogueMath
 
                 default: break;
             }
-            if (map.cellMap[temp_x, temp_y].cellID != CellID.HWall
-                && map.cellMap[temp_x, temp_y].cellID != CellID.VWall
-                && map.cellMap[temp_x, temp_y].cellID != CellID.Void
-                && map.cellMap[temp_x, temp_y].cellID != CellID.ExitClose
-                && map.cellMap[temp_x, temp_y].cellID != CellID.Enemy
-                && map.cellMap[temp_x, temp_y].cellID != CellID.Chest
-                && map.cellMap[temp_x, temp_y].cellID != CellID.Shop
-                || (temp_x != x && temp_y != y) )
+
+            if (!cellIDs.Contains(map.cellMap[temp_x, temp_y].cellID)
+                && consoleKeysList.Contains(consoleKey.Key) || (temp_x != x && temp_y != y))
             {
-                
-                map.cellMap[x,y].cellID = map.cellMap[temp_x, temp_y].cellID;
+
+                map.cellMap[x, y].cellID = map.cellMap[temp_x, temp_y].cellID;
                 y = temp_y;
                 x = temp_x;
-                map.cellMap[x,y].cellID = CellID.Player;
+                map.cellMap[x, y].cellID = CellID.Player;
+                return true;
             }
-            else { }
+            else return false;
         }
     }
 }
