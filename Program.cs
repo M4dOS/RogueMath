@@ -19,7 +19,7 @@ internal class Program
         //const int fontSize = 16;
 
         //для верхней панели
-        const string version = "v0.1.1927 alpha";
+        const string version = "v0.2.1306 alpha";
         const string info = "RogueMath" + " " + version;
 
         //прописываем настройки консоли
