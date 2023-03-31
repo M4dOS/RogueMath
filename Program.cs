@@ -29,15 +29,20 @@ internal class Program
         Console.CursorVisible = false;
         Console.Title = info;
 
-        //генерация карты
-        List<Room> manual_rooms = new() {new Room(35, 7, 10, 16)};
+        //задаём комнату(ы) вручную через список
+        List<Room> manual_rooms = new() { new Room(35, 7, 10, 16) };
+
+        //производим генерацию карты
         Map map = new(consoleX, consoleY, edge, manual_rooms); map.Create();
 
+        //спавним игрока
         Player player = new Player(1, Race.Human, map.rooms[0].x + 3, map.rooms[0].y + 3);
-
         map.cellMap[player.x, player.y].cellID = CellID.Player;
+
+        //выводим первоначальную карту
         map.PrintMap();
 
+        //процесс игры
         while (true)
         {
             if (player.Movement(map)) { Console.Clear(); map.PrintMap(); }

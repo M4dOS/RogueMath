@@ -1,4 +1,3 @@
-
 namespace RogueMath
 {
     internal class Room
@@ -7,14 +6,14 @@ namespace RogueMath
         public int x;
         public int y;
 
-        public int roomID;
+        public int roomID; //идентификатор комнаты
         public int wigth; //длина
         public int height; //ширина
         public List<Exit> exits; //выходы комнаты
         public bool isExplored; //исследована ли комната?
         public RoomType roomType; //id комнаты
         public List<CellInfo> objects; //список доп. обьектов на карте
-        public bool manual;
+        public bool manual; //создана ли вручную?
 
         /*public List<Tunel> tunels;*/
         public void RoomPlacer() { }
@@ -23,12 +22,12 @@ namespace RogueMath
             Random rand = new();
             this.x = x;
             this.y = y;
-            this.wigth = wight;
+            wigth = wight;
             this.height = height;
-            this.isExplored = false;
-            this.objects = new List<CellInfo>();
-            this.exits = new List<Exit>();
-            this.manual = true;
+            isExplored = false;
+            objects = new List<CellInfo>();
+            exits = new List<Exit>();
+            manual = true;
 
             while (exits.Count <= 1)
             {
@@ -48,7 +47,7 @@ namespace RogueMath
                 foreach (Exit exit in loc_exits)
                 {
                     if ((exit.x == x || exit.y == y || exit.x == x + wight - 1 || exit.y == y + height - 1) //проверка на нахождение на стороне
-                    && (exit.y >= y + 3 && exit.y <= y + height - 4 || exit.x >= x + 3 && exit.x <= x + wight - 4)) //проверка что это не угол 
+                    && ((exit.y >= y + 3 && exit.y <= y + height - 4) || (exit.x >= x + 3 && exit.x <= x + wight - 4))) //проверка что это не угол 
                     {
                         if (exit.x == x)
                         {
@@ -86,8 +85,8 @@ namespace RogueMath
 
                     //если расстояние выходов на одной стене маленькое - просто уберу одну из них
 
-                    if ((Math.Abs(ex[0].x - ex[1].x) < 4 && ex == WallN || ex == WallS)
-                        || (Math.Abs(ex[0].y - ex[1].y) < 4 && ex == WallW || ex == WallE))
+                    if ((Math.Abs(ex[0].x - ex[1].x) < 4 && ex == WallN) || ex == WallS
+                        || (Math.Abs(ex[0].y - ex[1].y) < 4 && ex == WallW) || ex == WallE)
                     {
                         ex.RemoveAt(0);
                     }

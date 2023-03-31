@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace RogueMath
 {
     internal class Character
@@ -39,13 +33,13 @@ namespace RogueMath
             }
 
             this._lvl = _lvl;
-            _hp = _hp + _lvl * 3;
-            _nerves = _nerves + _lvl * 2;
-            _atk = _atk + _lvl * 5;
-            _def = _def + _lvl * 2;
+            _hp = _hp + (_lvl * 3);
+            _nerves = _nerves + (_lvl * 2);
+            _atk = _atk + (_lvl * 5);
+            _def = _def + (_lvl * 2);
         }
     }
-    
+
 
     internal class Player : Character
     {
@@ -63,10 +57,10 @@ namespace RogueMath
                     break;
             }
             this._lvl = _lvl;
-            _hp = _hp + _lvl * 3;
-            _nerves = _nerves + _lvl * 2;
-            _atk = _atk + _lvl * 5;
-            _def = _def + _lvl * 2;
+            _hp = _hp + (_lvl * 3);
+            _nerves = _nerves + (_lvl * 2);
+            _atk = _atk + (_lvl * 5);
+            _def = _def + (_lvl * 2);
             this.x = x;
             this.y = y;
         }
@@ -87,12 +81,14 @@ namespace RogueMath
             }
             get { return _exp; }
         }
+
+        CellID tempCell = CellID.None;
         public bool Movement(Map map)
         {
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             int temp_x = x;
             int temp_y = y;
-            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.UpArrow, ConsoleKey.W, ConsoleKey.DownArrow, ConsoleKey.S, 
+            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.UpArrow, ConsoleKey.W, ConsoleKey.DownArrow, ConsoleKey.S,
                                                        ConsoleKey.LeftArrow, ConsoleKey.A, ConsoleKey.RightArrow, ConsoleKey.D };
 
             List<CellID> cellIDs = new() { CellID.HWall, CellID.VWall, CellID.ExitClose, CellID.Void,
@@ -123,13 +119,14 @@ namespace RogueMath
                 default: break;
             }
 
-            if (!cellIDs.Contains(map.cellMap[temp_x, temp_y].cellID)
-                && consoleKeysList.Contains(consoleKey.Key) || (temp_x != x && temp_y != y))
+            if ((!cellIDs.Contains(map.cellMap[temp_x, temp_y].cellID)
+                && consoleKeysList.Contains(consoleKey.Key)) || (temp_x != x && temp_y != y))
             {
-
-                map.cellMap[x, y].cellID = map.cellMap[temp_x, temp_y].cellID;
+                
+                map.cellMap[x, y].cellID = tempCell;
                 y = temp_y;
                 x = temp_x;
+                tempCell = map.cellMap[x, y].cellID;
                 map.cellMap[x, y].cellID = CellID.Player;
                 return true;
             }

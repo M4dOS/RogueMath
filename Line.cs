@@ -2,41 +2,27 @@ namespace RogueMath
 {
     internal class Line
     {
+        //координаты начала
         public int xStart;
-        public int yStart; //координаты начала
-        public int xEnd;
-        public int yEnd; //координаты конца
-        public int length; //длина отрезка
-        public int mode;
+        public int yStart;
 
-/*        public Line(int xStart, int yStart, int xEnd, int yEnd)
-        {//конструктор
-            this.xStart = xStart;
-            this.yStart = yStart;
-            this.xEnd = xEnd;
-            this.yEnd = yEnd;
-            if (xEnd == xStart)
-            {
-                this.mode = 1;
-                this.length = (yEnd - yStart);
-            }
-            else if (yEnd == yStart)
-            {
-                this.mode = 0;
-                this.length = (xEnd - xStart);
-            }
-        }*/
+        //координаты конца
+        public int xEnd;
+        public int yEnd;
+
+        public int length; //длина отрезка
+        public int mode; //направление
 
         public Line(int xStart, int yStart, int mode, int lenght)
         {
             this.xStart = xStart;
             this.yStart = yStart;
             this.mode = mode;
-            this.length = lenght;
+            length = lenght;
             switch (mode)
             {
-                case 0: this.xEnd = xStart + length; break;
-                case 1: this.yEnd = yStart + length; break;
+                case 0: xEnd = xStart + length; break;
+                case 1: yEnd = yStart + length; break;
             }
         }
     }
