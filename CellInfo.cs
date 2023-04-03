@@ -1,7 +1,9 @@
-﻿namespace RogueMath
+namespace RogueMath
 {
-    internal class CellInfo //информация по клетке 
-    { 
+    internal class CellInfo
+    { //информация по клетке
+        public int enemyId;  /// добавлено для кода врага, не удалять
+
         public int x, y; //координаты
         public CellID cellID; //id клетки
         public bool isStepible; //наступать можно?
@@ -16,6 +18,7 @@
 
         public CellInfo(int x, int y, CellID cell) //создание 
         {
+            enemyId = -1;
             this.x = x;
             this.y = y;
             this.cellID = cell;
