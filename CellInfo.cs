@@ -2,6 +2,7 @@
 {
     internal class CellInfo
     { //информация по клетке
+        public int enemyId;  /// добавлено для кода врага, не удалять
         public int x, y; //координаты
         public CellID cellID { get; set; } //id клетки
 
@@ -17,6 +18,7 @@
 
         public CellInfo(int x, int y, CellID cell)
         {
+            enemyId = -1;
             this.x = x;
             this.y = y;
             cellID = cell;

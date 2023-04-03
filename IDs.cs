@@ -35,6 +35,7 @@ namespace RogueMath
 
         //для классов врагов
         Enemy = 'x',
+        Boss = 'F',
 
         //для внутрикартовых обьектов
         Chest = '!',

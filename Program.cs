@@ -1,4 +1,5 @@
 using RogueMath;
+using System;
 using System.Text;
 internal class Program
 {
@@ -36,8 +37,24 @@ internal class Program
         Map map = new(consoleX, consoleY, edge, manual_rooms); map.Create();
 
         //спавним игрока
-        Player player = new Player(1, Race.Human, map.rooms[0].x + 3, map.rooms[0].y + 3);
+        Player player = new Player(Race.Human, map.rooms[0].x + 3, map.rooms[0].y + 3);
         map.cellMap[player.x, player.y].cellID = CellID.Player;
+
+        List<Enemy> enemies = new();
+        for (int i = 0; i < map.rooms.Count; ++i)
+        {
+            if (map.rooms[i].roomType == RoomType.Empty)
+            {
+                enemies.Add(new Enemy(player._lvl, Race.Math, map.rooms[i].x + 1, map.rooms[i].y + 1));
+                map.cellMap[enemies[i].x, enemies[i].y].cellID = CellID.Enemy;
+            }
+           // else if (map.rooms[i].roomType == RoomType.Mather)
+            //{
+                /*enemies.Add(new Enemy(Race.Mather, map.rooms[i].x + 1, map.rooms[i].y + 1));
+                map.cellMap[enemies[i].x, enemies[i].y].cellID = CellID.Boss;*/
+            //}
+            map.cellMap[enemies[i].x, enemies[i].y].enemyId = i;
+        }
 
         //выводим первоначальную карту
         map.PrintMap();
@@ -45,8 +62,36 @@ internal class Program
         //процесс игры
         while (true)
         {
-            if (player.Movement(map)) { Console.Clear(); map.PrintMap(); }
-            else { }
+            if (player.phase == Player.Phase.Nothing)
+            {
+                if (player._hp == player._maxHp && player._energy < player._maxEnergy) ++player._energy;
+                if (player._hp < player._maxHp) ++player._hp;
+                if (player.Movement(map))
+                {
+                    for (int i = 0; i < enemies.Count; i++) enemies[i].Movement(map);
+                    Console.Clear();
+                    map.PrintMap();
+                }
+                player.battlingWith = player.EnemyCheck(map);
+                if (player.battlingWith > -1) player.phase = Player.Phase.Battle;
+            }
+            else if (player.phase == Player.Phase.Battle)
+            {
+                if (player.Battle(enemies[player.battlingWith]))
+                {
+                    if (enemies[player.battlingWith]._hp > 0) enemies[player.battlingWith].Bite(player);
+                    else
+                    {
+                        map.cellMap[enemies[player.battlingWith].x, enemies[player.battlingWith].y].cellID = CellID.None;
+                        player.phase = Player.Phase.Nothing;
+                        enemies[player.battlingWith].dead = true;
+                        player.battlingWith = -1;
+                        Console.Clear();
+                        map.PrintMap();
+                    }
+                }
+            }
+            
         }
     }
 }
