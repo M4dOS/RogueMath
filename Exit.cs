@@ -1,28 +1,26 @@
 namespace RogueMath
 {
-    internal class Exit
+    internal class Exit //выход 
     {
         public int x, y; //координаты
         public bool isOpen; //открыта ли дверь?
 
-        // protected bool isNone; //можно ли наступать на клетку? (1 для пустоты и туннелей, остальное редактируется отдельно)
-
-        public bool isConnected;
-        public int roomID;
-        public int mode;
-        public Exit(int x, int y)
+        public bool isConnected; //соединён ли с другим выходом?
+        public int roomID; //айди комнаты, которой он принадлежит
+        public int mode; //направление (0 -верхняя стена, 1 - нижняя стена, 2 - левая стена, 3 - правая стена)
+        public Exit(int x, int y) //создание 
         {
             this.x = x;
             this.y = y;
             isOpen = true;
-            //isNone = true;
             isConnected = false;
         }
 
-        public int Distance(Exit exitTo)
-        {
-            return (int)Math.Sqrt(Math.Pow(exitTo.x - x, 2) + Math.Pow(exitTo.y - y, 2));
+        public Exit() { } //создание пустышки 
 
+        public int Distance(Exit exitTo) //вычисление расстояния до определённого выхода 
+        { 
+            return (int)Math.Sqrt(Math.Pow(exitTo.x - x, 2) + Math.Pow(exitTo.y - y, 2)); 
         }
     }
 }

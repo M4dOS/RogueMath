@@ -1,35 +1,39 @@
-﻿namespace RogueMath
+namespace RogueMath
 {
     internal class CellInfo
     { //информация по клетке
         public int enemyId;  /// добавлено для кода врага, не удалять
-        public int x, y; //координаты
-        public CellID cellID { get; set; } //id клетки
 
-        /*public char cellName { get; } 
-        public CellInfo(int x, int y, CellID cell, char chr)
+        public int x, y; //координаты
+        public CellID cellID; //id клетки
+        public bool isStepible; //наступать можно?
+
+        public CellInfo(int x, int y, CellID cell, bool isStepible) //создание 
         {
             this.x = x;
             this.y = y;
             this.cellID = cell;
-            this.cellName = chr;
+            this.isStepible = isStepible;
+        }
 
-        }*/
-
-        public CellInfo(int x, int y, CellID cell)
+        public CellInfo(int x, int y, CellID cell) //создание 
         {
             enemyId = -1;
             this.x = x;
             this.y = y;
-            cellID = cell;
+            this.cellID = cell;
+            List<CellID> notStepible = new() {CellID.HWall, CellID.VWall, CellID.ExitClose, /*CellID.Void,*/
+                                              CellID.Enemy, CellID.Chest, CellID.Shop, CellID.MainVSpot,
+                                              CellID.SecondVSpot};
+            if (notStepible.Contains(cell)) this.isStepible = false;
+            else this.isStepible = true;
         }
 
-        public CellInfo(CellInfo copy)
+        public CellInfo(CellInfo copy) //создание копии 
         {
-            x = copy.x;
-            y = copy.y;
-            cellID = copy.cellID;
-            /*this.cellName = copy.cellName;*/
+            this.x = copy.x;
+            this.y = copy.y;
+            this.cellID = copy.cellID;
         }
     }
 }

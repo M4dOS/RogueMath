@@ -173,30 +173,27 @@ namespace RogueMath
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             int temp_x = x;
             int temp_y = y;
-            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.UpArrow, ConsoleKey.W, ConsoleKey.DownArrow, ConsoleKey.S,
-                                                       ConsoleKey.LeftArrow, ConsoleKey.A, ConsoleKey.RightArrow, ConsoleKey.D };
-
-            List<CellID> cellIDs = new() { CellID.HWall, CellID.VWall, CellID.ExitClose, CellID.Void,
-                                           CellID.Enemy, CellID.Chest, CellID.Shop};
+            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.W, ConsoleKey.A, ConsoleKey.S,ConsoleKey.D
+                                                       /*,ConsoleKey.UpArrow, ConsoleKey.LeftArrow, ConsoleKey.DownArrow, ConsoleKey.RightArrow*/};
 
             switch (consoleKey.Key)
             {
-                case ConsoleKey.UpArrow:
+                /*case ConsoleKey.UpArrow:*/
                 case ConsoleKey.W:
                     --temp_y;
                     break;
 
-                case ConsoleKey.LeftArrow:
+                /*case ConsoleKey.LeftArrow:*/
                 case ConsoleKey.A:
                     --temp_x;
                     break;
 
-                case ConsoleKey.DownArrow:
+                /*case ConsoleKey.DownArrow:*/
                 case ConsoleKey.S:
                     ++temp_y;
                     break;
 
-                case ConsoleKey.RightArrow:
+                /*case ConsoleKey.RightArrow:*/
                 case ConsoleKey.D:
                     ++temp_x;
                     break;
@@ -204,15 +201,17 @@ namespace RogueMath
                 default: break;
             }
 
-            if ((!cellIDs.Contains(map.cellMap[temp_x, temp_y].cellID)
-                && consoleKeysList.Contains(consoleKey.Key)) || (temp_x != x && temp_y != y))
+            if ((map.cellMap[temp_x, temp_y].isStepible && consoleKeysList.Contains(consoleKey.Key)) || (temp_x != x && temp_y != y))
             {
-                
-                map.cellMap[x, y].cellID = tempCell;
+                map.changesForCellMap.Add(new(x,y,tempCell));
                 y = temp_y;
                 x = temp_x;
                 tempCell = map.cellMap[x, y].cellID;
-                map.cellMap[x, y].cellID = CellID.Player;
+                
+                foreach (Room room in map.rooms) { room.Exploring(this, map); }
+                foreach (Tunel tunel in map.tunels) { tunel.Exploring(this, map); }
+
+                map.changesForCellMap.Add(new(x, y, CellID.Player));
                 return true;
             }
             else return false;
