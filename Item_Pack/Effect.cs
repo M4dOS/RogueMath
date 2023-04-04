@@ -6,76 +6,40 @@ using System.Threading.Tasks;
 
 namespace RogueMath.Item_Pack
 {
-    internal class Effect
+    internal abstract class Effect
     {
-        public Effect()
+        public int Id_effect { get; set; }
+        public string Name_effect { get; set; }
+        public int Value_effect { get; set; }
+        public bool IsPermanent_effect { get; set; }
+        public Effect(int id_effect, string name, int value, bool isPermanent)
         {
+            Id_effect = id_effect;
+            Name_effect = name;
+            Value_effect = value;
+            IsPermanent_effect = isPermanent;
+        }
+    }
+    class BattleEffect : Effect
+    {
+        public int Duration { get; set; }
+        public bool IsForEnemy { get; set; }
 
+        // constructor
+        public BattleEffect(int id_effect, string name, int value, int duration, bool isForEnemy) : base(id_effect, name, value, false)
+        {
+            Duration = duration;
+            IsForEnemy = isForEnemy;
         }
+    }
+    class PermanentEffect : Effect
+    {
+        public string Stat_type { get; set; }
 
-        //one use
-        protected void Add_Max_Health(Character c, int add_hp)
+        // constructor
+        public PermanentEffect(int id_effect, string name, int value, string stat_type) : base(id_effect, name, value, true)
         {
-            c.max_hp = c.max_hp + add_hp;
-        }
-        protected void Add_Max_Health_and_Heal(Character c, int add_hp)
-        {
-            c.max_hp = c.max_hp + add_hp;
-            c.cur_hp = c.max_hp;
-        }
-        protected void Add_Max_Energy(Character c, int add_en)
-        {
-            c.max_energy = c.max_energy + add_en;
-        }
-        protected void Add_Max_Energy_and_Recover(Character c, int add_en)
-        {
-            c.max_energy = c.max_energy + add_en;
-            c.cur_energy = c.max_energy;
-        }
-        protected void Add_Base_Attack(Character c, int add_atk)
-        {
-            c.atk = c.atk + add_atk;
-        }
-        protected void Get_Exp(Character c, int exp)
-        {
-            c._exp = c._exp + exp;
-        }
-        protected void Get_Max_Potions_Hp(Health_Cons max_hp_potions, int add_number)
-        {
-            max_hp_potions.max_health_stack = max_hp_potions.max_health_stack + add_number;
-        }
-        protected void Get_Max_Potions_En(Energy_Cons max_en_potions, int add_number)
-        {
-            max_en_potions.max_energy_stack = max_en_potions.max_energy_stack + add_number;
-        }
-
-        //----------------------------------------------------------------------------------------------------------
-
-        protected void Get_Const_Damage(Character c, int dmg)//poison|burn|curse etc.
-        {
-            c.cur_hp = c.cur_hp - dmg;
-        }
-        protected void Get_Const_Heal(Character c, int hp)//evry turn get healed a little
-        {
-            if (c.cur_hp + hp !> c.max_hp)
-            { 
-                c.cur_hp = c.cur_hp + hp;
-            }
-            else
-            {
-                c.cur_hp = c.max_hp;
-            }
-        }
-        protected void Get_Const_Recover(Character c, int en)//evry turn recover some energy
-        {
-            if (c.cur_energy + en !> c.max_energy)
-            {
-                c.cur_energy = c.cur_energy + en;
-            }
-            else
-            {
-                c.cur_energy = c.max_energy;
-            }
+            this.Stat_type = stat_type;
         }
     }
 }

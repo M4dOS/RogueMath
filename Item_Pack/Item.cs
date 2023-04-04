@@ -18,10 +18,3 @@ namespace RogueMath.Item_Pack
         }
     }
 }
-
-//          id_item:
-// 1-health
-// 2-sp
-// 3-gold
-// 401, 402, 403... art
-// 501, 502, 503... weapon

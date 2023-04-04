@@ -8,20 +8,26 @@ namespace RogueMath.Item_Pack
 {
     internal class Artefact : Item
     {
-        private int quality;
-        private int id_art;
-        public string description;
-        public string stat_derscription;
+        public int quality { get; set; }
+        public int id_art { get; set; }
+        public string description { get; set; }
+        public string stat_derscription { get; set; }
+        public List<Effect> Effects { get; set; }
 
-         public Artefact(int id_art, int price, string name,  string description, int quality) : base( price, name)
+        public Artefact(int id_art, int price, string name, string description, int quality) : base( price, name)
         {
             this.id_art = id_art;
             this.quality = quality;
             this.description = description;
+            Effects = new List<Effect>();
         }
-        //public virtual void Use_Art(Artefact art, Character c) { }
-        //public virtual void Get_Art(Artefact art) { }
-        //public virtual void Lose_Art(Artefact art) { }
-        //public virtual void Sell_Art(Artefact art) { }
+        public void AddEffect(Effect effect)
+        {
+            Effects.Add(effect);
+        }
+        public void RemoveEffect(Effect effect)
+        {
+            Effects.Remove(effect);
+        }
     }
 }

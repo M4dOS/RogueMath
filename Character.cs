@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RogueMath.Item_Pack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,15 +34,19 @@ namespace RogueMath
             this.wallet = 0;
             this.inventory = new Inventory(
                 25,
-                25,
+                //25,
                 new Item_Pack.Health_Cons(25, 10, "heal"),
-                new Item_Pack.Energy_Cons(25, 10, "Energy")
+                new Item_Pack.Energy_Cons(25, 10, "Energy"),
+                new List<Artefact> ()
             );
         }
 
         public void Status(Character c)
         {
-            Console.WriteLine($"Stats:   hp " + c.cur_hp + "|" + c.max_hp + "    energy" + c.cur_energy + "|" + c.max_energy + "     atk " + c.atk + "      $ " +c.wallet);
+            Console.WriteLine($"Stats:   hp " + c.cur_hp + 
+                "|" + c.max_hp + "    energy" + c.cur_energy + 
+                "|" + c.max_energy + "     atk " + c.atk + 
+                "     оставшаяся стипендия $ " +c.wallet);
         }
     }
 }
