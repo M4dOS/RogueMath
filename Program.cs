@@ -35,7 +35,7 @@ internal class Program
         List<Room> manual_rooms = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true } };
 
         //задаём карту
-        Map map = new(consoleX, consoleY, edge, manual_rooms); 
+        Map map = new(consoleX, consoleY, edge, manual_rooms);
 
         //спавним игрока
         Player player = new Player(Race.Human, ((2 * map.rooms[0].x) + map.rooms[0].wigth) / 2, ((2 * map.rooms[0].y) + map.rooms[0].height) / 2);
@@ -45,7 +45,7 @@ internal class Program
         map.Create(player);
 
         //выводим первоначальную карту и спавним игрока  
-        Console.SetCursorPosition(player.x, player.y); 
+        Console.SetCursorPosition(player.x, player.y);
         Console.Write((char)map.cellMap[player.x, player.y].cellID);
         Console.SetCursorPosition(0, 0);
         map.Update();
