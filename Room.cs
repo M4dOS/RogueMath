@@ -6,6 +6,8 @@ namespace RogueMath
         public int x;
         public int y;
 
+        public List<Enemy> enemies;
+
         public int roomID; //идентификатор комнаты
         public int wigth; //длина
         public int height; //ширина
@@ -100,14 +102,30 @@ namespace RogueMath
             }
         }
 
-        public void ChangeDoorsStatus(Map map)
+        protected int DeadEnemiesCount()
         {
-            foreach(Exit exit in exits)
+            int i = 0;
+            foreach(Enemy enemy in enemies)
             {
-                exit.isOpen = !exit.isOpen;
-                if (exit.isOpen) map.changesForCellMap.Add(new(exit.x, exit.y, CellID.ExitOpen));
-                else map.changesForCellMap.Add(new(exit.x, exit.y, CellID.ExitClose));
+                if (!enemy.dead) ++i;
             }
+            return i;
+        }
+        public bool PlayerInRoom(Player player)
+        {
+            return (player.x > x && player.x < x + wigth && player.y > y && player.y < y + height && player.roomIDin == roomID);
+        }
+        public void ChangeDoorsStatus(Map map, Player player)
+        {
+            bool openStatus = true;
+            if(PlayerInRoom(player) && DeadEnemiesCount() > 0) openStatus = false;
+            foreach (Exit exit in exits)
+            {
+                if (openStatus) map.AddChange(new(exit.x, exit.y, CellID.ExitOpen));
+                else map.AddChange(new(exit.x, exit.y, CellID.ExitClose));
+            }
+            if (openStatus) player.battlingWith = -1;
+            else player.battlingWith = roomID;
         }
 
         public Room(int x, int y, int wigth, int height) //создание комнаты-спавна
@@ -119,11 +137,12 @@ namespace RogueMath
             isExplored = false;
             objects = new List<CellInfo>();
             exits = new List<Exit>();
-            this.roomType = RoomType.Spawn;
+            enemies = new List<Enemy>();
+            roomType = RoomType.Spawn;
             manual = true;
             ExitPlacer();
         }
-        public Room(int x, int y, int wigth, int height, RoomType roomType):this (x,y,wigth, height) //создание комнаты определённого типа
+        public Room(int x, int y, int wigth, int height, RoomType roomType) : this(x, y, wigth, height) //создание комнаты определённого типа
         {
             this.roomType = roomType;
         }
@@ -137,59 +156,71 @@ namespace RogueMath
         {
             foreach (Exit exit in exits)
             {
-                if (player.x == exit.x && player.y == exit.y + 1  && exit.isOpen
-                    || player.x == exit.x && player.x == exit.y - 1 && exit.isOpen
-                    || player.x == exit.x - 1 && player.y == exit.y && exit.isOpen
-                    || player.x == exit.x + 1 && player.x == exit.y && exit.isOpen)
+                if (   (player.x == exit.x && player.y == exit.y + 1)
+                    || (player.x == exit.x && player.y == exit.y - 1)
+                    || (player.x == exit.x - 1 && player.y == exit.y)
+                    || (player.x == exit.x + 1 && player.y == exit.y)
+                    || PlayerInRoom(player))
                 {
-                    isExplored = true;
+                    if (exit.isOpen)
+                    {
+                        isExplored = true;
+                        player.roomIDin = exit.roomID;
+                    }
+                    
                 }
             }
 
             if (isExplored)
             {
                 //генерация основания комнаты
-                for (int y = this.y; y < this.height + this.y; ++y)
+                for (int y = this.y; y < height + this.y; ++y)
                 {
-                    for (int x = this.x; x < this.wigth + this.x; ++x)
+                    for (int x = this.x; x < wigth + this.x; ++x)
                     {
-                        if ((x == this.wigth + this.x - 1 && y == this.y) || (y == this.height + this.y - 1 && x == this.x)) //углы побочной диагонали
+                        if ((x == wigth + this.x - 1 && y == this.y) || (y == height + this.y - 1 && x == this.x)) //углы побочной диагонали
                         {
-                            map.changesForCellMap.Add(new(x, y, CellID.SecondVSpot));
+                            map.AddChange(new(x, y, CellID.SecondVSpot));
                         }
-                        else if ((y == this.y && x == this.x) || (x == this.wigth + this.x - 1 && y == this.height + this.y - 1)) //углы главной диагонали
+                        else if ((y == this.y && x == this.x) || (x == wigth + this.x - 1 && y == height + this.y - 1)) //углы главной диагонали
                         {
-                            map.changesForCellMap.Add(new(x, y, CellID.MainVSpot));
+                            map.AddChange(new(x, y, CellID.MainVSpot));
                         }
-                        else if (y == this.height + this.y - 1 || y == this.y) //горизонтальные стены
+                        else if (y == height + this.y - 1 || y == this.y) //горизонтальные стены
                         {
-                            map.changesForCellMap.Add(new(x, y, CellID.HWall));
+                            map.AddChange(new(x, y, CellID.HWall));
                         }
-                        else if (x == this.wigth + this.x - 1 || x == this.x) //вертикальные стены
+                        else if (x == wigth + this.x - 1 || x == this.x) //вертикальные стены
                         {
-                            map.changesForCellMap.Add(new(x, y, CellID.VWall));
+                            map.AddChange(new(x, y, CellID.VWall));
                         }
                         else
                         {
-                            map.changesForCellMap.Add(new(x, y, CellID.None));
+                            map.AddChange(new(x, y, CellID.None));
                         }
                     }
                 }
 
                 //генерация выходов
-                foreach(Exit exit in exits)
-                {
-                    if (exit.isOpen) map.changesForCellMap.Add(new(exit.x, exit.y, CellID.ExitOpen));
-                    else map.changesForCellMap.Add(new(exit.x, exit.y, CellID.ExitClose));
-                }
+                ChangeDoorsStatus(map, player);
 
                 //генерация доп. предметов на карте
-                foreach (CellInfo obj in this.objects)
+                foreach (CellInfo obj in objects)
                 {
-                    map.changesForCellMap.Add(new(obj));
+                    map.AddChange(new(obj));
                 }
+
+                foreach(Enemy enemy in enemies)
+                {
+                    if(enemy.dead) { map.AddChange(new(enemy.x, enemy.y, CellID.None)); }
+                    else map.AddChange(new(enemy.x, enemy.y, CellID.Enemy));
+                }
+
                 isExplored = false;
             }
+
+
+
         }
     }
 }

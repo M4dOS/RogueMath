@@ -15,27 +15,34 @@ namespace RogueMath
         public int _lvl;
         public int x;
         public int y;
+        public int roomIDin;
         protected List<Buff>? buffs;
         protected int _exp;
         protected int _gold;
+        public enum Phase // фаза
+        {
+            Adventure,
+            Battle
+        }
+
         public void Bite(Character character)
         {
             if (_atk - character._def < 1) --character._hp;
-            else character._hp -= (_atk - character._def);
+            else character._hp -= _atk - character._def;
         }
         public void ULTRABite(Character character)
         {
             if (_energy > 0)
             {
-                if (_atk+_energy / 2 - character._def < 1) --character._hp;
-                else character._hp -= (_atk+_energy / 2 - character._def);
+                if (_atk + (_energy / 2) - character._def < 1) --character._hp;
+                else character._hp -= _atk + (_energy / 2) - character._def;
                 if (_energy % 2 == 0)
                 {
                     _energy /= 2;
                 }
                 else
                 {
-                    _energy = _energy / 2 + 1;
+                    _energy = (_energy / 2) + 1;
                 }
             }
         }
@@ -43,7 +50,7 @@ namespace RogueMath
 
     internal class Enemy : Character
     {
-        public Enemy(int _lvl,  Race r, int x, int y)
+        public Enemy(int _lvl, Race r, int x, int y)
         {
             switch (r) //добавить потом ещё рвсс врагов
             {
@@ -55,7 +62,7 @@ namespace RogueMath
                     _def = 0;
                     _exp = 0;
                     _gold = 0;
-                break;
+                    break;
                 case Race.Mather:
                     _lvl = 1;
                     _hp = 10;
@@ -74,45 +81,57 @@ namespace RogueMath
                 _energy = _energy + (_lvl * 2);
                 _atk = _atk + (_lvl * 5);
                 _def = _def + (_lvl * 2);
-            }            
+            }
             this.x = x;
             this.y = y;
             dead = false;
-        } 
-        public bool Movement(Map map) // движение монстрика
+        }
+        public bool Movement(Map map, Player player) // движение монстрика
         {
             if (dead) return false;
-            
+
             Random random = new Random();
             int temp_x = x;
             int temp_y = y;
-            switch (random.Next(0, 5))
+            switch (random.Next(1, 4 + 1))
             {
                 case 1:
                     ++temp_x;
-                break;
+                    break;
                 case 2:
                     --temp_x;
-                break;
+                    break;
                 case 3:
                     ++temp_y;
-                break;
+                    break;
                 case 4:
                     --temp_y;
-                break;
+                    break;
             }
-            if (map.cellMap[temp_x,temp_y].cellID == CellID.None)
-            {                
-                map.cellMap[temp_x, temp_y].enemyId = map.cellMap[x,y].enemyId;
-                map.cellMap[x, y].enemyId = -1;
-                map.cellMap[temp_x, temp_y].cellID = map.cellMap[x, y].cellID;
-                map.cellMap[x, y].cellID = CellID.None;
-                y = temp_y;
-                x = temp_x;
-                return true;
+            if (map.cellMap[temp_x, temp_y].cellID == CellID.None && map.cellMap[temp_x, temp_y].cellID != CellID.Player)
+            {
+                bool condition = true;
+                foreach (CellInfo check in map.changesForCellMap)
+                {
+                    if (check.cellID == CellID.Player)
+                    {
+                        if (check.x == temp_x && check.y == temp_y) { condition = false; break; }
+                    }
+                }
+                if (condition)
+                {
+                    /*map.cellMap[temp_x, temp_y].enemyId = map.cellMap[x, y].enemyId;
+                    map.cellMap[x, y].enemyId = -1;*/
+                    map.AddChange(new(temp_x, temp_y, map.cellMap[x, y].cellID) { enemyId = map.cellMap[x,y].enemyId });
+                    map.AddChange(new(x, y, map.cellMap[temp_x, temp_y].cellID) { enemyId = map.cellMap[temp_x, temp_y].enemyId });
+                    y = temp_y;
+                    x = temp_x;
+                    return true;
+                }
+                else return false;
             }
             else return false;
-            
+
         }
         public bool dead;
     }
@@ -141,7 +160,7 @@ namespace RogueMath
             this.x = x;
             this.y = y;
             battlingWith = -1;
-            phase = Phase.Nothing;
+            phase = Phase.Adventure;
         }
         private int LvlUp(int _lvl) // опеределение кол-ва опыта для апа уровня
         {
@@ -155,7 +174,7 @@ namespace RogueMath
                 if (_exp > LvlUp(_lvl + 1))
                 {
                     ++_lvl;
-                    _exp -= LvlUp(_lvl + 1);                   
+                    _exp -= LvlUp(_lvl + 1);
                     _maxHp = _maxHp + (_lvl * 3);
                     _hp = _maxHp;
                     _maxEnergy = _maxEnergy + (_lvl * 2);
@@ -170,6 +189,13 @@ namespace RogueMath
         CellID tempCell = CellID.None;
         public bool Movement(Map map) // движение чела
         {
+            int forCx = Console.CursorLeft; int forCy = Console.CursorTop;
+            Console.SetCursorPosition(5 + 50, map.maxY - 4);
+            Console.Write($"LVL:{_lvl} EXP:{_exp} HP:{_hp}/{_maxHp} DEF:{_def} ENG:{_energy}/{_maxEnergy} ATK:{_atk} GOLD:{_gold}");
+
+            Console.SetCursorPosition(forCx, forCy);
+
+
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             int temp_x = x;
             int temp_y = y;
@@ -197,39 +223,75 @@ namespace RogueMath
                 case ConsoleKey.D:
                     ++temp_x;
                     break;
-
                 default: break;
             }
 
             if ((map.cellMap[temp_x, temp_y].isStepible && consoleKeysList.Contains(consoleKey.Key)) || (temp_x != x && temp_y != y))
             {
-                map.changesForCellMap.Add(new(x,y,tempCell));
+                map.AddChange(new(x, y, tempCell));
                 y = temp_y;
                 x = temp_x;
                 tempCell = map.cellMap[x, y].cellID;
-                
+
                 foreach (Room room in map.rooms) { room.Exploring(this, map); }
                 foreach (Tunel tunel in map.tunels) { tunel.Exploring(this, map); }
 
-                map.changesForCellMap.Add(new(x, y, CellID.Player));
+                map.AddChange(new(x, y, CellID.Player));
                 return true;
             }
             else return false;
         }
-        public enum Phase // фаза
-        {
-            Nothing,
-            Battle
-        }
+
         public int EnemyCheck(Map map) // проверка на врага
         {
-            if (map.cellMap[x+1,y].cellID == CellID.Enemy) return map.cellMap[x + 1,y].enemyId;
-            else if (map.cellMap[x -1, y].cellID == CellID.Enemy) return map.cellMap[x - 1, y].enemyId;
+            if (map.cellMap[x + 1, y].cellID == CellID.Enemy) return map.cellMap[x + 1, y].enemyId;
+            else if (map.cellMap[x - 1, y].cellID == CellID.Enemy) return map.cellMap[x - 1, y].enemyId;
             else if (map.cellMap[x, y + 1].cellID == CellID.Enemy) return map.cellMap[x, y + 1].enemyId;
             else if (map.cellMap[x, y - 1].cellID == CellID.Enemy) return map.cellMap[x, y - 1].enemyId;
             else return -1;
         }
-        public bool Battle (Enemy enemy) //фаза боя
+
+        public void Advenchuring(Map map)
+        {
+            Player player = this;
+
+            if (player.phase == Player.Phase.Adventure)
+            {
+                if (player._energy < player._maxEnergy) ++player._energy;
+                else if (player._hp < player._maxHp) ++player._hp;
+
+                if (player.Movement(map))
+                {
+                    for (int i = 0; i < map.rooms[player.roomIDin].enemies.Count; i++) map.rooms[player.roomIDin].enemies[i].Movement(map, player);
+                    map.Update();
+                }
+                /*else
+                {*/
+                    player.battlingWith = player.EnemyCheck(map);
+                    if (player.battlingWith > -1) player.phase = Player.Phase.Battle;
+                /*}*/
+            }
+
+            else if (player.phase == Player.Phase.Battle)
+            {
+
+                if (player.Battle(map.rooms[player.roomIDin].enemies[0]))
+                {
+                    if (map.rooms[player.roomIDin].enemies[player.battlingWith]._hp > 0) map.rooms[player.roomIDin].enemies[player.battlingWith].Bite(player);
+                    else
+                    {
+                        map.AddChange(new(map.rooms[player.roomIDin].enemies[player.battlingWith].x, map.rooms[player.roomIDin].enemies[player.battlingWith].y, CellID.None));
+                        player.phase = Player.Phase.Adventure;
+                        map.rooms[player.roomIDin].enemies[player.battlingWith].dead = true;
+                        player.battlingWith = -1;
+                        map.Update();
+                    }
+                }
+            }
+
+        }
+
+        public bool Battle(Enemy enemy/*, ConsoleKeyInfo consoleKey*/) //фаза боя
         {
             bool result = false;
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
@@ -238,11 +300,11 @@ namespace RogueMath
                 case ConsoleKey.E:
                     Bite(enemy); //кусь
                     result = true;
-                break;
+                    break;
                 case ConsoleKey.Q:
                     ULTRABite(enemy);//УЛЬТРАКУСЬ
                     result = true;
-                break;
+                    break;
             }
             return result;
         }

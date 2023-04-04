@@ -19,8 +19,8 @@ namespace RogueMath
         public Exit() { } //создание пустышки 
 
         public int Distance(Exit exitTo) //вычисление расстояния до определённого выхода 
-        { 
-            return (int)Math.Sqrt(Math.Pow(exitTo.x - x, 2) + Math.Pow(exitTo.y - y, 2)); 
+        {
+            return (int)Math.Sqrt(Math.Pow(exitTo.x - x, 2) + Math.Pow(exitTo.y - y, 2));
         }
     }
 }

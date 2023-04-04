@@ -12,28 +12,28 @@ namespace RogueMath
         {
             this.x = x;
             this.y = y;
-            this.cellID = cell;
+            cellID = cell;
             this.isStepible = isStepible;
         }
 
         public CellInfo(int x, int y, CellID cell) //создание 
         {
-            enemyId = -1;
             this.x = x;
             this.y = y;
-            this.cellID = cell;
+            cellID = cell;
             List<CellID> notStepible = new() {CellID.HWall, CellID.VWall, CellID.ExitClose, /*CellID.Void,*/
                                               CellID.Enemy, CellID.Chest, CellID.Shop, CellID.MainVSpot,
-                                              CellID.SecondVSpot};
-            if (notStepible.Contains(cell)) this.isStepible = false;
-            else this.isStepible = true;
+                                              CellID.SecondVSpot, CellID.Player};
+            if (notStepible.Contains(cell)) isStepible = false;
+            else isStepible = true;
         }
 
         public CellInfo(CellInfo copy) //создание копии 
         {
-            this.x = copy.x;
-            this.y = copy.y;
-            this.cellID = copy.cellID;
+            x = copy.x;
+            y = copy.y;
+            cellID = copy.cellID;
+            enemyId = copy.enemyId;
         }
     }
 }

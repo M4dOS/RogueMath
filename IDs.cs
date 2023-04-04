@@ -1,6 +1,7 @@
 
 namespace RogueMath
 {
+
     enum RoomType //id комнаты 
     {
         Bonus = -2, //бонус-комната

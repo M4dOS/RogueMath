@@ -11,15 +11,15 @@ namespace RogueMath
             this.exit1 = exit1;
             this.exit2 = exit2;
             this.lines = lines;
-            this.length = CalcLength();
+            length = CalcLength();
         }
 
         public Tunel() //создание пустышки
         {
-            this.exit1 = new();
-            this.exit2 = new();
-            this.lines = new List<Line>();
-            this.length = -1;
+            exit1 = new();
+            exit2 = new();
+            lines = new List<Line>();
+            length = -1;
         }
         protected int CalcLength() //вычисление длины туннеля
         {
@@ -30,10 +30,10 @@ namespace RogueMath
 
         public void Exploring(Player player, Map map)
         {
-            foreach (Tunel tunel in map.tunels) 
-            { 
-                foreach (Line line in tunel.lines) 
-                { 
+            foreach (Tunel tunel in map.tunels)
+            {
+                foreach (Line line in tunel.lines)
+                {
                     line.Exploring(player);
                     if (line.isExplored)
                     {
@@ -41,12 +41,12 @@ namespace RogueMath
                         {
                             for (int y = line.yStart; y < line.yEnd; y++)
                             {
-                                map.changesForCellMap.Add(new(x, y, CellID.Tunel));
+                                map.AddChange(new(x, y, CellID.Tunel));
                             }
                         }
                         line.isExplored = false;
                     }
-                } 
+                }
             }
         }
     }
