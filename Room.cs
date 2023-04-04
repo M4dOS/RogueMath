@@ -105,7 +105,7 @@ namespace RogueMath
         protected int DeadEnemiesCount()
         {
             int i = 0;
-            foreach(Enemy enemy in enemies)
+            foreach (Enemy enemy in enemies)
             {
                 if (!enemy.dead) ++i;
             }
@@ -113,12 +113,12 @@ namespace RogueMath
         }
         public bool PlayerInRoom(Player player)
         {
-            return (player.x > x && player.x < x + wigth && player.y > y && player.y < y + height && player.roomIDin == roomID);
+            return player.x > x && player.x < x + wigth && player.y > y && player.y < y + height && player.roomIDin == roomID;
         }
         public void ChangeDoorsStatus(Map map, Player player)
         {
             bool openStatus = true;
-            if(PlayerInRoom(player) && DeadEnemiesCount() > 0) openStatus = false;
+            if (PlayerInRoom(player) && DeadEnemiesCount() > 0) openStatus = false;
             foreach (Exit exit in exits)
             {
                 if (openStatus) map.AddChange(new(exit.x, exit.y, CellID.ExitOpen));
@@ -156,7 +156,7 @@ namespace RogueMath
         {
             foreach (Exit exit in exits)
             {
-                if (   (player.x == exit.x && player.y == exit.y + 1)
+                if ((player.x == exit.x && player.y == exit.y + 1)
                     || (player.x == exit.x && player.y == exit.y - 1)
                     || (player.x == exit.x - 1 && player.y == exit.y)
                     || (player.x == exit.x + 1 && player.y == exit.y)
@@ -167,7 +167,7 @@ namespace RogueMath
                         isExplored = true;
                         player.roomIDin = exit.roomID;
                     }
-                    
+
                 }
             }
 
@@ -210,9 +210,9 @@ namespace RogueMath
                     map.AddChange(new(obj));
                 }
 
-                foreach(Enemy enemy in enemies)
+                foreach (Enemy enemy in enemies)
                 {
-                    if(enemy.dead) { map.AddChange(new(enemy.x, enemy.y, CellID.None)); }
+                    if (enemy.dead) { map.AddChange(new(enemy.x, enemy.y, CellID.None)); }
                     else map.AddChange(new(enemy.x, enemy.y, CellID.Enemy));
                 }
 

@@ -156,7 +156,7 @@ namespace RogueMath
                 }
 
                 //генерация врагов
-                foreach(Enemy enemy in room.enemies)
+                foreach (Enemy enemy in room.enemies)
                 {
                     if (room.isExplored) { cellMap[enemy.x, enemy.y] = new CellInfo(enemy.x, enemy.y, CellID.Status); }
                     else cellMap[enemy.x, enemy.y] = new CellInfo(enemy.x, enemy.y, CellID.Enemy, false);
@@ -501,7 +501,7 @@ namespace RogueMath
                 {
                     exit.roomID = i;
                 }
-                foreach(Enemy enemy in room.enemies)
+                foreach (Enemy enemy in room.enemies)
                 {
                     AddChange(new(cellMap[enemy.x, enemy.y]) { enemyId = i });
                 }

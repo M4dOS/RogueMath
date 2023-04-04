@@ -122,7 +122,7 @@ namespace RogueMath
                 {
                     /*map.cellMap[temp_x, temp_y].enemyId = map.cellMap[x, y].enemyId;
                     map.cellMap[x, y].enemyId = -1;*/
-                    map.AddChange(new(temp_x, temp_y, map.cellMap[x, y].cellID) { enemyId = map.cellMap[x,y].enemyId });
+                    map.AddChange(new(temp_x, temp_y, map.cellMap[x, y].cellID) { enemyId = map.cellMap[x, y].enemyId });
                     map.AddChange(new(x, y, map.cellMap[temp_x, temp_y].cellID) { enemyId = map.cellMap[temp_x, temp_y].enemyId });
                     y = temp_y;
                     x = temp_x;
@@ -267,8 +267,8 @@ namespace RogueMath
                 }
                 /*else
                 {*/
-                    player.battlingWith = player.EnemyCheck(map);
-                    if (player.battlingWith > -1) player.phase = Player.Phase.Battle;
+                player.battlingWith = player.EnemyCheck(map);
+                if (player.battlingWith > -1) player.phase = Player.Phase.Battle;
                 /*}*/
             }
 
