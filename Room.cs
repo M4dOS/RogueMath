@@ -213,7 +213,7 @@ namespace RogueMath
                 foreach (Enemy enemy in enemies)
                 {
                     if (enemy.dead) { map.AddChange(new(enemy.x, enemy.y, CellID.None)); }
-                    else map.AddChange(new(enemy.x, enemy.y, CellID.Enemy));
+                    else map.AddChange(new(enemy.x, enemy.y, enemy.sign));
                 }
 
                 isExplored = false;

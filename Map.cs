@@ -223,8 +223,6 @@ namespace RogueMath
 
             int tries = 0;
 
-            //this.mapplace = new bool[maxX, maxY];
-
 
             while (!(minRooms <= rooms.Count && rooms.Count <= maxRooms))
             {
@@ -468,27 +466,6 @@ namespace RogueMath
             /*здесь должен быть код для рисования линий*/
 
             return true;
-            /* if (IsValidLine(startLineA) && IsValidLine(startLineB))
-             {
-                 for (int i = 0; i < 1000000; ++i)
-                 {
-                     int cursorX = startLineA.xEnd; int cursorY = startLineA.yEnd;
-                     int endCursorX = startLineB.xEnd; int endCursorY = startLineB.yEnd;
-                     int currDestination = startLineA.mode;
-                     lines.Add(startLineA);
-                     for(int lineCount = 0; lineCount < maxLinesCount; ++lineCount)
-                     {
-                         Line line0 = new Line(cursorX, cursorY, Line.Where(cursorX, cursorY, endCursorX, endCursorY, currDestination), rand.Next(10));
-                         lines.Add(line0);
-                         cursorX = line0.xEnd; cursorY = line0.yEnd;
-                     }
-                     if (endCursorX == cursorX && endCursorY == cursorY) tunels.Add(new Tunel(exitA, exitB, lines));
-                 }
-                 if (tunels.Count == 0) return false;
-                 aTunels = tunels;  return true;
-             }
-
-             else return false;*/
         }
 
         public void CalibrateRoomIDs() //калибруем айди у комнат и выходов 
@@ -552,13 +529,11 @@ namespace RogueMath
                     if (room.isExplored) AddChange(new(room.enemies[0].x, room.enemies[0].y, CellID.Enemy));
                 }
 
-                /*else if (room.roomType == RoomType.Enemy)
+                else if (room.roomType == RoomType.Mather)
                 {
-                    room.enemies.Add(new Enemy(Race.Mather, map.rooms[i].x + 1, map.rooms[i].y + 1));
-                    map.changesForCellMap.Add(new(enemy.x, enemy.y, CellID.Boss));
-                }*/
-
-                /*map.cellMap[enemy.x, enemy.y].enemyId = room.roomID;*/
+                    room.enemies.Add(new Enemy(player._lvl, Race.Mather, room.x + 3, room.y + 2));
+                    if (room.isExplored) AddChange(new(room.enemies[0].x, room.enemies[0].y, CellID.Boss));
+                }
             }
         }
 
