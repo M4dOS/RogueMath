@@ -1,5 +1,9 @@
 
 
+using System;
+using System.Linq;
+using Windows.System.Threading.Core;
+
 namespace RogueMath
 {
     internal class Character
@@ -7,8 +11,8 @@ namespace RogueMath
         protected Race r;
         public int _maxHp;
         public int _hp;
-        protected int _def;
-        protected int _atk;
+        public int _def;
+        public int _atk;
         public int _energy;
         public int _maxEnergy;
         protected Weapon? w;
@@ -17,12 +21,36 @@ namespace RogueMath
         public int y;
         public int roomIDin;
         protected List<Buff>? buffs;
-        protected int _exp;
-        protected int _gold;
+        public int _exp;
+        public int _gold;
+        public CellID sign;
         public enum Phase // фаза
         {
             Adventure,
             Battle
+        }
+
+        protected void TestStats(Map map)
+        {
+            int forCx = Console.CursorLeft; int forCy = Console.CursorTop;
+
+            Console.SetCursorPosition(5, map.maxY - 4);
+            for (int i = 5; i < (map.maxX - 5 - 1 - (5)); i++)
+            {
+                Console.Write(" ");
+            }
+
+            Console.SetCursorPosition(5 + 25, map.maxY - 4);
+            Console.Write($"LVL:{_lvl} EXP:{_exp} HP:{_hp}/{_maxHp} DEF:{_def} ENG:{_energy}/{_maxEnergy} ATK:{_atk} GOLD:{_gold}");
+
+            if (roomIDin > -1 && map.rooms[roomIDin].enemies.Count != 0)
+            {
+                Enemy e = map.rooms[roomIDin].enemies[0];
+                Console.CursorLeft += 20;
+                Console.Write($"LVL:{e._lvl} EXP:{e._exp} HP:{e._hp}/{e._maxHp} DEF:{e._def} ENG:{e._energy}/{e._maxEnergy} ATK:{e._atk} GOLD:{e._gold}");
+            }
+
+            Console.SetCursorPosition(forCx, forCy);
         }
 
         public void Bite(Character character)
@@ -50,27 +78,35 @@ namespace RogueMath
 
     internal class Enemy : Character
     {
+        public bool dead;
+
         public Enemy(int _lvl, Race r, int x, int y)
         {
             switch (r) //добавить потом ещё рвсс врагов
             {
                 case Race.Math:
-                    _lvl = 1;
+                    this._lvl = 1;
                     _hp = 10;
                     _energy = 5;
+                    _maxHp = _hp;
+                    _maxEnergy = _energy;
                     _atk = 3;
                     _def = 0;
                     _exp = 0;
                     _gold = 0;
+                    sign = CellID.Enemy;
                     break;
                 case Race.Mather:
-                    _lvl = 1;
-                    _hp = 10;
-                    _energy = 5;
-                    _atk = 3;
+                    this._lvl = 1;
+                    _hp = 100;
+                    _maxHp = _hp;
+                    _maxEnergy = _energy;
+                    _energy = 15;
+                    _atk = 6;
                     _def = 0;
                     _exp = 0;
                     _gold = 0;
+                    sign = CellID.Boss;
                     break;
             }
 
@@ -109,7 +145,7 @@ namespace RogueMath
                     break;
             }
             if (map.cellMap[temp_x, temp_y].cellID == CellID.None && map.cellMap[temp_x, temp_y].cellID != CellID.Player)
-            {
+                {
                 bool condition = true;
                 foreach (CellInfo check in map.changesForCellMap)
                 {
@@ -120,8 +156,6 @@ namespace RogueMath
                 }
                 if (condition)
                 {
-                    /*map.cellMap[temp_x, temp_y].enemyId = map.cellMap[x, y].enemyId;
-                    map.cellMap[x, y].enemyId = -1;*/
                     map.AddChange(new(temp_x, temp_y, map.cellMap[x, y].cellID) { enemyId = map.cellMap[x, y].enemyId });
                     map.AddChange(new(x, y, map.cellMap[temp_x, temp_y].cellID) { enemyId = map.cellMap[temp_x, temp_y].enemyId });
                     y = temp_y;
@@ -133,7 +167,7 @@ namespace RogueMath
             else return false;
 
         }
-        public bool dead;
+        
     }
 
 
@@ -147,9 +181,9 @@ namespace RogueMath
             {
                 case Race.Human:
                     _lvl = 1;
-                    _hp = 11;
+                    _hp = 1;
                     _maxHp = 11;
-                    _energy = 10;
+                    _energy = 1;
                     _maxEnergy = 10;
                     _atk = 5;
                     _def = 0;
@@ -187,14 +221,10 @@ namespace RogueMath
         }
 
         CellID tempCell = CellID.None;
+        
+        
         public bool Movement(Map map) // движение чела
         {
-            int forCx = Console.CursorLeft; int forCy = Console.CursorTop;
-            Console.SetCursorPosition(5 + 50, map.maxY - 4);
-            Console.Write($"LVL:{_lvl} EXP:{_exp} HP:{_hp}/{_maxHp} DEF:{_def} ENG:{_energy}/{_maxEnergy} ATK:{_atk} GOLD:{_gold}");
-
-            Console.SetCursorPosition(forCx, forCy);
-
 
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             int temp_x = x;
@@ -244,32 +274,33 @@ namespace RogueMath
 
         public int EnemyCheck(Map map) // проверка на врага
         {
-            if (map.cellMap[x + 1, y].cellID == CellID.Enemy) return map.cellMap[x + 1, y].enemyId;
-            else if (map.cellMap[x - 1, y].cellID == CellID.Enemy) return map.cellMap[x - 1, y].enemyId;
-            else if (map.cellMap[x, y + 1].cellID == CellID.Enemy) return map.cellMap[x, y + 1].enemyId;
-            else if (map.cellMap[x, y - 1].cellID == CellID.Enemy) return map.cellMap[x, y - 1].enemyId;
+            List<CellID> enemyIDs = new List<CellID>() { CellID.Enemy, CellID.Boss };
+            if (enemyIDs.Contains(map.cellMap[x + 1, y].cellID)) return map.cellMap[x + 1, y].enemyId;
+            else if (enemyIDs.Contains(map.cellMap[x - 1, y].cellID)) return map.cellMap[x - 1, y].enemyId;
+            else if (enemyIDs.Contains(map.cellMap[x, y + 1].cellID)) return map.cellMap[x, y + 1].enemyId;
+            else if (enemyIDs.Contains(map.cellMap[x, y - 1].cellID)) return map.cellMap[x, y - 1].enemyId;
             else return -1;
         }
 
         public void Advenchuring(Map map)
         {
+
+            TestStats(map);
+
             Player player = this;
 
             if (player.phase == Player.Phase.Adventure)
             {
-                if (player._energy < player._maxEnergy) ++player._energy;
-                else if (player._hp < player._maxHp) ++player._hp;
+                if (player._hp < player._maxHp) ++player._hp;
+                else if (player._energy < player._maxEnergy /*&& player._hp < player._maxHp*/) ++player._energy;
 
                 if (player.Movement(map))
                 {
                     for (int i = 0; i < map.rooms[player.roomIDin].enemies.Count; i++) map.rooms[player.roomIDin].enemies[i].Movement(map, player);
                     map.Update();
                 }
-                /*else
-                {*/
                 player.battlingWith = player.EnemyCheck(map);
                 if (player.battlingWith > -1) player.phase = Player.Phase.Battle;
-                /*}*/
             }
 
             else if (player.phase == Player.Phase.Battle)
@@ -283,6 +314,7 @@ namespace RogueMath
                         map.AddChange(new(map.rooms[player.roomIDin].enemies[player.battlingWith].x, map.rooms[player.roomIDin].enemies[player.battlingWith].y, CellID.None));
                         player.phase = Player.Phase.Adventure;
                         map.rooms[player.roomIDin].enemies[player.battlingWith].dead = true;
+                        map.rooms[player.roomIDin].ChangeDoorsStatus(map, player);
                         player.battlingWith = -1;
                         map.Update();
                     }
@@ -291,7 +323,7 @@ namespace RogueMath
 
         }
 
-        public bool Battle(Enemy enemy/*, ConsoleKeyInfo consoleKey*/) //фаза боя
+        public bool Battle(Enemy enemy) //фаза боя
         {
             bool result = false;
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);

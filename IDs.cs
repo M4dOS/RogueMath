@@ -38,8 +38,8 @@ namespace RogueMath
         Tunel = '#',
 
         //для классов врагов
-        Enemy = 'x',
-        Boss = 'F',
+        Enemy = 'F',
+        Boss = '∫',
 
         //для внутрикартовых обьектов
         Chest = '!',
