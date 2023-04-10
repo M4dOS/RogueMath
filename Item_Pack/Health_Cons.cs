@@ -20,7 +20,7 @@ namespace RogueMath.Item_Pack
             name = "вкусняха";
         }
 
-        public override void Use_Cons(Character player)
+        public override void Use_Cons(CharacterTest player)
         {
             if (cur_health_stack > 0 && player.max_hp != player.cur_hp)
             {
@@ -42,7 +42,7 @@ namespace RogueMath.Item_Pack
                 Console.WriteLine($"У вас нет еды");
             }
         }
-        public override void Sell_Cons(Character player)
+        public override void Sell_Cons(CharacterTest player)
         {
             if (cur_health_stack > 0)
             {
@@ -56,7 +56,7 @@ namespace RogueMath.Item_Pack
                 Console.WriteLine($"У вас нет еды");
             }
         }
-        public override void Get_Cons(Character player)
+        public override void Get_Cons(CharacterTest player)
         {
             if (cur_health_stack < max_health_stack)
             {

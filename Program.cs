@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using RogueMath.Item_Pack;
+using System.Numerics;
 
 namespace RogueMath
 {
@@ -13,87 +14,123 @@ namespace RogueMath
     {
         static void Main(string[] args)
         {
-            Character player = new Character(100, 300, 10, 1, 10);
-            //List<Item> pockets = new List<Item>();
+            InventoryTest();
+        }
+        //считывание эффектов с файла
+        public static List<Effect> ReadEffects(String filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            List<Effect> effects = new List<Effect>();
+
+            string line;
+            // Read and display lines from the file until the end of
+            // the file is reached.
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] effectArray = line.Split("|");
+
+                if (effectArray.Length == 4)
+                {
+                    PermanentEffect effect = new PermanentEffect(
+                        Convert.ToInt32(effectArray[0]),
+                        effectArray[1],
+                        Convert.ToInt32(effectArray[2]),
+                        effectArray[3]
+                    );
+                    effects.Add(effect);
+                }
+            }
+
+            return effects;
+        }
+        //считывание артов
+        public static List<Artefact> ReadArtefacts(String filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            List<Artefact> artefacts = new List<Artefact>();
+
+            List<Effect> effects = ReadEffects("Const_effects.txt");
+
+            string line;
+            // Read and display lines from the file until the end of
+            // the file is reached.
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] artLine = line.Split("|");
+
+                if (artLine.Length == 6)
+                {
+                    Artefact art = new Artefact(
+                        Convert.ToInt32(artLine[0]),
+                        Convert.ToInt32(artLine[1]),
+                        artLine[2],
+                        artLine[3],
+                        Convert.ToInt32(artLine[4])
+                    );
+
+                    string[] artEffects = artLine[5].Split(",");
+
+                    for (int i = 0; i < artEffects.Length; i++)
+                    {
+                        foreach (Effect effect in effects)
+                        {
+                            if (effect.Id_effect == Convert.ToInt32(artEffects[i]))
+                            {
+                                art.AddEffect(effect);
+                                break;
+                            }
+                        }
+                    }
+
+                    artefacts.Add(art);
+                }
+            }
+
+            return artefacts;
+        }
+
+        //это для теста функционала, ничего полезного нет
+        public static void InventoryTest()
+        {
+            CharacterTest player = new CharacterTest(100, 300, 10, 1, 10);
             Health_Cons hp_potions = new Health_Cons(10, 5, "food");
             Energy_Cons en_potions = new Energy_Cons(10, 3, "cofe");
             List<Item> items = new List<Item>();
             List<Artefact> arts_equiped = new List<Artefact>();
-            /*
-            {
-                new Art_Max_Stat_Hp(1, 25, "потрепанная тетрадь", "придаёт уверенность, особенно если ты туда что-то записал с лекций", 2, 50),
-                new Art_Max_Stat_Hp(2, 15, "кусочек шпоры", "клочок бумаги из пенала, который ты забыл выбросить с прошлой контрольной", 1, 25),
-                new Art_Max_Stat_Hp(3, 25, "аккуратная шпора", "пока её писал, ты уже всё выучил", 2, 50),
-                new Art_Max_Stat_Hp(4, 50, "ключ от 738", "открывает дверь в клуб мазохистов", 2, 25),
-                new Art_Max_Stat_Atk(5, 30, "учбник по высшей математики том 17", "ничего не понятно, но осуждаем", 2, 25),
-                new Art_Max_Stat_Atk(6, 25, "сломанный будильник", "теперь ты выспишься только на том свете", 1, 15),
-                //new Art_Max_Stat_Atk(7, 25, "сломанный будильник", "теперь ты выспишься только на том свете", 1, 15),
-            };
-            */
             Inventory bag = new Inventory(6, hp_potions, en_potions, arts_equiped);
 
-            List<Effect> eff = new List<Effect>();
-            PermanentEffect hp_lil = new PermanentEffect(1, "lil hp+", 25, "hp");
-            PermanentEffect hp_third = new PermanentEffect(2, "norm hp+", 33, "hp");
-            PermanentEffect hp_half = new PermanentEffect(3, "good hp+", 50, "hp");
-            PermanentEffect hp_sev_five = new PermanentEffect(4, "a lot hp+", 75, "hp");
-            PermanentEffect hp_double = new PermanentEffect(5, "double hp+", 100, "hp");
-            PermanentEffect atk_lil = new PermanentEffect(6, "lil atk+", 25, "atk");
-            PermanentEffect atk_third = new PermanentEffect(7, "norm atk+", 33, "atk");
-            PermanentEffect atk_half = new PermanentEffect(8, "good atk+", 50, "atk");
-            PermanentEffect atk_sev_five = new PermanentEffect(9, "a lot atk+", 75, "atk");
-            PermanentEffect atk_double = new PermanentEffect(10, "double atk+", 100, "atk");
-            eff.Add(hp_lil);
-            eff.Add(hp_third);
-            eff.Add(hp_half);
-            eff.Add(hp_sev_five);
-            eff.Add(hp_double);
-            eff.Add(atk_lil);
-            eff.Add(atk_third);
-            eff.Add(atk_half);
-            eff.Add(atk_sev_five);
-            eff.Add(atk_double);
+
+            List<Effect> effects = ReadEffects("Const_Effects.txt");
+            List<Artefact> all_art = ReadArtefacts("Arts.txt");
 
             /*
-            for (int i = 0; i < eff.Count; i++)
+            for (int i =0; i < effects.Count; i++)
             {
-                Console.WriteLine( eff[i].Id_effect + " " + eff[i].Name_effect);
+                Console.WriteLine(effects[i].Name_effect);
+            }
+
+            Console.WriteLine("-------------------------------------------------------------------------------------------------");
+
+            for (int i = 0; i < all_arts.Count; i++)
+            {
+                Console.WriteLine(all_arts[i].name);
+                Console.WriteLine(all_arts[i].description);
+                for (int j = 0; j < all_arts[i].Effects.Count; j++)
+                {
+                    Console.WriteLine(all_arts[i].Effects[j].Name_effect);
+                }
+                Console.WriteLine("");
             }
             */
+
             player.Status(player);
             bag.Show_Inventory(items);
 
-            //Console.WriteLine("-------------------------------------------------------------------------------------------------");
-
-            List<Artefact> all_art = new List<Artefact>();
-
-            Artefact notebook = new Artefact(1, 30, "потрепаная тетрадь", "+ хп | не зря сходил на лекцию", 2);
-            notebook.AddEffect(hp_third);
-            Artefact paper_sheet = new Artefact(2, 10, "кусочек шпоры", "+ атк | забыл выбросить", 1);
-            paper_sheet.AddEffect(atk_lil);
-            Artefact nice_shpora = new Artefact(3, 30, "аккуратная шпора", "+ атк + хп| пока её писал, ты уже всё выучил", 3);
-            nice_shpora.AddEffect(atk_half);
-            nice_shpora.AddEffect(hp_lil);
-            Artefact key = new Artefact(4, 50, "ключ от 738", "+ хп +дорого продаётся| открывает дверь в клуб мазохистов", 2);
-            key.AddEffect(hp_lil);
-            Artefact studybook = new Artefact(5, 30, "учбник по высшей математики том 17", "+атк | ничего не понятно, но осуждаем", 3);
-            studybook.AddEffect(atk_third);
-            Artefact alarm_clock = new Artefact(6, 10, "сломанный будильник", "+хп | теперь ты выспишься только на том свете", 1);
-            alarm_clock.AddEffect(hp_lil);
-
-            all_art.Add(notebook);
-            all_art.Add(paper_sheet);
-            all_art.Add(nice_shpora);
-            all_art.Add(key);
-            all_art.Add(studybook);
-            all_art.Add(alarm_clock);
-
-            //пулы артефактов - списки, содержащие предметы одинакового качества
-            var art_1_pool = all_art.Where(art => art.quality == 1).ToList();
-            var art_2_pool = all_art.Where(art => art.quality == 2).ToList();
-            var art_3_pool = all_art.Where(art => art.quality == 3).ToList();
-            var art_4_pool = all_art.Where(art => art.quality == 4).ToList();
-            var art_5_pool = all_art.Where(art => art.quality == 5).ToList();
+            var art_1_pool = all_art.Where(art => art.quality_art == 1).ToList();
+            var art_2_pool = all_art.Where(art => art.quality_art == 2).ToList();
+            var art_3_pool = all_art.Where(art => art.quality_art == 3).ToList();
+            var art_4_pool = all_art.Where(art => art.quality_art == 4).ToList();
+            var art_5_pool = all_art.Where(art => art.quality_art == 5).ToList();
 
 
             Artefact rand_1 = bag.RandArt(bag.arts_equiped, art_1_pool);
@@ -102,22 +139,16 @@ namespace RogueMath
             bag.AddArt(rand_2, player);
             Artefact rand_3 = bag.RandArt(bag.arts_equiped, art_3_pool);
             bag.AddArt(rand_3, player);
+            Artefact rand_4 = bag.RandArt(bag.arts_equiped, all_art);
+            bag.AddArt(rand_4, player);
 
-            /*
-            for (int i = 0; i < all_art.Count; i++)
-            {
-                Console.WriteLine(i+1 + ". " + all_art[i].name);
-                Console.WriteLine("   " + all_art[i].description);
-            }
-            */
-            // Console.WriteLine("-------------------------------------------------------------------------------------------------");
 
             Console.WriteLine("---get----------------------------------------------------------------------------------------------");
 
             player.Status(player);
             bag.Show_Inventory(items);
 
-           //bag.RemoveArt(nice_shpora, player);
+            bag.RemoveArt(rand_3, player);
 
             Console.WriteLine("---remove----------------------------------------------------------------------------------------------");
 
@@ -149,11 +180,19 @@ namespace RogueMath
                     case 6:
                         bag.en_potions.Get_Cons(player);
                         break;
+                    case 7:
+                        bag.AddArt_Random(player, arts_equiped, all_art);
+                        break;
+                    case 8:
+                        bag.SellArt(rand_1, player);
+                        break;
                     default:
                         break;
                 }
                 Console.WriteLine("____________________________________________");
             }
+
+
         }
     }
 }

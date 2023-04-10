@@ -17,7 +17,6 @@ namespace RogueMath
         public Health_Cons hp_potions;
         public Energy_Cons en_potions;
         public List<Artefact> arts_equiped;
-
         public Inventory(int pockets_max, Health_Cons hp_potions, Energy_Cons en_potions, List<Artefact> arts_equiped)
         {
             this.pockets_max = pockets_max;
@@ -26,10 +25,12 @@ namespace RogueMath
             this.en_potions = en_potions;
             this.arts_equiped = arts_equiped;
         }
-        public void AddArt(Artefact art, Character c)
+
+        //добавить арт в инвентарь
+        public void AddArt(Artefact art, CharacterTest c)
         {
             arts_equiped.Add(art);
-            foreach (Effect effect in art.Effects)
+            foreach (Effect effect in art.effects_art)
             {
                 if (effect is PermanentEffect)
                 {
@@ -49,6 +50,7 @@ namespace RogueMath
                 }
             }
         }
+        //выбрать рандомный арт из предложеного списка(pool), которого нет в инвентаре (arts_equiped)
         public Artefact RandArt(List<Artefact> arts_equiped, List<Artefact> pool)
         {
             var equipe_art = pool.Except(arts_equiped);
@@ -65,45 +67,56 @@ namespace RogueMath
                 return null;
             }
         }
-        public void AddArt_Random(Character c, List<Artefact> arts_equiped, List<Artefact> pool)
+        //добавиьть рандомный арт
+        public void AddArt_Random(CharacterTest c, List<Artefact> arts_equiped, List<Artefact> pool)
         {
             Artefact art = RandArt(arts_equiped, pool);
             AddArt(art, c);
         }
-        public void RemoveArt(Artefact art, Character c)
+        //убрать арт
+        public void RemoveArt(Artefact art, CharacterTest c)
         {
-            foreach (Effect effect in art.Effects)
+            for (int i = 0; i < art.effects_art.Count; i++)
             {
-                if (effect is PermanentEffect)
+                foreach (Effect effect in art.effects_art)
                 {
-                    PermanentEffect effect2 = (PermanentEffect)effect;
-                    if (effect2.Stat_type == "hp")
+                    if (effect is PermanentEffect)
                     {
-                        c.max_hp -= effect.Value_effect;
-                    }
-                    if (effect2.Stat_type == "atk")
-                    {
-                        c.atk -= effect.Value_effect;
-                    }
-                    if (effect2.Stat_type == "en")
-                    {
-                        c.max_energy -= effect.Value_effect;
+                        PermanentEffect effect2 = (PermanentEffect)effect;
+                        if (effect2.Stat_type == "hp")
+                        {
+                            c.max_hp -= effect.Value_effect;
+                        }
+                        if (effect2.Stat_type == "atk")
+                        {
+                            c.atk -= effect.Value_effect;
+                        }
+                        if (effect2.Stat_type == "en")
+                        {
+                            c.max_energy -= effect.Value_effect;
+                        }
                     }
                 }
             }
             arts_equiped.Remove(art);
         }
-
-        /*
-        public void DisplayInventory()
+        //продать арт
+        public void SellArt(Artefact art, CharacterTest c)
         {
-            Console.WriteLine("Inventory:");
-            foreach (var item in items)
-            {
-                Console.WriteLine("{0} - {1}", item.Name, item.Description);
-            }
+            c.wallet += art.price_item;
+            RemoveArt(art, c );
         }
-        */
+        //купить арт
+        public void BuyArt(Artefact art, CharacterTest c)
+        {
+            if (c.wallet >= art.price_item)
+            {
+                c.wallet -= art.price_item;
+                AddArt(art, c);
+            }
+            else Console.WriteLine("Вам не хватает стипы");
+        }
+
         public void Show_Inventory(List<Item> bag)
         {
             Console.WriteLine($"Кол-во вкуснях: " + hp_potions.cur_health_stack);
@@ -113,7 +126,7 @@ namespace RogueMath
                 {
                     for (int j = 0; j < pockets_max; j++)
                     {
-                        Console.WriteLine(j+1 + $") " + arts_equiped[j].name);
+                        Console.WriteLine(j+1 + $") " + arts_equiped[j].name_item);
                     }
                 }
                 else if (pockets_max > arts_equiped.Count)
@@ -122,12 +135,41 @@ namespace RogueMath
                     for (int j = 0; j < arts_equiped.Count; j++)
                     {
                         rest_space--;
-                        Console.WriteLine(j+1 + $") " + arts_equiped[j].name);
+                        Console.WriteLine(j+1 + $") " + arts_equiped[j].name_item);
                     }
                     for (int j = 0;j < rest_space; j++)
                         Console.WriteLine(j+1+ arts_equiped.Count + $")__________");
                 }
         }
+
+        /*
+        public Artefact SelectArt(List<Artefact> bag)
+        {
+            for (int j = 0; j < bag.Count; j++)
+            {
+
+            }
+            bool end = false;
+            int pockets = bag.Count;
+            int max_pockets = pockets_max;
+            int choise = Convert.ToInt32(Console.ReadLine());
+            while (end = false)
+            {
+                if (choise > max_pockets)
+                {
+                    Console.WriteLine("Не получилось выбрать");
+                    end = true;
+                    return null;
+                }
+                else if (choise <= max_pockets && choise > pockets)
+                {
+                    Console.WriteLine("Пусто");
+                }
+            }
+            
+        }
+        */
+        
     }
 }
 // crad как работать с файлом

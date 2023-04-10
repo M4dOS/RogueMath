@@ -18,7 +18,7 @@ namespace RogueMath.Item_Pack
             name = "энергия";
         }
 
-        public override void Use_Cons(Character player)
+        public override void Use_Cons(CharacterTest player)
         {
             if (cur_energy_stack > 0 && player.max_energy != player.cur_energy)
             {
@@ -40,7 +40,7 @@ namespace RogueMath.Item_Pack
                 Console.WriteLine($"У вас нет кофе");
             }
         }
-        public override void Sell_Cons(Character player)
+        public override void Sell_Cons(CharacterTest player)
         {
             if (cur_energy_stack > 0)
             {
@@ -54,7 +54,7 @@ namespace RogueMath.Item_Pack
                 Console.WriteLine($"У вас нет кофе");
             }
         }
-        public override void Get_Cons(Character player)
+        public override void Get_Cons(CharacterTest player)
         {
             if (cur_energy_stack < max_energy_stack)
             {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RogueMath
 {
-    public class Character
+    public class CharacterTest
     {
         public int max_hp { get; set; }
         public int cur_hp { get; set; }
@@ -22,7 +22,7 @@ namespace RogueMath
 
         private Inventory inventory;
 
-        public Character(int max_hp, int energy, int atk, int lvl, int exp)
+        public CharacterTest(int max_hp, int energy, int atk, int lvl, int exp)
         {
             this.max_hp = max_hp;
             this.cur_hp = max_hp -25;
@@ -41,7 +41,7 @@ namespace RogueMath
             );
         }
 
-        public void Status(Character c)
+        public void Status(CharacterTest c)
         {
             Console.WriteLine($"Stats:   hp " + c.cur_hp + 
                 "|" + c.max_hp + "    energy" + c.cur_energy + 

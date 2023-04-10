@@ -20,23 +20,21 @@ namespace RogueMath.Item_Pack
             IsPermanent_effect = isPermanent;
         }
     }
+    //временные эффекты: пока их нет
     class BattleEffect : Effect
     {
         public int Duration { get; set; }
         public bool IsForEnemy { get; set; }
-
-        // constructor
         public BattleEffect(int id_effect, string name, int value, int duration, bool isForEnemy) : base(id_effect, name, value, false)
         {
             Duration = duration;
             IsForEnemy = isForEnemy;
         }
     }
+    //постоянные эффекты, навсегда увеличивают статы пока в инвенторе
     class PermanentEffect : Effect
     {
         public string Stat_type { get; set; }
-
-        // constructor
         public PermanentEffect(int id_effect, string name, int value, string stat_type) : base(id_effect, name, value, true)
         {
             this.Stat_type = stat_type;
