@@ -13,7 +13,6 @@ namespace RogueMath.Item_Pack
         public string description_art { get; set; }
         public string stat_derscription { get; set; }
         public List<Effect> effects_art { get; set; }
-
         public Artefact(int id_art, int price, string name, string description, int quality) : base( price, name)
         {
             this.id_art = id_art;

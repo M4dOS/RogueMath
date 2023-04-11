@@ -14,7 +14,7 @@ namespace RogueMath
     {
         static void Main(string[] args)
         {
-            InventoryTest();
+            InventoryTestPlus();
         }
         //считывание эффектов с файла
         public static List<Effect> ReadEffects(String filename)
@@ -89,15 +89,17 @@ namespace RogueMath
             return artefacts;
         }
 
-        //это для теста функционала, ничего полезного нет
+
+
+        //это для теста функционала (CharacterTest), ничего полезного нет
         public static void InventoryTest()
         {
             CharacterTest player = new CharacterTest(100, 300, 10, 1, 10);
-            Health_Cons hp_potions = new Health_Cons(10, 5, "food");
-            Energy_Cons en_potions = new Energy_Cons(10, 3, "cofe");
+            Health_Cons_Test hp_potions = new Health_Cons_Test(10, 5, "food");
+            Energy_Cons_Test en_potions = new Energy_Cons_Test(10, 3, "cofe");
             List<Item> items = new List<Item>();
             List<Artefact> arts_equiped = new List<Artefact>();
-            Inventory bag = new Inventory(6, hp_potions, en_potions, arts_equiped);
+            InventoryTest bag = new InventoryTest(6, hp_potions, en_potions, arts_equiped);
 
 
             List<Effect> effects = ReadEffects("Const_Effects.txt");
@@ -186,6 +188,9 @@ namespace RogueMath
                     case 8:
                         bag.SellArt(rand_1, player);
                         break;
+                    case 9:
+                        bag.RemoveSelectedArt(bag.arts_equiped, player);
+                        break;
                     default:
                         break;
                 }
@@ -193,6 +198,90 @@ namespace RogueMath
             }
 
 
+        }
+
+
+        //новый тест, с Player
+        public static void InventoryTestPlus()
+        {
+            Player p = new Player(0, 0);
+            p._hp = 50;
+            p._maxHp = 100;
+            p._energy = 25;
+            p._maxEnergy = 100;
+            p._atk = 10;
+            
+            Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
+            Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
+            List<Item> items = new List<Item>();
+            List<Artefact> arts_equiped = new List<Artefact>();
+
+
+            List<Effect> effects = ReadEffects("Const_Effects.txt");
+            List<Artefact> all_art = ReadArtefacts("Arts.txt");
+            
+            //пул предметов нужен для более удачного рандома: он создаёт новые списки исходя из качества предметов, где 1 - плохо, 4 - имба
+            //но реализовать это я сейчас не успею
+
+            //poor - отстойные и средние арты: могут быть наградой за победу монстра/за зачистку комнаты, сундука, первых этажей
+            var poor_pool = all_art.Where(art => art.quality_art == 1 || art.quality_art == 2).ToList(); 
+            //good - средние и хорошие: для магаза и поздних этажей (на продажу выставить 2-4 предмета, т.к. таких предметов всего 10)
+            var good_pool = all_art.Where(art => art.quality_art == 2 || art.quality_art == 3).ToList();
+            //boss - эксклюзив, выпадает с босса
+            var boss_pool = all_art.Where(art => art.quality_art == 4).ToList();
+
+
+            Inventory bag = new Inventory(6, hp_potions, en_potions, arts_equiped);
+
+            Console.WriteLine("1-use hp, 2-sell hp, 3-get hp");
+            Console.WriteLine("4-use en, 5-sell en, 6-get en");
+            Console.WriteLine("7-get art, 8-read art, 9-sell art");
+
+            while (true)
+            {
+                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+                Console.WriteLine("hp " + p._hp + "/" + p._maxHp + "   en " + p._energy + "/" + p._maxEnergy + "   atk " + p._atk);
+                bag.Show_Inventory(items);
+
+                int m = Convert.ToInt32(Console.ReadLine());
+                switch (m)
+                {
+                    case 1:
+                        hp_potions.Use_Cons(p);
+                        break;
+                    case 2:
+                        hp_potions.Sell_Cons(p);
+                        break;
+                    case 3:
+                        hp_potions.Get_Cons(p);
+                        break;
+                    case 4:
+                        en_potions.Use_Cons(p);
+                        break;
+                    case 5:
+                        en_potions.Sell_Cons(p);
+                        break;
+                    case 6:
+                        en_potions.Get_Cons(p);
+                        break;
+                    
+                case 7:
+                    bag.AddArt_Random(p, arts_equiped, all_art);
+                    break;
+                    
+                case 8:
+                    bag.LookArt(items, arts_equiped, p);
+                    break;
+                    
+                case 9:
+                    bag.RemoveSelectedArt(bag.arts_equiped, p);
+                    break;
+                    
+                    default:
+                        break;
+
+                }
+            }
         }
     }
 }

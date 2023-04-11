@@ -20,7 +20,7 @@ namespace RogueMath
         public int _exp { get; set; }
         public int wallet;
 
-        private Inventory inventory;
+        private InventoryTest inventory;
 
         public CharacterTest(int max_hp, int energy, int atk, int lvl, int exp)
         {
@@ -32,11 +32,11 @@ namespace RogueMath
             this._lvl = lvl;
             this._exp = exp;
             this.wallet = 0;
-            this.inventory = new Inventory(
+            this.inventory = new InventoryTest(
                 25,
                 //25,
-                new Item_Pack.Health_Cons(25, 10, "heal"),
-                new Item_Pack.Energy_Cons(25, 10, "Energy"),
+                new Item_Pack.Health_Cons_Test(25, 10, "heal"),
+                new Item_Pack.Energy_Cons_Test(25, 10, "Energy"),
                 new List<Artefact> ()
             );
         }
