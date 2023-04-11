@@ -1,4 +1,16 @@
 
+using System;
+using System.Diagnostics;
+using System.Dynamic;
+using System.Linq;
+using System.Text;
+//using Windows.System.Threading.Core;
+
+
+// Пришлось много коментировать, т.к. он просто отказывал  (ваши комменты не трогала)
+// (извиняюсь за неудобство с этим)
+
+
 
 using System;
 using System.Linq;
@@ -15,21 +27,31 @@ namespace RogueMath
         public int _atk;
         public int _energy;
         public int _maxEnergy;
-        protected Weapon? w;
+
+
+        //пока оружек нет, можно удалить
+        //protected Weapon? w;
+
+
         public int _lvl;
         public int x;
         public int y;
         public int roomIDin;
-        protected List<Buff>? buffs;
+
+        //временных эффектов тоже (Batle effects), могу попробовать добавить позже
+       //protected List<Buff>? buffs;
+
         public int _exp;
         public int _gold;
-        public CellID sign;
+       public CellID sign;
+       
         public enum Phase // фаза
         {
             Adventure,
             Battle
         }
-
+        
+        /*
         protected void TestStats(Map map)
         {
             int forCx = Console.CursorLeft; int forCy = Console.CursorTop;
@@ -52,7 +74,8 @@ namespace RogueMath
 
             Console.SetCursorPosition(forCx, forCy);
         }
-
+        */
+        
         public void Bite(Character character)
         {
             if (_atk - character._def < 1) --character._hp;
@@ -75,7 +98,7 @@ namespace RogueMath
             }
         }
     }
-
+    
     internal class Enemy : Character
     {
         public bool dead;
@@ -109,7 +132,6 @@ namespace RogueMath
                     sign = CellID.Boss;
                     break;
             }
-
             this._lvl = _lvl;
             if (_lvl > 1)
             {
@@ -122,6 +144,7 @@ namespace RogueMath
             this.y = y;
             dead = false;
         }
+        
         public bool Movement(Map map, Player player) // движение монстрика
         {
             if (dead) return false;
@@ -145,6 +168,7 @@ namespace RogueMath
                     break;
             }
             if (map.cellMap[temp_x, temp_y].cellID == CellID.None && map.cellMap[temp_x, temp_y].cellID != CellID.Player)
+            {
                 {
                 bool condition = true;
                 foreach (CellInfo check in map.changesForCellMap)
@@ -169,7 +193,6 @@ namespace RogueMath
         }
         
     }
-
 
     internal class Player : Character
     {
@@ -240,16 +263,21 @@ namespace RogueMath
                     break;
 
                 /*case ConsoleKey.LeftArrow:*/
+
                 case ConsoleKey.A:
                     --temp_x;
                     break;
 
+
                 /*case ConsoleKey.DownArrow:*/
+
                 case ConsoleKey.S:
                     ++temp_y;
                     break;
 
+
                 /*case ConsoleKey.RightArrow:*/
+
                 case ConsoleKey.D:
                     ++temp_x;
                     break;
