@@ -1,4 +1,5 @@
-﻿using System;
+
+using System;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
@@ -9,11 +10,17 @@ using System.Text;
 // Пришлось много коментировать, т.к. он просто отказывал  (ваши комменты не трогала)
 // (извиняюсь за неудобство с этим)
 
+
+
+using System;
+using System.Linq;
+using Windows.System.Threading.Core;
+
 namespace RogueMath
 {
     internal class Character
     {
-        //protected Race r;
+        protected Race r;
         public int _maxHp;
         public int _hp;
         public int _def;
@@ -21,8 +28,10 @@ namespace RogueMath
         public int _energy;
         public int _maxEnergy;
 
+
         //пока оружек нет, можно удалить
         //protected Weapon? w;
+
 
         public int _lvl;
         public int x;
@@ -30,16 +39,18 @@ namespace RogueMath
         public int roomIDin;
 
         //временных эффектов тоже (Batle effects), могу попробовать добавить позже
-       //rotected List<Buff>? buffs;
+       //protected List<Buff>? buffs;
 
         public int _exp;
         public int _gold;
-       //ublic CellID sign;
+       public CellID sign;
+       
         public enum Phase // фаза
         {
             Adventure,
             Battle
         }
+        
         /*
         protected void TestStats(Map map)
         {
@@ -64,6 +75,7 @@ namespace RogueMath
             Console.SetCursorPosition(forCx, forCy);
         }
         */
+        
         public void Bite(Character character)
         {
             if (_atk - character._def < 1) --character._hp;
@@ -86,16 +98,14 @@ namespace RogueMath
             }
         }
     }
+    
     internal class Enemy : Character
     {
         public bool dead;
 
-        public Enemy(int _lvl,
-         // Race r,
-            int x,
-            int y)
+        public Enemy(int _lvl, Race r, int x, int y)
         {
-         /* switch (r) //добавить потом ещё рвсс врагов
+            switch (r) //добавить потом ещё рвсс врагов
             {
                 case Race.Math:
                     this._lvl = 1;
@@ -122,7 +132,6 @@ namespace RogueMath
                     sign = CellID.Boss;
                     break;
             }
-            */
             this._lvl = _lvl;
             if (_lvl > 1)
             {
@@ -135,7 +144,7 @@ namespace RogueMath
             this.y = y;
             dead = false;
         }
-        /*
+        
         public bool Movement(Map map, Player player) // движение монстрика
         {
             if (dead) return false;
@@ -160,6 +169,7 @@ namespace RogueMath
             }
             if (map.cellMap[temp_x, temp_y].cellID == CellID.None && map.cellMap[temp_x, temp_y].cellID != CellID.Player)
             {
+                {
                 bool condition = true;
                 foreach (CellInfo check in map.changesForCellMap)
                 {
@@ -181,18 +191,16 @@ namespace RogueMath
             else return false;
 
         }
-        */
+        
     }
+
     internal class Player : Character
     {
         public int battlingWith;
         public Phase phase;
-        public Player(
-          //Race r,
-            int x,
-            int y)
+        public Player(Race r, int x, int y)
         {
-        /*  switch (r) //добавить потом ещё расс врагов
+            switch (r) //добавить потом ещё расс врагов
             {
                 case Race.Human:
                     _lvl = 1;
@@ -205,7 +213,7 @@ namespace RogueMath
                     _exp = 0;
                     _gold = 0;
                     break;
-            } */
+            }
             this.x = x;
             this.y = y;
             battlingWith = -1;
@@ -235,9 +243,9 @@ namespace RogueMath
             get { return _exp; }
         }
 
-     // CellID tempCell = CellID.None;
-
-        /*
+        CellID tempCell = CellID.None;
+        
+        
         public bool Movement(Map map) // движение чела
         {
 
@@ -245,23 +253,30 @@ namespace RogueMath
             int temp_x = x;
             int temp_y = y;
             List<ConsoleKey> consoleKeysList = new() { ConsoleKey.W, ConsoleKey.A, ConsoleKey.S,ConsoleKey.D
-                                                       /*,ConsoleKey.UpArrow, ConsoleKey.LeftArrow, ConsoleKey.DownArrow, ConsoleKey.RightArrow*/
-        /* };
+                                                       /*,ConsoleKey.UpArrow, ConsoleKey.LeftArrow, ConsoleKey.DownArrow, ConsoleKey.RightArrow*/};
 
             switch (consoleKey.Key)
             {
-                
+                /*case ConsoleKey.UpArrow:*/
                 case ConsoleKey.W:
                     --temp_y;
                     break;
+
+                /*case ConsoleKey.LeftArrow:*/
 
                 case ConsoleKey.A:
                     --temp_x;
                     break;
 
+
+                /*case ConsoleKey.DownArrow:*/
+
                 case ConsoleKey.S:
                     ++temp_y;
                     break;
+
+
+                /*case ConsoleKey.RightArrow:*/
 
                 case ConsoleKey.D:
                     ++temp_x;
@@ -284,9 +299,7 @@ namespace RogueMath
             }
             else return false;
         }
-        */
 
-        /*
         public int EnemyCheck(Map map) // проверка на врага
         {
             List<CellID> enemyIDs = new List<CellID>() { CellID.Enemy, CellID.Boss };
@@ -296,8 +309,7 @@ namespace RogueMath
             else if (enemyIDs.Contains(map.cellMap[x, y - 1].cellID)) return map.cellMap[x, y - 1].enemyId;
             else return -1;
         }
-        */
-        /*
+
         public void Advenchuring(Map map)
         {
 
@@ -308,8 +320,7 @@ namespace RogueMath
             if (player.phase == Player.Phase.Adventure)
             {
                 if (player._hp < player._maxHp) ++player._hp;
-                else if (player._energy < player._maxEnergy /*&& player._hp < player._maxHp */
-      /* ) ++player._energy;
+                else if (player._energy < player._maxEnergy /*&& player._hp < player._maxHp*/) ++player._energy;
 
                 if (player.Movement(map))
                 {
@@ -339,7 +350,6 @@ namespace RogueMath
             }
 
         }
-        */
 
         public bool Battle(Enemy enemy) //фаза боя
         {
