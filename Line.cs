@@ -63,26 +63,21 @@ namespace RogueMath
             }
         }
 
-        static public int Where(int xFrom, int yFrom, int xTo, int yTo, int lastMode) //куда заворачивать дальше 
+        public static int Where(int xFrom, int yFrom, int xTo, int yTo, int lastMode) //куда заворачивать дальше 
         {
-            if (lastMode == 0 || lastMode == 1)
+            if (lastMode is 0 or 1)
             {
-                if (Math.Abs(xTo - (xFrom + 1)) < Math.Abs(xTo - (xFrom - 1)))
-                {
-                    return 3;
-                }
-                else return 2;
+                return Math.Abs(xTo - (xFrom + 1)) < Math.Abs(xTo - (xFrom - 1)) ? 3 : 2;
             }
-            if (lastMode == 2 || lastMode == 3)
+            if (lastMode is 2 or 3)
             {
-                if (Math.Abs(yTo - (yFrom + 1)) < Math.Abs(yTo - (yFrom - 1)))
-                {
-                    return 1;
-                }
-                else return 0;
+                return Math.Abs(yTo - (yFrom + 1)) < Math.Abs(yTo - (yFrom - 1)) ? 1 : 0;
             }
 
-            else return -1;
+            else
+            {
+                return -1;
+            }
         }
 
         public void DrawMapPlacer(Map map) //рисование занятости для туннеля 

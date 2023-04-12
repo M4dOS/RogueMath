@@ -84,9 +84,9 @@ namespace RogueMath
                     }
 
                     //добавляем все отфильтрованные выходы в один список
-                    foreach (Exit exit in Walls[(int)Walls.IndexOf(ex)])
+                    foreach (Exit exit in Walls[Walls.IndexOf(ex)])
                     {
-                        exit.mode = (int)Walls.IndexOf(ex);
+                        exit.mode = Walls.IndexOf(ex);
                         exits.Add(exit);
                     }
 
@@ -107,7 +107,10 @@ namespace RogueMath
             int i = 0;
             foreach (Enemy enemy in enemies)
             {
-                if (!enemy.dead) ++i;
+                if (!enemy.dead)
+                {
+                    ++i;
+                }
             }
             return i;
         }
@@ -118,14 +121,23 @@ namespace RogueMath
         public void ChangeDoorsStatus(Map map, Player player)
         {
             bool openStatus = true;
-            if (PlayerInRoom(player) && DeadEnemiesCount() > 0) openStatus = false;
+            if (PlayerInRoom(player) && DeadEnemiesCount() > 0)
+            {
+                openStatus = false;
+            }
+
             foreach (Exit exit in exits)
             {
-                if (openStatus) map.AddChange(new(exit.x, exit.y, CellID.ExitOpen));
-                else map.AddChange(new(exit.x, exit.y, CellID.ExitClose));
+                if (openStatus)
+                {
+                    map.AddChange(new(exit.x, exit.y, CellID.ExitOpen));
+                }
+                else
+                {
+                    map.AddChange(new(exit.x, exit.y, CellID.ExitClose));
+                }
             }
-            if (openStatus) player.battlingWith = -1;
-            else player.battlingWith = roomID;
+            player.battlingWith = openStatus ? -1 : roomID;
         }
 
         public Room(int x, int y, int wigth, int height) //создание комнаты-спавна
@@ -213,7 +225,10 @@ namespace RogueMath
                 foreach (Enemy enemy in enemies)
                 {
                     if (enemy.dead) { map.AddChange(new(enemy.x, enemy.y, CellID.None)); }
-                    else map.AddChange(new(enemy.x, enemy.y, enemy.sign));
+                    else
+                    {
+                        map.AddChange(new(enemy.x, enemy.y, enemy.sign));
+                    }
                 }
 
                 isExplored = false;

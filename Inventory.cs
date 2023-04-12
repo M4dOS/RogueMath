@@ -1,10 +1,4 @@
 ﻿using RogueMath.Item_Pack;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 // инвентарь будет иметь только игрок, не монстры
@@ -14,7 +8,7 @@ namespace RogueMath
 {
     internal class Inventory
     {
-        Random rnd = new Random();
+        private readonly Random rnd = new();
 
         public int pockets_max;
         public int pockets_free;
@@ -38,9 +32,8 @@ namespace RogueMath
                 arts_equiped.Add(art);
                 foreach (Effect effect in art.effects_art)
                 {
-                    if (effect is PermanentEffect)
+                    if (effect is PermanentEffect effect2)
                     {
-                        PermanentEffect effect2 = (PermanentEffect)effect;
                         if (effect2.Stat_type == "hp")
                         {
                             p._maxHp += effect.Value_effect;
@@ -56,17 +49,20 @@ namespace RogueMath
                     }
                 }
             }
-            else Console.WriteLine("не получилось взять предмет");
+            else
+            {
+                Console.WriteLine("не получилось взять предмет");
+            }
         }
 
         //выбрать рандомный арт из предложеного списка(pool), которого нет в инвентаре (arts_equiped)
-        public Artefact RandArt(List<Artefact> arts_equiped, List<Artefact> pool)
+        public Artefact? RandArt(List<Artefact> arts_equiped, List<Artefact> pool)
         {
-            var equipe_art = pool.Except(arts_equiped);
+            IEnumerable<Artefact> equipe_art = pool.Except(arts_equiped);
             if (equipe_art.Any())
             {
-                Random random = new Random();
-                var rand_art = equipe_art.ElementAt(random.Next(equipe_art.Count()));
+                Random random = new();
+                Artefact rand_art = equipe_art.ElementAt(random.Next(equipe_art.Count()));
 
                 return rand_art;
             }
@@ -87,16 +83,18 @@ namespace RogueMath
         //убрать арт
         public void RemoveArt(Artefact art, Player p)
         {
-            if(art == null) Console.WriteLine("Не удалось продать предмет");
+            if (art == null)
+            {
+                Console.WriteLine("Не удалось продать предмет");
+            }
             else
             {
                 for (int i = 0; i < art.effects_art.Count; i++)
                 {
                     foreach (Effect effect in art.effects_art)
                     {
-                        if (effect is PermanentEffect)
+                        if (effect is PermanentEffect effect2)
                         {
-                            PermanentEffect effect2 = (PermanentEffect)effect;
                             if (effect2.Stat_type == "hp")
                             {
                                 p._maxHp -= effect.Value_effect;
@@ -112,7 +110,7 @@ namespace RogueMath
                         }
                     }
                 }
-                arts_equiped.Remove(art);
+                _ = arts_equiped.Remove(art);
             }
         }
 
@@ -131,7 +129,10 @@ namespace RogueMath
                 p._gold -= art.price_item;
                 AddArt(art, p);
             }
-            else Console.WriteLine("Вам не хватает стипы");
+            else
+            {
+                Console.WriteLine("Вам не хватает стипы");
+            }
         }
 
         //показ инвенторя (лучше потом красиво оформить)
@@ -156,28 +157,27 @@ namespace RogueMath
                     Console.WriteLine(j + 1 + $") " + arts_equiped[j].name_item);
                 }
                 for (int j = 0; j < rest_space; j++)
+                {
                     Console.WriteLine(j + 1 + arts_equiped.Count + $")__________");
+                }
             }
         }
 
         //выбор арта
-        public Artefact SelectArt(List<Artefact> bag)
+        public Artefact? SelectArt(List<Artefact> bag)
         {
-            bool end = false;
-            int pockets = bag.Count;
+            _ = bag.Count;
             int max_pockets = pockets_max;
             ConsoleKey key = Console.ReadKey().Key;
-            int choise = Convert.ToInt32(key)-48;
+            int choise = Convert.ToInt32(key) - 48;
             if (choise > max_pockets)
             {
                 Console.WriteLine("Не получилось выбрать");
-                end = true;
                 return null;
             }
             else
             {
-                if (choise <= bag.Count )  return bag[choise - 1];
-                else return null;
+                return choise <= bag.Count ? bag[choise - 1] : null;
             }
 
         }
@@ -214,10 +214,10 @@ namespace RogueMath
         }
 
         //почитать описание арта из инвенторя(после выбора выходит из метода: можно потом доработать, чтобы выходил после нажатой клавиши выхода)
-        public void LookArt(List<Item> items,List<Artefact> bag, Player p)
+        public void LookArt(List<Item> items, List<Artefact> bag, Player p)
         {
-           // Console.WriteLine("Для выхода из меню инвентaря выберете номер несуществующей ячейки инвенторя");
-           // Show_Inventory(items);
+            // Console.WriteLine("Для выхода из меню инвентaря выберете номер несуществующей ячейки инвенторя");
+            // Show_Inventory(items);
             Console.WriteLine("Выберете предмет");
             Artefact art = SelectArt(bag);
             if (art != null)
@@ -226,7 +226,7 @@ namespace RogueMath
                 InfoArt(art);
                 Console.WriteLine();
                 Console.WriteLine("Для выхода нажмите лютую клавишу");
-                Console.ReadKey();
+                _ = Console.ReadKey();
             }
         }
 
@@ -242,10 +242,10 @@ namespace RogueMath
 
 
         //считывание эффектов с файла
-        List<Effect> ReadEffects(string filename)
+        private List<Effect> ReadEffects(string filename)
         {
-            StreamReader sr = new StreamReader(filename);
-            List<Effect> effects = new List<Effect>();
+            StreamReader sr = new(filename);
+            List<Effect> effects = new();
 
             string line;
             // Read and display lines from the file until the end of
@@ -256,7 +256,7 @@ namespace RogueMath
 
                 if (effectArray.Length == 4)
                 {
-                    PermanentEffect effect = new PermanentEffect(
+                    PermanentEffect effect = new(
                         Convert.ToInt32(effectArray[0]),
                         effectArray[1],
                         Convert.ToInt32(effectArray[2]),
@@ -268,11 +268,12 @@ namespace RogueMath
 
             return effects;
         }
+
         //считывание артов
-        List<Artefact> ReadArtefacts(string filename)
+        private List<Artefact> ReadArtefacts(string filename)
         {
-            StreamReader sr = new StreamReader(filename);
-            List<Artefact> artefacts = new List<Artefact>();
+            StreamReader sr = new(filename);
+            List<Artefact> artefacts = new();
 
             List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
 
@@ -285,7 +286,7 @@ namespace RogueMath
 
                 if (artLine.Length == 6)
                 {
-                    Artefact art = new Artefact(
+                    Artefact art = new(
                         Convert.ToInt32(artLine[0]),
                         Convert.ToInt32(artLine[1]),
                         artLine[2],
@@ -323,10 +324,10 @@ namespace RogueMath
             player._maxEnergy = 100;
             player._atk = 10;*/
 
-            Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
-            Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
-            List<Item> items = new List<Item>();
-            List<Artefact> arts_equiped = new List<Artefact>();
+            Health_Cons hp_potions = new(15, 5, "вкусняхи");
+            Energy_Cons en_potions = new(10, 5, "кофе");
+            List<Item> items = new();
+            List<Artefact> arts_equiped = new();
 
 
             List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
@@ -336,21 +337,21 @@ namespace RogueMath
             //но реализовать это я сейчас не успею
 
             //poor - отстойные и средние арты: могут быть наградой за победу монстра/за зачистку комнаты, сундука, первых этажей
-            var poor_pool = all_art.Where(art => art.quality_art == 1 || art.quality_art == 2).ToList();
+            List<Artefact> poor_pool = all_art.Where(art => art.quality_art is 1 or 2).ToList();
             //good - средние и хорошие: для магаза и поздних этажей (на продажу выставить 2-4 предмета, т.к. таких предметов всего 10)
-            var good_pool = all_art.Where(art => art.quality_art == 2 || art.quality_art == 3).ToList();
+            List<Artefact> good_pool = all_art.Where(art => art.quality_art is 2 or 3).ToList();
             //boss - эксклюзив, выпадает с босса
-            var boss_pool = all_art.Where(art => art.quality_art == 4).ToList();
+            List<Artefact> boss_pool = all_art.Where(art => art.quality_art == 4).ToList();
 
 
-            Inventory bag = new Inventory(6, hp_potions, en_potions, arts_equiped);
+            Inventory bag = new(6, hp_potions, en_potions, arts_equiped);
 
-            
+
 
             bool cond = true;
             while (cond)
             {
-                
+
                 Console.WriteLine("1-use hp, 2-sell hp, 3-get hp");
                 Console.WriteLine("4-use en, 5-sell en, 6-get en");
                 Console.WriteLine("7-get art, 8-read art, 9-sell art");
@@ -405,14 +406,14 @@ namespace RogueMath
                         cond = false; break;
 
                     default:
-                        
+
                         break;
 
                 }
                 Console.Clear();
 
             }
-            
+
 
         }
     }

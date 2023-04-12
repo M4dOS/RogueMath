@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RogueMath.Item_Pack
+﻿namespace RogueMath.Item_Pack
 {
     internal class Consumable : Item
     {

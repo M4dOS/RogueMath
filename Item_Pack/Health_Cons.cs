@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RogueMath.Item_Pack
+﻿namespace RogueMath.Item_Pack
 {
     internal class Health_Cons : Consumable
     {
@@ -13,9 +7,8 @@ namespace RogueMath.Item_Pack
 
         public Health_Cons(int price, int max_stack, string name) : base(price, max_stack, name)
         {
-            this.cur_health_stack = 1;
-            this.max_health_stack = max_stack;
-            name = "вкусняха";
+            cur_health_stack = 1;
+            max_health_stack = max_stack;
         }
 
         public override void Use_Cons(Player player)
@@ -23,7 +16,7 @@ namespace RogueMath.Item_Pack
             if (cur_health_stack > 0 && player._maxHp != player._hp)
             {
                 cur_health_stack--;
-                player._hp = player._hp + (player._maxHp / 3);
+                player._hp += (player._maxHp / 3);
                 if (player._hp > player._maxHp)
                 {
                     player._hp = player._maxHp;
@@ -45,7 +38,7 @@ namespace RogueMath.Item_Pack
             if (cur_health_stack > 0)
             {
                 cur_health_stack--;
-                player._gold = player._gold + 10;
+                player._gold += 10;
                 Console.WriteLine($"Вы отдали 1 вкусняху");
 
             }

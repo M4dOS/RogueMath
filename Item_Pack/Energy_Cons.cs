@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RogueMath.Item_Pack
+﻿namespace RogueMath.Item_Pack
 {
     internal class Energy_Cons : Consumable
     {
@@ -13,9 +7,8 @@ namespace RogueMath.Item_Pack
 
         public Energy_Cons(int price, int max_stack, string name) : base(price, max_stack, name)
         {
-            this.cur_energy_stack = 1;
-            this.max_energy_stack = max_stack;
-            name = "энергия";
+            cur_energy_stack = 1;
+            max_energy_stack = max_stack;
         }
 
         public override void Use_Cons(Player player)
@@ -23,7 +16,7 @@ namespace RogueMath.Item_Pack
             if (cur_energy_stack > 0 && player._maxEnergy != player._energy)
             {
                 cur_energy_stack--;
-                player._energy = player._energy + (player._maxEnergy / 3);
+                player._energy += (player._maxEnergy / 3);
                 if (player._energy > player._maxEnergy)
                 {
                     player._energy = player._maxEnergy;
@@ -45,7 +38,7 @@ namespace RogueMath.Item_Pack
             if (cur_energy_stack > 0)
             {
                 cur_energy_stack--;
-                player._gold = player._gold + 10;
+                player._gold += 10;
                 Console.WriteLine($"Вы отдали 1 кофе");
 
             }

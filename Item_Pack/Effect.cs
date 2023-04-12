@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RogueMath.Item_Pack
+﻿namespace RogueMath.Item_Pack
 {
     internal abstract class Effect
     {
@@ -20,8 +14,9 @@ namespace RogueMath.Item_Pack
             IsPermanent_effect = isPermanent;
         }
     }
+
     //временные эффекты: пока их нет
-    class BattleEffect : Effect
+    internal class BattleEffect : Effect
     {
         public int Duration { get; set; }
         public bool IsForEnemy { get; set; }
@@ -31,13 +26,14 @@ namespace RogueMath.Item_Pack
             IsForEnemy = isForEnemy;
         }
     }
+
     //постоянные эффекты, навсегда увеличивают статы пока в инвенторе
-    class PermanentEffect : Effect
+    internal class PermanentEffect : Effect
     {
         public string Stat_type { get; set; }
         public PermanentEffect(int id_effect, string name, int value, string stat_type) : base(id_effect, name, value, true)
         {
-            this.Stat_type = stat_type;
+            Stat_type = stat_type;
         }
     }
 }

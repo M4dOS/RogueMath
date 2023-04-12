@@ -1,8 +1,7 @@
 
 namespace RogueMath
 {
-
-    enum RoomType //id комнаты 
+    internal enum RoomType //id комнаты 
     {
         Bonus = -2, //бонус-комната
         Enemy = -1, //комната с врагами
@@ -17,7 +16,8 @@ namespace RogueMath
         Human = 0, //персонаж
         Mather = 1 //босс
     }
-    enum CellID //id клетки 
+
+    internal enum CellID //id клетки 
     {
         //тестовые
         Status = '□',

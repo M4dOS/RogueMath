@@ -25,8 +25,7 @@ namespace RogueMath
                                               CellID.Enemy, CellID.Chest, CellID.Shop, CellID.MainVSpot,
                                               CellID.SecondVSpot, CellID.Player, CellID.Boss};
 
-            if (notStepible.Contains(cell)) isStepible = false;
-            else isStepible = true;
+            isStepible = !notStepible.Contains(cell);
         }
 
         public CellInfo(CellInfo copy) //создание копии 
