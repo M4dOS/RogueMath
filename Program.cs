@@ -23,7 +23,7 @@ static class Program
         //const int fontSize = 16;
 
         //для верхней панели
-        const string version = "v1.2.1322 alpha";
+        const string version = "v1.3.1138 alpha";
         const string info = "RogueMath" + " " + version;
 
         //прописываем настройки консоли
