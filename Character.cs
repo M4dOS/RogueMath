@@ -52,24 +52,25 @@ namespace RogueMath
             Battle
         }
         
-        protected void TestStats(Map map)
+        public void Stats(Map map)
         {
             int forCx = Console.CursorLeft; int forCy = Console.CursorTop;
 
             Console.SetCursorPosition(5, map.maxY - 4);
-            for (int i = 5; i < (map.maxX - 5 - 1 - (5)); i++)
+            for (int i = 5; i < (map.maxX - 5); i++)
             {
                 Console.Write(" ");
             }
 
-            Console.SetCursorPosition(5 + 25, map.maxY - 4);
+            Console.SetCursorPosition(5, map.maxY - 4);
             Console.Write($"LVL:{_lvl} EXP:{_exp} HP:{_hp}/{_maxHp} DEF:{_def} ENG:{_energy}/{_maxEnergy} ATK:{_atk} GOLD:{_gold}");
 
-            if (roomIDin > -1 && map.rooms[roomIDin].enemies.Count != 0)
+            if (roomIDin > -1 && map.rooms[roomIDin].enemies.Count != 0 && !map.rooms[roomIDin].enemies[0].dead)
             {
-                Enemy e = map.rooms[roomIDin].enemies[0];
-                Console.CursorLeft += 20;
-                Console.Write($"LVL:{e._lvl} EXP:{e._exp} HP:{e._hp}/{e._maxHp} DEF:{e._def} ENG:{e._energy}/{e._maxEnergy} ATK:{e._atk} GOLD:{e._gold}");
+                Enemy enemy = map.rooms[roomIDin].enemies[0];
+                string stateLine = $"LVL:{enemy._lvl} EXP:{enemy._exp} HP:{enemy._hp}/{enemy._maxHp} DEF:{enemy._def} ENG:{enemy._energy}/{enemy._maxEnergy} ATK:{enemy._atk} GOLD:{enemy._gold}";
+                Console.CursorLeft = map.maxX - 5 - stateLine.Length;
+                Console.Write(stateLine);
             }
 
             Console.SetCursorPosition(forCx, forCy);
@@ -288,7 +289,7 @@ namespace RogueMath
                     break;
 
                 case ConsoleKey.Z:
-                    inventory.InventoryTestPlus(this);
+                    inventory.InventoryShow(map, this);
                     break;
 
                 default: break;
@@ -323,7 +324,7 @@ namespace RogueMath
         public void Advenchuring(Map map)
         {
 
-            TestStats(map);
+            Stats(map);
 
             Player player = this;
 
@@ -334,7 +335,13 @@ namespace RogueMath
 
                 if (player.Movement(map))
                 {
-                    for (int i = 0; i < map.rooms[player.roomIDin].enemies.Count; i++) map.rooms[player.roomIDin].enemies[i].Movement(map, player);
+                    foreach(Room room in map.rooms)
+                    {
+                        foreach(Enemy enemy in room.enemies)
+                        {
+                            enemy.Movement(map, player);
+                        }
+                    }
                     map.Update();
                 }
                 player.battlingWith = player.EnemyCheck(map);

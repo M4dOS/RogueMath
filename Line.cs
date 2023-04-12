@@ -49,7 +49,7 @@ namespace RogueMath
                     else if (this.xStart - xEnd > 0 && this.yStart - yEnd == 0) //влево
                     { length = Math.Abs(this.xStart - xEnd); mode = 2; }
 
-                    else if (this.xStart - xEnd < 0 && this.yStart - yEnd == 0) //вправл
+                    else if (this.xStart - xEnd < 0 && this.yStart - yEnd == 0) //вправо
                     { length = Math.Abs(this.xStart - xEnd); mode = 3; }
 
                     else //вкось
