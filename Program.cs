@@ -1,9 +1,11 @@
-using RogueMath;
 using System.Text;
-internal class Program
-{
 
-    static void Main(string[] args)
+namespace RogueMath;
+
+
+static class Program
+{
+    public static void Main(string[] args)
 
     {
         //задаём кодировку
@@ -21,7 +23,7 @@ internal class Program
         //const int fontSize = 16;
 
         //для верхней панели
-        const string version = "v1.2.1322 alpha";
+        const string version = "v1.3.1138 alpha";
         const string info = "RogueMath" + " " + version;
 
         //прописываем настройки консоли
@@ -33,7 +35,7 @@ internal class Program
 
         //задаём комнату(ы) вручную через список
         List<Room> manual_rooms = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                          new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
+                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
 
         //задаём карту
         Map map = new(consoleX, consoleY, edge, manual_rooms);
