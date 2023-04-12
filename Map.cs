@@ -24,6 +24,10 @@ namespace RogueMath
         const int minRoomY = 10;
         const int maxRoomY = 15;
 
+        public void TypePlacer() //распределение RoomType (сделать) 
+        {
+
+        }
         public void AddChange(CellInfo change)
         {
             changesForCellMap.Add(change);
@@ -163,8 +167,7 @@ namespace RogueMath
                 }
             }
         }
-
-        public void Update()  /*ждёт пока его напишут вместо PrintMap*/
+        public void Update()  //обновление карты
         {
             Console.SetCursorPosition(0, 0);
             foreach (CellInfo change in changesForCellMap)
@@ -176,9 +179,18 @@ namespace RogueMath
             changesForCellMap.Clear();
         }
 
+        public void CustomUpdate(List<CellInfo> changes)
+        {
+            foreach (CellInfo change in changes)
+            {
+                Console.SetCursorPosition(change.x, change.y);
+                cellMap[change.x, change.y] = change;
+                Console.Write((char)cellMap[change.x, change.y].cellID);
+            }
+        }
+
         public void PrintMap() //печать карты 
         {
-            bool isDebug = false;
 
             Console.SetCursorPosition(0, 0);
             for (int y = 0; y < maxY; ++y)
@@ -191,29 +203,7 @@ namespace RogueMath
                 if (y == maxY - 1) Console.Write("");
                 else Console.WriteLine();
             }
-
-
-            if (isDebug)
-            {
-                List<CellID> cellIDs = new() { CellID.HWall, CellID.VWall, CellID.ExitClose, /*CellID.Void,*/
-                                           CellID.Enemy, CellID.Chest, CellID.Shop};
-                for (int y = 0; y < mapplace.GetLength(1); ++y)
-                {
-                    for (int x = 0; x < mapplace.GetLength(0); ++x)
-                    {
-                        if (cellIDs.Contains(cellMap[x, y].cellID)) Console.Write((char)cellMap[x, y].cellID);
-                        else Console.Write(mapplace[x, y] ? 1 : 0);
-                    }
-                    Console.WriteLine("");
-                }
-            }
         }
-
-        public void TypePlacer() //распределение RoomType 
-        {
-
-        }
-
         private void RoomPlace() //расставление комнат 
         {
             bool isDebug = false;
@@ -367,10 +357,14 @@ namespace RogueMath
                         if (x == manual_room.x - roomEdge || x == manual_room.x + manual_room.wigth + roomEdge - 1
                         || y == manual_room.y - roomEdge || y == manual_room.y + manual_room.height + roomEdge - 1
 
-                        /*|| x == manual_room.x - roomEdge + 1 || x == manual_room.x + manual_room.wigth + roomEdge - 1 - 1
-                        || y == manual_room.y - roomEdge + 1 || y == manual_room.y + manual_room.height + roomEdge - 1 - 1*/)
-                            mapplace[x, y] = false;
+                        || x == manual_room.x - roomEdge + 1 || x == manual_room.x + manual_room.wigth + roomEdge - 1 - 1
+                        || y == manual_room.y - roomEdge + 1 || y == manual_room.y + manual_room.height + roomEdge - 1 - 1
+
+                        || x == manual_room.x - roomEdge + 2 || x == manual_room.x + manual_room.wigth + roomEdge - 1 - 2
+                        || y == manual_room.y - roomEdge + 2 || y == manual_room.y + manual_room.height + roomEdge - 1 - 2)
+                        mapplace[x, y] = false;
                     }
+                    
                 }
             }
         }
@@ -385,8 +379,8 @@ namespace RogueMath
             List<Exit> exitList = new();
 
             PrepareForWeb();
-
-            foreach (Room room in rooms)
+            
+            foreach (Room room in rooms) //добавляем все выходы 
             {
                 foreach (Exit exit in room.exits)
                 {
@@ -394,19 +388,20 @@ namespace RogueMath
                 }
             }
 
+
             int intDestination = maxX + maxY + 1;
             List<int> removeExitsID = new();
 
-            foreach (Exit dot in exitList)
+            foreach (Exit dot in exitList) 
             {
                 exitFrom = dot;
                 exitTo = dot;
 
-                List<Tunel> tunels = new List<Tunel>();
+                List<Tunel> tunels = new();
 
                 bool findConnect = false;
 
-                for (int indexOfExit = 0; indexOfExit < exitList.Count; indexOfExit++)
+                for (int indexOfExit = 0; indexOfExit < exitList.Count; indexOfExit++) //берём каждый выход и ищем ему самый подходящий  
                 {
                     if (exitList[indexOfExit] == dot || exitList[indexOfExit].isConnected) continue;
                     foreach (int remove in removeExitsID) { if (removeExitsID.Contains(indexOfExit)) continue; }
@@ -420,16 +415,16 @@ namespace RogueMath
                     }
                 }
 
-                if (exitTo != exitFrom) findConnect = true;
-                if (!findConnect) { rooms[dot.roomID].exits.Remove(dot); removeExitsID.Add(exitList.IndexOf(dot)); }
+                if (exitTo != exitFrom) findConnect = true; //проверка на обнаружение выхода
+                if (!findConnect) { rooms[dot.roomID].exits.Remove(dot); removeExitsID.Add(exitList.IndexOf(dot)); } //подвергаем выход удалению в ином случае
 
-                if (!Drawer(exitFrom, exitTo, tunels))
+                if (!Drawer(exitFrom, exitTo, tunels)) //если путь к выходам не вырисовался
                 {
                     if (!IsValidLine(new Line(exitFrom.x, exitFrom.y, exitFrom.mode, 3, "dot-lenght"))) { removeExitsID.Add(exitList.IndexOf(exitFrom)); }
                     else if (!IsValidLine(new Line(exitTo.x, exitTo.y, exitTo.mode, 3, "dot-lenght"))) { removeExitsID.Add(exitList.IndexOf(exitTo)); }
                 }
 
-                else
+                else //если же вышло
                 {
                     Tunel minDestTunel = null;
                     int min = maxX * maxX;
@@ -451,19 +446,46 @@ namespace RogueMath
                     }
                 }
             }
-            foreach (int remove in removeExitsID) exitList.RemoveAt(remove);
+            foreach (int remove in removeExitsID) //очистка выходов
+            {
+                foreach(Room room in this.rooms)
+                {
+                    for(int i = 0; i < room.exits.Count; i++)
+                    {
+                        if (room.exits[i] == exitList[remove]) room.exits.RemoveAt(i);
+                        break;
+                    }
+                }
+                exitList.RemoveAt(remove);
+            }
         }
 
         protected bool Drawer(Exit exitA, Exit exitB, List<Tunel> aTunels) //рисуем туннель от выхода до выхода 
         {
+            Random random = new Random();
             Random rand = new();
             const int maxLinesCount = 6;
             Line startLineA = new(exitA.x, exitA.y, exitA.mode, roomEdge + 1, "dot-lenght");
             Line startLineB = new(exitB.x, exitB.y, exitB.mode, roomEdge + 1, "dot-lenght");
             List<Tunel> tunels = new();
-            List<Line> lines = new();
+            /*List<Line> lines = new();*/
 
             /*здесь должен быть код для рисования линий*/
+
+            for (int i = 0; i < 1000; i++)
+            {
+                int cursorX = startLineA.xEnd;
+                int cursorY = startLineA.yEnd;
+                List<Line> midLines = new();
+                int mode = startLineA.mode;
+                while(midLines.Count<6 || (cursorX != startLineB.xEnd && cursorY != startLineB.yEnd) )
+                {
+                    Line temp_line = new(cursorX, cursorY, Line.Where(cursorX, cursorY, startLineB.xEnd, startLineB.yEnd, mode), random.Next(5,20), "dot-lenght");
+                    if(IsValidLine(temp_line)) midLines.Add(temp_line);
+                }
+                Tunel tunel = new(exitA, exitB, midLines);
+                if(IsValidTunel(tunel)) tunels.Add(tunel);
+            }
 
             return true;
         }
@@ -500,9 +522,8 @@ namespace RogueMath
 
         protected bool IsValidTunel(Tunel tunel)    //удовлетворяет ли данный туннель карте 
         {
-            for (int i = 0; i < tunel.lines.Count - 1; ++i)
+            for (int i = 0 + 1; i < tunel.lines.Count - 1 + (- 1); ++i)
             {
-                if (!(tunel.lines[i].xEnd == tunel.lines[i + 1].xStart && tunel.lines[i].yEnd == tunel.lines[i + 1].yStart)) return false;
                 if (!IsValidLine(tunel.lines[i]) || !IsValidLine(tunel.lines[i + 1])) return false;
             }
             return true;
@@ -536,6 +557,14 @@ namespace RogueMath
                 }
             }
         }
+        public Map(int maxX, int maxY, int edge, List<Room> rooms) //создание 
+                                                                   : this(maxX, maxY, edge)
+        {
+            foreach (Room room in rooms)
+            {
+                this.rooms.Add(room);
+            }
+        }
 
         public Map(int maxX, int maxY, int edge) //создание (устаревшее) 
         {
@@ -547,15 +576,6 @@ namespace RogueMath
             this.edge = edge;
             mapplace = new bool[maxX, maxY];
             tunels = new();
-        }
-
-        public Map(int maxX, int maxY, int edge, List<Room> rooms) //создание 
-                                                                   : this(maxX, maxY, edge)
-        {
-            foreach (Room room in rooms)
-            {
-                this.rooms.Add(room);
-            }
         }
     }
 }
