@@ -15,6 +15,7 @@ using System.Text;
 using System;
 using System.Linq;
 using Windows.System.Threading.Core;
+using RogueMath.Item_Pack;
 
 namespace RogueMath
 {
@@ -51,7 +52,6 @@ namespace RogueMath
             Battle
         }
         
-        /*
         protected void TestStats(Map map)
         {
             int forCx = Console.CursorLeft; int forCy = Console.CursorTop;
@@ -74,7 +74,6 @@ namespace RogueMath
 
             Console.SetCursorPosition(forCx, forCy);
         }
-        */
         
         public void Bite(Character character)
         {
@@ -166,10 +165,10 @@ namespace RogueMath
                 case 4:
                     --temp_y;
                     break;
+                default: break;
             }
             if (map.cellMap[temp_x, temp_y].cellID == CellID.None && map.cellMap[temp_x, temp_y].cellID != CellID.Player)
             {
-                {
                 bool condition = true;
                 foreach (CellInfo check in map.changesForCellMap)
                 {
@@ -196,10 +195,15 @@ namespace RogueMath
 
     internal class Player : Character
     {
+        public Inventory inventory;
         public int battlingWith;
         public Phase phase;
         public Player(Race r, int x, int y)
         {
+            Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
+            Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
+            List<Item> items = new List<Item>();
+            List<Artefact> arts_equiped = new List<Artefact>();
             switch (r) //добавить потом ещё расс врагов
             {
                 case Race.Human:
@@ -218,6 +222,7 @@ namespace RogueMath
             this.y = y;
             battlingWith = -1;
             phase = Phase.Adventure;
+            inventory = new Inventory(6, hp_potions, en_potions, arts_equiped);
         }
         private int LvlUp(int _lvl) // опеределение кол-ва опыта для апа уровня
         {
@@ -252,7 +257,7 @@ namespace RogueMath
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             int temp_x = x;
             int temp_y = y;
-            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.W, ConsoleKey.A, ConsoleKey.S,ConsoleKey.D
+            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.W, ConsoleKey.A, ConsoleKey.S,ConsoleKey.D, ConsoleKey.Z
                                                        /*,ConsoleKey.UpArrow, ConsoleKey.LeftArrow, ConsoleKey.DownArrow, ConsoleKey.RightArrow*/};
 
             switch (consoleKey.Key)
@@ -281,6 +286,11 @@ namespace RogueMath
                 case ConsoleKey.D:
                     ++temp_x;
                     break;
+
+                case ConsoleKey.Z:
+                    inventory.InventoryTestPlus(this);
+                    break;
+
                 default: break;
             }
 

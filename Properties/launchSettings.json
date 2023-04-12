@@ -1,7 +1,8 @@
 {
   "profiles": {
     "RogueMath": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
     },
     "WSL": {
       "commandName": "WSL2",

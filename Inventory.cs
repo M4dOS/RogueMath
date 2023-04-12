@@ -1,6 +1,7 @@
 ﻿using RogueMath.Item_Pack;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,29 +87,33 @@ namespace RogueMath
         //убрать арт
         public void RemoveArt(Artefact art, Player p)
         {
-            for (int i = 0; i < art.effects_art.Count; i++)
+            if(art == null) Console.WriteLine("Не удалось продать предмет");
+            else
             {
-                foreach (Effect effect in art.effects_art)
+                for (int i = 0; i < art.effects_art.Count; i++)
                 {
-                    if (effect is PermanentEffect)
+                    foreach (Effect effect in art.effects_art)
                     {
-                        PermanentEffect effect2 = (PermanentEffect)effect;
-                        if (effect2.Stat_type == "hp")
+                        if (effect is PermanentEffect)
                         {
-                            p._maxHp -= effect.Value_effect;
-                        }
-                        if (effect2.Stat_type == "atk")
-                        {
-                            p._atk -= effect.Value_effect;
-                        }
-                        if (effect2.Stat_type == "en")
-                        {
-                            p._maxEnergy -= effect.Value_effect;
+                            PermanentEffect effect2 = (PermanentEffect)effect;
+                            if (effect2.Stat_type == "hp")
+                            {
+                                p._maxHp -= effect.Value_effect;
+                            }
+                            if (effect2.Stat_type == "atk")
+                            {
+                                p._atk -= effect.Value_effect;
+                            }
+                            if (effect2.Stat_type == "en")
+                            {
+                                p._maxEnergy -= effect.Value_effect;
+                            }
                         }
                     }
                 }
+                arts_equiped.Remove(art);
             }
-            arts_equiped.Remove(art);
         }
 
         //продать арт
@@ -161,47 +166,18 @@ namespace RogueMath
             bool end = false;
             int pockets = bag.Count;
             int max_pockets = pockets_max;
-            int choise = Convert.ToInt32(Console.ReadLine());
+            ConsoleKey key = Console.ReadKey().Key;
+            int choise = Convert.ToInt32(key)-48;
             if (choise > max_pockets)
             {
                 Console.WriteLine("Не получилось выбрать");
                 end = true;
                 return null;
             }
-            else if (choise <= max_pockets && choise > pockets)
-            {
-                Console.WriteLine("Пусто");
-                end = true;
-                return null;
-            }
             else
             {
-                switch (choise)
-                {
-                    case 1:
-                        return bag[0];
-                        break;
-                    case 2:
-                        return bag[1];
-                        break;
-                    case 3:
-                        return bag[2];
-                        break;
-                    case 4:
-                        return bag[3];
-                        break;
-                    case 5:
-                        return bag[4];
-                        break;
-                    case 6:
-                        return bag[5];
-                        break;
-                    default:
-                        Console.WriteLine("Не получилось выбрать");
-                        return null;
-                        break;
-                }
-                end = true;
+                if (choise <= bag.Count )  return bag[choise - 1];
+                else return null;
             }
 
         }
@@ -209,6 +185,7 @@ namespace RogueMath
         //удалить выбранный арт (без подтверждения)
         public void RemoveSelectedArt(List<Artefact> bag, Player p)
         {
+            Console.WriteLine("Выберете предмет");
             Artefact art = SelectArt(bag);
             RemoveArt(art, p);
         }
@@ -241,7 +218,7 @@ namespace RogueMath
         {
            // Console.WriteLine("Для выхода из меню инвентaря выберете номер несуществующей ячейки инвенторя");
            // Show_Inventory(items);
-            Console.WriteLine("Выберете предмет:");
+            Console.WriteLine("Выберете предмет");
             Artefact art = SelectArt(bag);
             if (art != null)
             {
@@ -251,6 +228,192 @@ namespace RogueMath
                 Console.WriteLine("Для выхода нажмите лютую клавишу");
                 Console.ReadKey();
             }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        //считывание эффектов с файла
+        List<Effect> ReadEffects(string filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            List<Effect> effects = new List<Effect>();
+
+            string line;
+            // Read and display lines from the file until the end of
+            // the file is reached.
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] effectArray = line.Split("|");
+
+                if (effectArray.Length == 4)
+                {
+                    PermanentEffect effect = new PermanentEffect(
+                        Convert.ToInt32(effectArray[0]),
+                        effectArray[1],
+                        Convert.ToInt32(effectArray[2]),
+                        effectArray[3]
+                    );
+                    effects.Add(effect);
+                }
+            }
+
+            return effects;
+        }
+        //считывание артов
+        List<Artefact> ReadArtefacts(string filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            List<Artefact> artefacts = new List<Artefact>();
+
+            List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
+
+            string line;
+            // Read and display lines from the file until the end of
+            // the file is reached.
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] artLine = line.Split("|");
+
+                if (artLine.Length == 6)
+                {
+                    Artefact art = new Artefact(
+                        Convert.ToInt32(artLine[0]),
+                        Convert.ToInt32(artLine[1]),
+                        artLine[2],
+                        artLine[3],
+                        Convert.ToInt32(artLine[4])
+                    );
+
+                    string[] artEffects = artLine[5].Split(",");
+
+                    for (int i = 0; i < artEffects.Length; i++)
+                    {
+                        foreach (Effect effect in effects)
+                        {
+                            if (effect.Id_effect == Convert.ToInt32(artEffects[i]))
+                            {
+                                art.AddEffect(effect);
+                                break;
+                            }
+                        }
+                    }
+
+                    artefacts.Add(art);
+                }
+            }
+
+            return artefacts;
+        }
+
+        //новый тест, с Player
+        public void InventoryTestPlus(Player player)
+        {
+            /*player._hp = 50;
+            player._maxHp = 100;
+            player._energy = 25;
+            player._maxEnergy = 100;
+            player._atk = 10;*/
+
+            Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
+            Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
+            List<Item> items = new List<Item>();
+            List<Artefact> arts_equiped = new List<Artefact>();
+
+
+            List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
+            List<Artefact> all_art = ReadArtefacts("Item_Pack/Arts.txt");
+
+            //пул предметов нужен для более удачного рандома: он создаёт новые списки исходя из качества предметов, где 1 - плохо, 4 - имба
+            //но реализовать это я сейчас не успею
+
+            //poor - отстойные и средние арты: могут быть наградой за победу монстра/за зачистку комнаты, сундука, первых этажей
+            var poor_pool = all_art.Where(art => art.quality_art == 1 || art.quality_art == 2).ToList();
+            //good - средние и хорошие: для магаза и поздних этажей (на продажу выставить 2-4 предмета, т.к. таких предметов всего 10)
+            var good_pool = all_art.Where(art => art.quality_art == 2 || art.quality_art == 3).ToList();
+            //boss - эксклюзив, выпадает с босса
+            var boss_pool = all_art.Where(art => art.quality_art == 4).ToList();
+
+
+            Inventory bag = new Inventory(6, hp_potions, en_potions, arts_equiped);
+
+            
+
+            bool cond = true;
+            while (cond)
+            {
+                
+                Console.WriteLine("1-use hp, 2-sell hp, 3-get hp");
+                Console.WriteLine("4-use en, 5-sell en, 6-get en");
+                Console.WriteLine("7-get art, 8-read art, 9-sell art");
+                Console.WriteLine("0 - exit");
+                Console.WriteLine("-------------------------------------------------------------------------------------------------");
+                Console.WriteLine("hp " + player._hp + "/" + player._maxHp + "   en " + player._energy + "/" + player._maxEnergy + "   atk " + player._atk);
+                bag.Show_Inventory(items);
+
+                switch (Console.ReadKey().Key)
+                {
+                    case ConsoleKey.D1:
+                        hp_potions.Use_Cons(player);
+                        Thread.Sleep(3000);
+                        break;
+                    case ConsoleKey.D2:
+                        hp_potions.Sell_Cons(player);
+                        Thread.Sleep(3000);
+                        break;
+                    case ConsoleKey.D3:
+                        hp_potions.Get_Cons(player);
+                        Thread.Sleep(3000);
+                        break;
+                    case ConsoleKey.D4:
+                        en_potions.Use_Cons(player);
+                        Thread.Sleep(3000);
+                        break;
+                    case ConsoleKey.D5:
+                        en_potions.Sell_Cons(player);
+                        Thread.Sleep(3000);
+                        break;
+                    case ConsoleKey.D6:
+                        en_potions.Get_Cons(player);
+                        Thread.Sleep(3000);
+                        break;
+
+                    case ConsoleKey.D7:
+                        bag.AddArt_Random(player, arts_equiped, all_art);
+                        Thread.Sleep(3000);
+                        break;
+
+                    case ConsoleKey.D8:
+                        bag.LookArt(items, arts_equiped, player);
+                        Thread.Sleep(3000);
+                        break;
+
+                    case ConsoleKey.D9:
+                        bag.RemoveSelectedArt(bag.arts_equiped, player);
+                        Thread.Sleep(3000);
+                        break;
+
+                    case ConsoleKey.D0:
+                        cond = false; break;
+
+                    default:
+                        
+                        break;
+
+                }
+                Console.Clear();
+
+            }
+            
+
         }
     }
 }
