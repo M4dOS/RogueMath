@@ -33,7 +33,7 @@ namespace RogueMath
         }
 
         //добавить арт в инвентарь
-        public void AddArt(Artefact art, Player p)
+        public void AddArt(Artefact art, Player p, Map map)
         {
             if (arts_equiped.Count < pockets_max)
             {
@@ -58,7 +58,7 @@ namespace RogueMath
                     }
                 }
             }
-            else Console.WriteLine("не получилось взять предмет");
+            else Inventory.Notification("не получилось взять предмет", map);
         }
 
         //выбрать рандомный арт из предложеного списка(pool), которого нет в инвентаре (arts_equiped)
@@ -83,7 +83,7 @@ namespace RogueMath
         public void AddArt_Random(Map map, Player p, List<Artefact> arts_equiped, List<Artefact> pool)
         {
             Artefact art = RandArt(map, arts_equiped, pool);
-            AddArt(art, p);
+            AddArt(art, p, map);
         }
 
         //убрать арт
@@ -126,12 +126,12 @@ namespace RogueMath
         }
 
         //купить арт
-        public void BuyArt(Artefact art, Player p)
+        public void BuyArt(Artefact art, Player p, Map map)
         {
             if (p._gold >= art.price_item)
             {
                 p._gold -= art.price_item;
-                AddArt(art, p);
+                AddArt(art, p, map);
             }
             else Console.WriteLine("Вам не хватает стипы");
         }
@@ -196,7 +196,7 @@ namespace RogueMath
         }
 
         //считывание эффектов с файла
-        List<Effect> ReadEffects(string filename)
+        public static List<Effect> ReadEffects(string filename)
         {
             StreamReader sr = new StreamReader(filename);
             List<Effect> effects = new List<Effect>();
@@ -223,12 +223,11 @@ namespace RogueMath
             return effects;
         }
         //считывание артов
-        List<Artefact> ReadArtefacts(string filename)
+        public static List<Artefact> ReadArtefacts(string filename, List<Effect> effects)
         {
             StreamReader sr = new StreamReader(filename);
             List<Artefact> artefacts = new List<Artefact>();
 
-            List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
 
             string line;
             // Read and display lines from the file until the end of
@@ -267,8 +266,6 @@ namespace RogueMath
 
             return artefacts;
         }
-
-        //новый тест, с Player
 
         public void PrintAtCenter(string text, int aX, int bX, int y)
         {
@@ -429,9 +426,11 @@ namespace RogueMath
             }
         }
 
-        public void InventoryShow(Map map, Player player)
+        public void InventoryShow(Map map, Player player, List<Effect> effects, List<Artefact> all_art)
         {
             /*Console.Clear();*/ //ждёт красивую обёртку
+
+            int rest = 100;
 
             int dotAX = map.maxX / 2 - 25;
             int dotAY = map.maxY / 2 - 10;
@@ -467,7 +466,7 @@ namespace RogueMath
                 }
             }
 
-            Thread.Sleep(2000);
+            Thread.Sleep(rest);
             Console.SetCursorPosition(map.maxX / 2 - 25 + 1, map.maxY / 2 - 10 + 1);
 
             Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
@@ -476,8 +475,7 @@ namespace RogueMath
             List<Artefact> arts_equiped = new List<Artefact>();
 
 
-            List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
-            List<Artefact> all_art = ReadArtefacts("Item_Pack/Arts.txt");
+            
 
             //пул предметов нужен для более удачного рандома: он создаёт новые списки исходя из качества предметов, где 1 - плохо, 4 - имба
             //но реализовать это я сейчас не успею
@@ -533,7 +531,7 @@ namespace RogueMath
                         PrintAtCenter(j + 1 + arts_equiped.Count + $")__________", dotAX, dotBX, Console.CursorTop);
                 }
 
-                int rest = 1000;
+                
 
                 switch (Console.ReadKey(false).Key)
                 {

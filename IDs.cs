@@ -14,16 +14,23 @@ namespace RogueMath
     public enum Race //раса 
     {
         Math = -1, //враг
-        Human = 0, //персонаж
-        Mather = 1 //босс
+        
+        Mather = 0, //босс
+
+
+        //персонажи
+
+        Student = 1,
+        СoffeeLover = 2,
+        Deadline = 3
     }
     enum CellID //id клетки 
     {
-        //тестовые
-        Status = '□',
-
         //пустота
         Void = '.',
+
+        //тестовые
+        Status = '□',
 
         //по ним нельзя ходить 
         VWall = '│',
@@ -46,7 +53,9 @@ namespace RogueMath
         Shop = '$',
 
         //для классов игрока
-        Player = '@'
+        Player = '@',
+        СoffeeLover = '☕',
+        Deadline = '⏱'
     }
 
 }
