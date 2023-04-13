@@ -23,7 +23,7 @@ static class Program
         //const int fontSize = 16;
 
         //для верхней панели
-        const string version = "v1.3.1138 alpha";
+        const string version = "v1.4.0448 alpha";
         const string info = "RogueMath" + " " + version;
 
         //прописываем настройки консоли
@@ -34,26 +34,45 @@ static class Program
         Console.Title = info;
 
         //задаём комнату(ы) вручную через список
-        List<Room> manual_rooms = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
+        List<Room> manual_rooms1 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
                                       new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
 
-        //задаём карту
-        Map map = new(consoleX, consoleY, edge, manual_rooms);
+        List<Room> manual_rooms2 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
+                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
 
-        //спавним игрока
-        Player player = new Player(Race.Human, ((2 * map.rooms[0].x) + map.rooms[0].wigth) / 2, ((2 * map.rooms[0].y) + map.rooms[0].height) / 2);
-        map.AddChange(new(player.x, player.y, CellID.Player));
+        List<Room> manual_rooms3 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
+                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
 
-        //генерируем карту
-        map.Create(player);
+        List<Room> manual_rooms4 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
+                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
 
-        //выводим первоначальную карту и спавним игрока
-        map.Update();
+        List<Room> manual_rooms5 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
+                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
 
-        //процесс игры
-        while (true)
+        List<List<Room>> level_prefs = new() { manual_rooms1, manual_rooms2, manual_rooms3, manual_rooms4, manual_rooms5 };
+
+        foreach (List<Room> manual_rooms in level_prefs)
         {
-            player.Advenchuring(map);
+            //задаём карту
+            Map map = new(consoleX, consoleY, edge, manual_rooms);
+
+            //спавним игрока
+            Player player = new Player(Race.Human, ((2 * map.rooms[0].x) + map.rooms[0].wigth) / 2, ((2 * map.rooms[0].y) + map.rooms[0].height) / 2);
+            map.AddChange(new(player.x, player.y, CellID.Player));
+
+            //генерируем карту
+            map.Create(player);
+
+            //выводим первоначальную карту и спавним игрока
+            map.Update();
+
+            //процесс игры
+            while (true)
+            {
+                player.Advenchuring(map);
+            }
         }
+
+
     }
 }

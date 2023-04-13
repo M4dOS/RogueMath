@@ -346,7 +346,7 @@ namespace RogueMath
 
         }
 
-        public void PrepareForWeb() //подготовка карты занятости под создание соединений 
+        /*public void PrepareForWeb() //подготовка карты занятости под создание соединений 
         {
             foreach (Room manual_room in rooms)
             {
@@ -468,9 +468,9 @@ namespace RogueMath
             Line startLineA = new(exitA.x, exitA.y, exitA.mode, roomEdge + 1, "dot-lenght");
             Line startLineB = new(exitB.x, exitB.y, exitB.mode, roomEdge + 1, "dot-lenght");
             List<Tunel> tunels = new();
-            /*List<Line> lines = new();*/
+            List<Line> lines = new();
 
-            /*здесь должен быть код для рисования линий*/
+            
 
             for (int i = 0; i < 1000; i++)
             {
@@ -488,7 +488,7 @@ namespace RogueMath
             }
 
             return true;
-        }
+        }*/
 
         public void CalibrateRoomIDs() //калибруем айди у комнат и выходов 
         {
@@ -522,7 +522,7 @@ namespace RogueMath
 
         protected bool IsValidTunel(Tunel tunel)    //удовлетворяет ли данный туннель карте 
         {
-            for (int i = 0 + 1; i < tunel.lines.Count - 1 + (- 1); ++i)
+            for (int i = 0; i < tunel.lines.Count - 1; ++i)
             {
                 if (!IsValidLine(tunel.lines[i]) || !IsValidLine(tunel.lines[i + 1])) return false;
             }
@@ -532,7 +532,7 @@ namespace RogueMath
         public void Create(Player player) //создание карты 
         {
             RoomPlace();
-            CreateWeb();
+            //CreateWeb();
             GenerateMap();
             AddEnemies(player);
             Update();
