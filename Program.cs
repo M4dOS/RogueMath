@@ -9,7 +9,7 @@ static class Program
 
     {
         //задаём кодировку
-        Console.OutputEncoding = Encoding.UTF8;
+        Console.OutputEncoding = Encoding.Unicode;
 
         //задаём неизменные параметры
         const int consoleX = 165;
@@ -23,7 +23,7 @@ static class Program
         //const int fontSize = 16;
 
         //для верхней панели
-        const string version = "v1.4.0448 alpha";
+        const string version = "v1.5.1500 alpha";
         const string info = "RogueMath" + " " + version;
 
         //прописываем настройки консоли
@@ -54,11 +54,11 @@ static class Program
         foreach (List<Room> manual_rooms in level_prefs)
         {
             //задаём карту
-            Map map = new(consoleX, consoleY, edge, manual_rooms);
+            Map map = new(consoleX, consoleY, edge, manual_rooms) { floor = level_prefs.IndexOf(manual_rooms) + 1};
 
             //спавним игрока
-            Player player = new Player(Race.Human, ((2 * map.rooms[0].x) + map.rooms[0].wigth) / 2, ((2 * map.rooms[0].y) + map.rooms[0].height) / 2);
-            map.AddChange(new(player.x, player.y, CellID.Player));
+            Player player = new Player (Player.RaceOfPlayer(level_prefs.IndexOf(manual_rooms) + 1), ((2 * map.rooms[0].x) + map.rooms[0].wigth) / 2, ((2 * map.rooms[0].y) + map.rooms[0].height) / 2);
+            map.AddChange(new(player.x, player.y, player.sign));
 
             //генерируем карту
             map.Create(player);
@@ -72,7 +72,5 @@ static class Program
                 player.Advenchuring(map);
             }
         }
-
-
     }
 }

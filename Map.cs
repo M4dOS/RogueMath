@@ -9,11 +9,12 @@ namespace RogueMath
         public List<Room> rooms; //список комнат
         public List<Tunel> tunels; //список всех проходов
         public bool[,] mapplace; //карта занятости
+        public int floor;
 
         public List<CellInfo> changesForCellMap;
 
         //общепринятые константы
-        const int roomEdge = 3;
+        const int roomEdge = 4;
 
         const int minRooms = 5;
         const int maxRooms = 12;
@@ -24,6 +25,38 @@ namespace RogueMath
         const int minRoomY = 10;
         const int maxRoomY = 15;
 
+        public static void Frame(int dotAX, int dotAY, int dotBX, int dotBY)
+        {
+            for (int x = dotAX ; x <= dotBX; x++)
+            {
+                for (int y = dotAY; y <= dotBY; y++)
+                {
+                    Console.SetCursorPosition(x, y);
+
+                    if (x == dotBX && y == dotBY || y == dotAY && x == dotAX) //углы главной диагонали
+                    {
+                        Console.Write((char)CellID.SecondVSpot);
+                    }
+                    else if (x == dotBX && y == dotAY || y == dotBY && x == dotAX) //углы побочной диагонали
+                    {
+                        Console.Write((char)CellID.MainVSpot);
+                    }
+                    else if (x == dotAX && y < dotBY && y > dotAY || x == dotBX && y < dotBY && y > dotAY) //вертикальные стены
+                    {
+                        Console.Write((char)CellID.VWall);
+                    }
+                    else if (y == dotAY && x < dotBX && x > dotAX || y == dotBY && x < dotBX && x > dotAX)
+                    {
+                        Console.Write((char)CellID.HWall);
+                    }
+                    else
+                    {
+                        Console.Write((char)CellID.None);
+                    }
+                }
+            }
+
+        }
         public void TypePlacer() //распределение RoomType (сделать) 
         {
 
@@ -576,6 +609,7 @@ namespace RogueMath
             this.edge = edge;
             mapplace = new bool[maxX, maxY];
             tunels = new();
+            floor = 0;
         }
     }
 }
