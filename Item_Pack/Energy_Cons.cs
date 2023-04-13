@@ -18,7 +18,7 @@ namespace RogueMath.Item_Pack
             name = "энергия";
         }
 
-        public override void Use_Cons(Player player)
+        public void Use_Cons(Map map,Player player)
         {
             if (cur_energy_stack > 0 && player._maxEnergy != player._energy)
             {
@@ -28,43 +28,43 @@ namespace RogueMath.Item_Pack
                 {
                     player._energy = player._maxEnergy;
                 }
-                Console.WriteLine($"Вы восполнили силы");
+                Inventory.Notification($"Вы восполнили силы", map);
 
             }
             else if (cur_energy_stack > 0 && player._maxEnergy == player._energy)
             {
-                Console.WriteLine($"На ваше удивление, вы переполнены энергией");
+                Inventory.Notification($"На ваше удивление, вы переполнены энергией", map);
             }
             else if (cur_energy_stack <= 0)
             {
-                Console.WriteLine($"У вас нет кофе");
+                Inventory.Notification($"У вас нет кофе", map);
             }
         }
-        public override void Sell_Cons(Player player)
+        public void Sell_Cons(Map map, Player player)
         {
             if (cur_energy_stack > 0)
             {
                 cur_energy_stack--;
                 player._gold = player._gold + 10;
-                Console.WriteLine($"Вы отдали 1 кофе");
+                Inventory.Notification($"Вы отдали 1 кофе", map);
 
             }
             else
             {
-                Console.WriteLine($"У вас нет кофе");
+                Inventory.Notification($"У вас нет кофе", map);
             }
         }
-        public override void Get_Cons(Player player)
+        public void Get_Cons(Map map,Player player)
         {
             if (cur_energy_stack < max_energy_stack)
             {
                 cur_energy_stack++;
-                Console.WriteLine($"Вы нашли свежеваренный кофе");
+                Inventory.Notification($"Вы нашли свежеваренный кофе", map);
 
             }
             else
             {
-                Console.WriteLine($"Все кружки для кофе заняты");
+                Inventory.Notification($"Все кружки для кофе заняты", map);
             }
 
         }

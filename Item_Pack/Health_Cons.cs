@@ -18,7 +18,7 @@ namespace RogueMath.Item_Pack
             name = "вкусняха";
         }
 
-        public override void Use_Cons(Player player)
+        public void Use_Cons(Map map, Player player)
         {
             if (cur_health_stack > 0 && player._maxHp != player._hp)
             {
@@ -28,43 +28,43 @@ namespace RogueMath.Item_Pack
                 {
                     player._hp = player._maxHp;
                 }
-                Console.WriteLine($"Вы покушали");
+                Inventory.Notification($"Вы покушали", map );
 
             }
             else if (cur_health_stack > 0 && player._maxHp == player._hp)
             {
-                Console.WriteLine($"На ваше удивление, вы сейчас сыты");
+                Inventory.Notification($"На ваше удивление, вы сейчас сыты", map);
             }
             else if (cur_health_stack <= 0)
             {
-                Console.WriteLine($"У вас нет еды");
+                Inventory.Notification($"У вас нет еды", map);
             }
         }
-        public override void Sell_Cons(Player player)
+        public void Sell_Cons(Map map, Player player)
         {
             if (cur_health_stack > 0)
             {
                 cur_health_stack--;
                 player._gold = player._gold + 10;
-                Console.WriteLine($"Вы отдали 1 вкусняху");
+                Inventory.Notification($"Вы отдали 1 вкусняху", map);
 
             }
             else
             {
-                Console.WriteLine($"У вас нет еды");
+                Inventory.Notification($"У вас нет еды", map);
             }
         }
-        public override void Get_Cons(Player player)
+        public void Get_Cons(Map map, Player player)
         {
             if (cur_health_stack < max_health_stack)
             {
                 cur_health_stack++;
-                Console.WriteLine($"Вы нашли себе покушать");
+                Inventory.Notification($"Вы нашли себе покушать", map);
 
             }
             else
             {
-                Console.WriteLine($"Все карманы для еды забиты");
+                Inventory.Notification($"Все карманы для еды забиты", map);
             }
 
         }
