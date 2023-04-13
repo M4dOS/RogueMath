@@ -34,9 +34,9 @@ static class Program
         Console.Title = info;
 
         //задаём комнату(ы) вручную через список
-        List<Room> manual_rooms/*1*/ = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
+        List<Room> manual_rooms1 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
                                       new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-/*
+
         List<Room> manual_rooms2 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
                                       new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
 
@@ -51,8 +51,8 @@ static class Program
 
         List<List<Room>> level_prefs = new() { manual_rooms1, manual_rooms2, manual_rooms3, manual_rooms4, manual_rooms5 };
 
-        foreach(List<Room> manual_rooms in level_prefs)
-        {*/
+        foreach (List<Room> manual_rooms in level_prefs)
+        {
             //задаём карту
             Map map = new(consoleX, consoleY, edge, manual_rooms);
 
@@ -71,8 +71,8 @@ static class Program
             {
                 player.Advenchuring(map);
             }
-        /*}*/
-    
-    
+        }
+
+
     }
 }
