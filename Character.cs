@@ -4,18 +4,12 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
-//using Windows.System.Threading.Core;
-
-
-// Пришлось много коментировать, т.к. он просто отказывал  (ваши комменты не трогала)
-// (извиняюсь за неудобство с этим)
-
-
-
-using System;
 using System.Linq;
 using Windows.System.Threading.Core;
 using RogueMath.Item_Pack;
+using System.Collections.Concurrent;
+using Windows.Networking.Sockets;
+using Windows.Foundation.Diagnostics;
 
 namespace RogueMath
 {
@@ -109,26 +103,26 @@ namespace RogueMath
             {
                 case Race.Math:
                     this._lvl = 1;
-                    _hp = 10;
-                    _energy = 5;
+                    _hp = 50;
+                    _energy = 10;
                     _maxHp = _hp;
                     _maxEnergy = _energy;
-                    _atk = 3;
+                    _atk = 10;
                     _def = 0;
-                    _exp = 0;
-                    _gold = 0;
+                    _exp = 5;
+                    _gold = 5;
                     sign = CellID.Enemy;
                     break;
                 case Race.Mather:
                     this._lvl = 1;
-                    _hp = 100;
+                    _hp = 150;
                     _maxHp = _hp;
                     _maxEnergy = _energy;
-                    _energy = 15;
-                    _atk = 6;
-                    _def = 0;
-                    _exp = 0;
-                    _gold = 0;
+                    _energy = 100;
+                    _atk = 35;
+                    _def = 10;
+                    _exp = 20;
+                    _gold = 20;
                     sign = CellID.Boss;
                     break;
             }
@@ -191,6 +185,26 @@ namespace RogueMath
             else return false;
 
         }
+
+        //дроп с врага
+        public void EnemyLootItem(Player p)
+        {
+            Random rnd = new Random();
+            int value_gold = rnd.Next(1, 5);
+            int value_exp = rnd.Next(5, 10);
+
+
+
+            //Artefact art = rnd.Next();
+            switch (value_gold)
+            {
+                case 1:
+                break;
+                default:
+                break;
+            }
+            
+        }
         
     }
 
@@ -201,6 +215,7 @@ namespace RogueMath
         public Phase phase;
         public Player(Race r, int x, int y)
         {
+            //this.inventory = new Inventory();
             Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
             Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
             List<Item> items = new List<Item>();
@@ -209,11 +224,11 @@ namespace RogueMath
             {
                 case Race.Human:
                     _lvl = 1;
-                    _hp = 1;
-                    _maxHp = 11;
-                    _energy = 1;
-                    _maxEnergy = 10;
-                    _atk = 5;
+                    _hp = 50;
+                    _maxHp = 100;
+                    _energy = 50;
+                    _maxEnergy = 100;
+                    _atk = 20;
                     _def = 0;
                     _exp = 0;
                     _gold = 0;
@@ -223,7 +238,7 @@ namespace RogueMath
             this.y = y;
             battlingWith = -1;
             phase = Phase.Adventure;
-            inventory = new Inventory(6, hp_potions, en_potions, arts_equiped);
+            this.inventory = new Inventory(6, hp_potions, en_potions, arts_equiped);
         }
         private int LvlUp(int _lvl) // опеределение кол-ва опыта для апа уровня
         {
@@ -248,10 +263,7 @@ namespace RogueMath
             }
             get { return _exp; }
         }
-
         CellID tempCell = CellID.None;
-        
-        
         public bool Movement(Map map) // движение чела
         {
 
@@ -310,7 +322,6 @@ namespace RogueMath
             }
             else return false;
         }
-
         public int EnemyCheck(Map map) // проверка на врага
         {
             List<CellID> enemyIDs = new List<CellID>() { CellID.Enemy, CellID.Boss };
@@ -320,7 +331,147 @@ namespace RogueMath
             else if (enemyIDs.Contains(map.cellMap[x, y - 1].cellID)) return map.cellMap[x, y - 1].enemyId;
             else return -1;
         }
+        public void GetArtLoot(Player player, Map map) // дает дроп с врага при вызове (или не даёт, как повезёт с: )
+        {
+            static List<Effect> ReadEffect(string filename)
+            {
+                StreamReader sr = new StreamReader(filename);
+                List<Effect> effects = new List<Effect>();
 
+                string line;
+                // Read and display lines from the file until the end of
+                // the file is reached.
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] effectArray = line.Split("|");
+
+                    if (effectArray.Length == 4)
+                    {
+                        PermanentEffect effect = new PermanentEffect(
+                            Convert.ToInt32(effectArray[0]),
+                            effectArray[1],
+                            Convert.ToInt32(effectArray[2]),
+                            effectArray[3]
+                        );
+                        effects.Add(effect);
+                    }
+                }
+
+                return effects;
+            }
+            static List<Artefact> ReadArtefact(string filename)
+            {
+                StreamReader sr = new StreamReader(filename);
+                List<Artefact> artefacts = new List<Artefact>();
+
+                List<Effect> effects = ReadEffect("Item_Pack/Const_Effects.txt");
+
+                string line;
+                // Read and display lines from the file until the end of
+                // the file is reached.
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] artLine = line.Split("|");
+
+                    if (artLine.Length == 6)
+                    {
+                        Artefact art = new Artefact(
+                            Convert.ToInt32(artLine[0]),
+                            Convert.ToInt32(artLine[1]),
+                            artLine[2],
+                            artLine[3],
+                            Convert.ToInt32(artLine[4])
+                        );
+
+                        string[] artEffects = artLine[5].Split(",");
+
+                        for (int i = 0; i < artEffects.Length; i++)
+                        {
+                            foreach (Effect effect in effects)
+                            {
+                                if (effect.Id_effect == Convert.ToInt32(artEffects[i]))
+                                {
+                                    art.AddEffect(effect);
+                                    break;
+                                }
+                            }
+                        }
+
+                        artefacts.Add(art);
+                    }
+                }
+
+                return artefacts;
+            }
+
+            List<Effect> effects = ReadEffect("Item_Pack/Const_Effects.txt");
+            List<Artefact> all_art = ReadArtefact("Item_Pack/Arts.txt");
+            List<Artefact> poor_pool = all_art.Where(art => art.quality_art == 1 || art.quality_art == 2).ToList();
+            List<Artefact> good_pool = all_art.Where(art => art.quality_art == 3 || art.quality_art == 4).ToList();
+            Random rnd = new Random();
+
+            player.exp = +5;
+            player._gold = +5;
+            int lohotron = rnd.Next(1, 9);
+            switch (lohotron)
+            {
+                    case 1:
+                    {
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        Inventory.Notification("Вы нашли две прикольные штучки", map);
+                        break;
+                    }
+                    case 2:
+                    {
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        Inventory.Notification("Вы нашли мощный артефакт", map);
+                        break;
+                    } 
+                    case 3:
+                    {
+                        Inventory.Notification("Ты попался на кликбейт", map);
+                        break;
+                    }
+                    case 4:
+                    {
+                        player._gold = +15;
+                        Inventory.Notification("С монстра выпало немало стипы", map);
+                        break;
+                    }
+                   case 5:
+                    {
+                        player.inventory.hp_potions.Get_Cons(map, player);
+                        break;
+                    }
+                   case 6:
+                    {
+                        player.inventory.en_potions.Get_Cons(map, player);
+                        break;
+                    }
+                case 7:
+                    {
+                        Inventory.Notification("Звезды говорят: тот, кто нажмет на цифру '7' во время игры, станет лошком-пирожком", map);
+                        break;
+                    }
+                case 8:
+                    {
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        Inventory.Notification("Вы нашли прикольную штуку", map);
+                        break;
+                    }
+                case 9:
+                    {
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        Inventory.Notification("Вы нашли прикольную штуку", map);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+        }
         public void Advenchuring(Map map)
         {
 
@@ -356,18 +507,27 @@ namespace RogueMath
                     if (map.rooms[player.roomIDin].enemies[player.battlingWith]._hp > 0) map.rooms[player.roomIDin].enemies[player.battlingWith].Bite(player);
                     else
                     {
+                        int deadX = map.rooms[player.roomIDin].enemies[player.battlingWith].x;
+                        int deadY = map.rooms[player.roomIDin].enemies[player.battlingWith].y;
+
+                        //GetArtLoot(player, map);
+
                         map.AddChange(new(map.rooms[player.roomIDin].enemies[player.battlingWith].x, map.rooms[player.roomIDin].enemies[player.battlingWith].y, CellID.None));
                         player.phase = Player.Phase.Adventure;
                         map.rooms[player.roomIDin].enemies[player.battlingWith].dead = true;
                         map.rooms[player.roomIDin].ChangeDoorsStatus(map, player);
                         player.battlingWith = -1;
+
+
+                        /*код для дропа*/
+                        GetArtLoot(player, map);
+
                         map.Update();
                     }
                 }
             }
 
         }
-
         public bool Battle(Enemy enemy) //фаза боя
         {
             bool result = false;
