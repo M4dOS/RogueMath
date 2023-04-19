@@ -1,3 +1,5 @@
+using System.ComponentModel.Design;
+
 namespace RogueMath
 {
     internal class Map //карта игры 
@@ -16,8 +18,8 @@ namespace RogueMath
         //общепринятые константы
         const int roomEdge = 4;
 
-        const int minRooms = 5;
-        const int maxRooms = 12;
+        const int minRooms = 7;
+        const int maxRooms = 15;
 
         const int minRoomX = 10;
         const int maxRoomX = 25;
@@ -59,7 +61,9 @@ namespace RogueMath
         }
         public void TypePlacer() //распределение RoomType (сделать) 
         {
-
+            Random random = new Random();
+            rooms[random.Next(rooms.Count)].ChangeType(RoomType.Mather);
+            rooms[random.Next(rooms.Count)].ChangeType(RoomType.Spawn);
         }
         public void AddChange(CellInfo change)
         {
@@ -523,6 +527,41 @@ namespace RogueMath
             return true;
         }*/
 
+        public bool Win()
+        {
+            Console.Clear();
+            Map map = this;
+            string text1 = "Тебе удалось успешно справиться с миром грёз математического уровня!";
+            string text2 = "Всё, что тебя ждёт дальше, это свобода... Но этого ли ты хотел?";
+            string text3 = "Напиши \"Я хочу повторить!\", чтобы начать сначала или \"Я добился своего...\" для окончания твоих странствий";
+            Console.SetCursorPosition(map.maxX / 2 - text1.Length / 2, map.maxY / 2 - 2);
+            Console.WriteLine(text1);
+            Console.CursorLeft = map.maxX / 2 - text2.Length / 2;
+            Console.WriteLine(text2);
+            Console.CursorTop += 2;
+            Console.CursorLeft = map.maxX / 2 - text3.Length / 2;
+            Console.WriteLine(text3);
+            Console.CursorTop += 2;
+            Console.CursorLeft = map.maxX / 2 - text3.Length / 2;
+            
+            while (true)
+            {
+                Console.CursorLeft = 25;
+                string input = Console.ReadLine();
+                if (input == "Я хочу повторить!") return true;
+                else if (input == "Я добился своего...") { Environment.Exit(0); return false; }
+                else
+                {
+                    Console.CursorLeft = 25;
+                    Console.CursorTop--;
+                    for(int i = 0; i < input.Length + 1; i++)
+                    {
+                        Console.Write(' ');
+                    }
+                }
+            }
+        }
+
         public void CalibrateRoomIDs() //калибруем айди у комнат и выходов 
         {
             int i = 0;
@@ -562,12 +601,14 @@ namespace RogueMath
             return true;
         }
 
-        public void Create(Player player) //создание карты 
+        public void Create(int lastFloor) //создание карты 
         {
+            if (floor > lastFloor) return;
             RoomPlace();
+            TypePlacer();
             //CreateWeb();
             GenerateMap();
-            AddEnemies(player);
+            /*AddEnemies(player);*/
             Update();
             CalibrateRoomIDs();
             PrintMap();

@@ -4,19 +4,15 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
-//using Windows.System.Threading.Core;
-
-
-// Пришлось много коментировать, т.к. он просто отказывал  (ваши комменты не трогала)
-// (извиняюсь за неудобство с этим)
-
-
-
-using System;
 using System.Linq;
 using Windows.System.Threading.Core;
 using RogueMath.Item_Pack;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
+using Windows.Networking.Sockets;
+using Windows.Foundation.Diagnostics;
+using System.Reflection;
+using Windows.UI.Core;
 
 namespace RogueMath
 {
@@ -113,27 +109,27 @@ namespace RogueMath
             {
                 case Race.Math:
                     this._lvl = 1;
-                    _hp = 10;
-                    _energy = 5;
+                    _hp = 50;
+                    _energy = 10;
                     _maxHp = _hp;
                     _maxEnergy = _energy;
-                    _atk = 3;
+                    _atk = 10;
                     _def = 0;
-                    _exp = 0;
-                    _gold = 0;
+                    _exp = 5;
+                    _gold = 5;
                     sign = CellID.Enemy;
                     this.r = r;
                     break;
                 case Race.Mather:
                     this._lvl = 1;
-                    _hp = 100;
+                    _hp = 150;
                     _maxHp = _hp;
                     _maxEnergy = _energy;
-                    _energy = 15;
-                    _atk = 6;
-                    _def = 0;
-                    _exp = 0;
-                    _gold = 0;
+                    _energy = 100;
+                    _atk = 35;
+                    _def = 10;
+                    _exp = 20;
+                    _gold = 20;
                     sign = CellID.Boss;
                     this.r = r;
                     break;
@@ -175,7 +171,7 @@ namespace RogueMath
                 default: break;
             }
 
-            List<CellID> players = new List<CellID>() { CellID.Player, CellID.СoffeeLover, CellID.Deadline };
+            List<CellID> players = new List<CellID>() { CellID.Student, CellID.СoffeeLover, CellID.Deadline };
 
             if (map.cellMap[temp_x, temp_y].cellID == CellID.None && !players.Contains(map.cellMap[temp_x, temp_y].cellID))
             {
@@ -200,6 +196,26 @@ namespace RogueMath
             else return false;
 
         }
+
+        //дроп с врага
+        public void EnemyLootItem(Player p)
+        {
+            Random rnd = new Random();
+            int value_gold = rnd.Next(1, 5);
+            int value_exp = rnd.Next(5, 10);
+
+
+
+            //Artefact art = rnd.Next();
+            switch (value_gold)
+            {
+                case 1:
+                break;
+                default:
+                break;
+            }
+            
+        }
         
     }
 
@@ -208,8 +224,10 @@ namespace RogueMath
         public Inventory inventory;
         public int battlingWith;
         public Phase phase;
-        public Player(Race r, int x, int y)
+        public bool dead;
+        public Player(Race r, int x, int y)//устаревшее 
         {
+            //this.inventory = new Inventory();
             Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
             Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
             List<Item> items = new List<Item>();
@@ -218,7 +236,7 @@ namespace RogueMath
             switch (this.r) //добавить потом ещё расс врагов
             {
                 case Race.Student:
-                    sign = CellID.Player;
+                    sign = CellID.Student;
                     _lvl = 1;
                     _hp = 1;
                     _maxHp = 11;
@@ -244,11 +262,11 @@ namespace RogueMath
                 case Race.Deadline:
                     sign = CellID.Deadline;
                     _lvl = 1;
-                    _hp = 1;
-                    _maxHp = 11;
-                    _energy = 1;
-                    _maxEnergy = 10;
-                    _atk = 5;
+                    _hp = 50;
+                    _maxHp = 100;
+                    _energy = 50;
+                    _maxEnergy = 100;
+                    _atk = 20;
                     _def = 0;
                     _exp = 0;
                     _gold = 0;
@@ -258,7 +276,65 @@ namespace RogueMath
             this.y = y;
             battlingWith = -1;
             phase = Phase.Adventure;
-            inventory = new Inventory(6, hp_potions, en_potions, arts_equiped);
+            this.inventory = new Inventory(6, hp_potions, en_potions, arts_equiped);
+        }
+
+        public Player(Map map, int index)
+        {
+            this.r = RaceOfPlayer(map.floor);
+            //this.inventory = new Inventory();
+            Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
+            Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
+            List<Item> items = new List<Item>();
+            List<Artefact> arts_equiped = new List<Artefact>();
+            roomIDin = index;
+            dead = false;
+            switch (this.r) //добавить потом ещё расс врагов
+            {
+                
+                case Race.Student:
+                    sign = CellID.Student;
+                    _lvl = 1;
+                    _hp = 50;
+                    _maxHp = 100;
+                    _energy = 1;
+                    _maxEnergy = 20;
+                    _atk = 5;
+                    _def = 10;
+                    _exp = 0;
+                    _gold = 0;
+                    break;
+                case Race.СoffeeLover:
+                    sign = CellID.СoffeeLover;
+                    _lvl = 1;
+                    _hp = 75;
+                    _maxHp = 150;
+                    _energy = 1;
+                    _maxEnergy = 50;
+                    _atk = 10;
+                    _def = 5;
+                    _exp = 0;
+                    _gold = 0;
+                    break;
+                case Race.Deadline:
+                    sign = CellID.Deadline;
+                    _lvl = 1;
+                    _hp = 150;
+                    _maxHp = 200;
+                    _energy = 50;
+                    _maxEnergy = 100;
+                    _atk = 15;
+                    _def = 0;
+                    _exp = 0;
+                    _gold = 0;
+                    break;
+            }
+            this.x = ((2 * map.rooms[index].x) + map.rooms[index].wigth) / 2;
+            this.y = ((2 * map.rooms[index].y) + map.rooms[index].height) / 2;
+            battlingWith = -1;
+            map.rooms[index].Exploring(this, map);
+            phase = Phase.Adventure;
+            this.inventory = new Inventory(6, hp_potions, en_potions, arts_equiped);
         }
         private int LvlUp(int _lvl) // опеределение кол-ва опыта для апа уровня
         {
@@ -283,17 +359,14 @@ namespace RogueMath
             }
             get { return _exp; }
         }
-
         CellID tempCell = CellID.None;
-        
-        
         public bool Movement(Map map) // движение чела
         {
 
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             int temp_x = x;
             int temp_y = y;
-            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.W, ConsoleKey.A, ConsoleKey.S,ConsoleKey.D, ConsoleKey.Z
+            List<ConsoleKey> consoleKeysList = new() { ConsoleKey.W, ConsoleKey.A, ConsoleKey.S,ConsoleKey.D, ConsoleKey.Z,
                                                        /*,ConsoleKey.UpArrow, ConsoleKey.LeftArrow, ConsoleKey.DownArrow, ConsoleKey.RightArrow*/};
 
             switch (consoleKey.Key)
@@ -333,6 +406,7 @@ namespace RogueMath
                 default: break;
             }
 
+            if (map.cellMap[temp_x, temp_y].cellID == CellID.Teleport) return false;
             if ((map.cellMap[temp_x, temp_y].isStepible && consoleKeysList.Contains(consoleKey.Key)) || (temp_x != x && temp_y != y))
             {
                 map.AddChange(new(x, y, tempCell));
@@ -348,7 +422,6 @@ namespace RogueMath
             }
             else return false;
         }
-
         public int EnemyCheck(Map map) // проверка на врага
         {
             List<CellID> enemyIDs = new List<CellID>() { CellID.Enemy, CellID.Boss };
@@ -358,7 +431,158 @@ namespace RogueMath
             else if (enemyIDs.Contains(map.cellMap[x, y - 1].cellID)) return map.cellMap[x, y - 1].enemyId;
             else return -1;
         }
+        public bool TeleportCheck(Map map) // проверка на врага
+        {
+            for(int ix = x-1; ix <= x + 1; ix++)
+            {
+                for(int iy = y - 1; iy <= y + 1; iy++)
+                {
+                    if (map.cellMap[ix, iy].cellID == CellID.Teleport) return true;
+                }
+            }
+            return false;
+        }
+        public void GetArtLoot(Player player, Map map) // дает дроп с врага при вызове (или не даёт, как повезёт с: )
+        {
+            static List<Effect> ReadEffect(string filename)
+            {
+                StreamReader sr = new StreamReader(filename);
+                List<Effect> effects = new List<Effect>();
 
+                string line;
+                // Read and display lines from the file until the end of
+                // the file is reached.
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] effectArray = line.Split("|");
+
+                    if (effectArray.Length == 4)
+                    {
+                        PermanentEffect effect = new PermanentEffect(
+                            Convert.ToInt32(effectArray[0]),
+                            effectArray[1],
+                            Convert.ToInt32(effectArray[2]),
+                            effectArray[3]
+                        );
+                        effects.Add(effect);
+                    }
+                }
+
+                return effects;
+            }
+            static List<Artefact> ReadArtefact(string filename)
+            {
+                StreamReader sr = new StreamReader(filename);
+                List<Artefact> artefacts = new List<Artefact>();
+
+                List<Effect> effects = ReadEffect("Item_Pack/Const_Effects.txt");
+
+                string line;
+                // Read and display lines from the file until the end of
+                // the file is reached.
+                while ((line = sr.ReadLine()) != null)
+                {
+                    string[] artLine = line.Split("|");
+
+                    if (artLine.Length == 6)
+                    {
+                        Artefact art = new Artefact(
+                            Convert.ToInt32(artLine[0]),
+                            Convert.ToInt32(artLine[1]),
+                            artLine[2],
+                            artLine[3],
+                            Convert.ToInt32(artLine[4])
+                        );
+
+                        string[] artEffects = artLine[5].Split(",");
+
+                        for (int i = 0; i < artEffects.Length; i++)
+                        {
+                            foreach (Effect effect in effects)
+                            {
+                                if (effect.Id_effect == Convert.ToInt32(artEffects[i]))
+                                {
+                                    art.AddEffect(effect);
+                                    break;
+                                }
+                            }
+                        }
+
+                        artefacts.Add(art);
+                    }
+                }
+
+                return artefacts;
+            }
+
+            List<Effect> effects = ReadEffect("Item_Pack/Const_Effects.txt");
+            List<Artefact> all_art = ReadArtefact("Item_Pack/Arts.txt");
+            List<Artefact> poor_pool = all_art.Where(art => art.quality_art == 1 || art.quality_art == 2).ToList();
+            List<Artefact> good_pool = all_art.Where(art => art.quality_art == 3 || art.quality_art == 4).ToList();
+            Random rnd = new Random();
+
+            player.exp = +5;
+            player._gold = +5;
+            int lohotron = rnd.Next(1, 9);
+            switch (lohotron)
+            {
+                    case 1:
+                    {
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        inventory.Notification("Вы нашли две прикольные штучки", map);
+                        break;
+                    }
+                    case 2:
+                    {
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        inventory.Notification("Вы нашли мощный артефакт", map);
+                        break;
+                    } 
+                    case 3:
+                    {
+                        inventory.Notification("Ты попался на кликбейт", map);
+                        break;
+                    }
+                    case 4:
+                    {
+                        player._gold = +15;
+                        inventory.Notification("С монстра выпало немало стипы", map);
+                        break;
+                    }
+                   case 5:
+                    {
+                        player.inventory.hp_potions.Get_Cons(map, player);
+                        break;
+                    }
+                   case 6:
+                    {
+                        player.inventory.en_potions.Get_Cons(map, player);
+                        break;
+                    }
+                case 7:
+                    {
+                        inventory.Notification("Звезды говорят: тот, кто нажмет на цифру '7' во время игры, станет лошком-пирожком", map);
+                        break;
+                    }
+                case 8:
+                    {
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        inventory.Notification("Вы нашли прикольную штуку", map);
+                        break;
+                    }
+                case 9:
+                    {
+                        player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
+                        inventory.Notification("Вы нашли прикольную штуку", map);
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+        }
         public void ViewFloor(Map map)
         {
             string floorText = $"Floor {map.floor}/5";
@@ -367,7 +591,7 @@ namespace RogueMath
             Console.Write(floorText);
         }
 
-        public void Advenchuring(Map map)
+        public bool Advenchuring(Map map)
         {
 
             Stats(map);
@@ -376,6 +600,8 @@ namespace RogueMath
 
             Player player = this;
 
+            player.inventory.countOfStepsToClear++;
+            if (this.inventory.countOfStepsToClear > 10) this.inventory.ClearNotification();
             if (player.phase == Player.Phase.Adventure)
             {
                 if (player._hp < player._maxHp) ++player._hp;
@@ -383,6 +609,15 @@ namespace RogueMath
 
                 if (player.Movement(map))
                 {
+                    if (TeleportCheck(map)) 
+                    { 
+                        this.inventory.Notification("Хотите перейти на следующий уровень? Нажмите Е рядом с телепортом для входа", map);
+                        if (Console.ReadKey().Key == ConsoleKey.E)
+                        {
+                            return false;
+                        }
+                        else this.inventory.ClearNotification();
+                    }
                     foreach(Room room in map.rooms)
                     {
                         foreach(Enemy enemy in room.enemies)
@@ -390,8 +625,10 @@ namespace RogueMath
                             enemy.Movement(map, player);
                         }
                     }
+                    /*map.AddChange(new(player.x, player.y, CellID.Player));*/
                     map.Update();
                 }
+                if (tempCell == CellID.Teleport) {  return false; }
                 player.battlingWith = player.EnemyCheck(map);
                 if (player.battlingWith > -1) player.phase = Player.Phase.Battle; 
             }
@@ -399,6 +636,7 @@ namespace RogueMath
             else if (player.phase == Player.Phase.Battle)
             {
                 Console.Clear();
+                Stats(map);
                 Pixel.DrawBorder();
                 Pixel.DrawAtack();
                 Pixel.DrawInvent();
@@ -421,36 +659,50 @@ namespace RogueMath
                 }
 
 
-                /*switch (map.rooms[player.roomIDin].enemies[player.battlingWith].r)
+                switch (map.rooms[player.roomIDin].enemies[player.battlingWith].r)
                 {
-                    case Race.Math:*/
+                    case Race.Math:
                         Pixel.DrawEnemyX();
                         Pixel.DrawEnemy1();
-                        /*break;
-                    case Race.Mather:
-                        *//*жду код*//*
                         break;
-                }*/
+                    case Race.Mather:
+                        Pixel.DrawEnemy2();
+                        Pixel.DrawEnemyINT();
+                        break;
+                }
 
-                if (player.Battle(map.rooms[player.roomIDin].enemies[0]))
+                if (player.Battle(map.rooms[player.roomIDin].enemies[0], map))
                 {
-                    if (map.rooms[player.roomIDin].enemies[player.battlingWith]._hp > 0) map.rooms[player.roomIDin].enemies[player.battlingWith].Bite(player);
+                    if (map.rooms[player.roomIDin].enemies[player.battlingWith]._hp > 0 && this._hp > 0) map.rooms[player.roomIDin].enemies[player.battlingWith].Bite(player);
+                    else if (player.dead) return false;
                     else
                     {
+                        int deadX = map.rooms[player.roomIDin].enemies[player.battlingWith].x;
+                        int deadY = map.rooms[player.roomIDin].enemies[player.battlingWith].y;
+
+                        //GetArtLoot(player, map);
+
                         map.AddChange(new(map.rooms[player.roomIDin].enemies[player.battlingWith].x, map.rooms[player.roomIDin].enemies[player.battlingWith].y, CellID.None));
                         player.phase = Player.Phase.Adventure;
                         map.rooms[player.roomIDin].enemies[player.battlingWith].dead = true;
                         map.rooms[player.roomIDin].ChangeDoorsStatus(map, player);
                         player.battlingWith = -1;
+
+
+                        /*код для дропа*/
+                        GetArtLoot(player, map);
+
                         map.PrintMap();
                         map.Update();
                     }
+
+                    
                 }
             }
-
+            return true;
         }
 
-        static public Race RaceOfPlayer(int floor)
+        public static Race RaceOfPlayer(int floor)
         {
             switch (floor)
             {
@@ -470,18 +722,27 @@ namespace RogueMath
             }
         }
 
-        public bool Battle(Enemy enemy) //фаза боя
+        public bool Battle(Enemy enemy, Map map) //фаза боя
         {
-            /*Pixel.DrawBorder();
-            Pixel.DrawType2();
-            Pixel.Draw_3_CharUltraBite();
-            Pixel.DrawAtack();
-            Pixel.DrawUltraAtack();
-            Pixel.DrawInvent();
-            Pixel.DrawEnemy1();
-            Pixel.DrawEnemyX();*/
+            if (this._hp <= 0 || this.dead)
+            {
+                this.dead = true;
+                Console.Clear();
+                string text1 = "Вот и пришёл конец странствиям по бесконечным мирам...";
+                string text2 = "Матанализ будет помнить тебя вечно и станет твоим пристанищем навеки вечные...";
+                string text3 = "Нажми любую кнопку, чтобы начать сначала или нажми ESC для выхода";
+                Console.SetCursorPosition(map.maxX / 2 - text1.Length / 2, map.maxY / 2 - 2);
+                Console.WriteLine(text1);
+                Console.CursorLeft = map.maxX / 2 - text2.Length / 2;
+                Console.WriteLine(text2);
+                Console.CursorTop += 2;
+                Console.CursorLeft = map.maxX / 2 - text3.Length / 2;
+                Console.WriteLine(text3);
+                ConsoleKey key = Console.ReadKey().Key;
+                if (key == ConsoleKey.Escape) Environment.Exit(0);
+                else return true;
 
-
+            }
             bool result = false;
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             switch (consoleKey.Key)

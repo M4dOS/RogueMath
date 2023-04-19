@@ -40,6 +40,7 @@ namespace RogueMath
 
         //по ним можно ходить
         None = ' ',
+        Teleport = '✦',
         ExitOpen = '+',
         ExitClose = '±',
         Tunel = '#',
@@ -53,7 +54,7 @@ namespace RogueMath
         Shop = '$',
 
         //для классов игрока
-        Player = '@',
+        Student = '@',
         СoffeeLover = '☕',
         Deadline = '⏱'
     }

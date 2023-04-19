@@ -23,7 +23,7 @@ namespace RogueMath
             cellID = cell;
             List<CellID> notStepible = new() {CellID.HWall, CellID.VWall, CellID.ExitClose, /*CellID.Void,*/
                                               CellID.Enemy, CellID.Chest, CellID.Shop, CellID.MainVSpot,
-                                              CellID.SecondVSpot, CellID.Player, CellID.СoffeeLover, 
+                                              CellID.SecondVSpot, CellID.Student, CellID.СoffeeLover, 
                                               CellID.Deadline, CellID.Boss};
 
             if (notStepible.Contains(cell)) isStepible = false;

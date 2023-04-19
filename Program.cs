@@ -1,3 +1,4 @@
+using RogueMath.Item_Pack;
 using System.Text;
 
 namespace RogueMath;
@@ -10,6 +11,7 @@ static class Program
     {
         //задаём кодировку
         Console.OutputEncoding = Encoding.Unicode;
+        Console.InputEncoding = Encoding.Unicode;
 
         //задаём неизменные параметры
         const int consoleX = 165;
@@ -23,7 +25,7 @@ static class Program
         //const int fontSize = 16;
 
         //для верхней панели
-        const string version = "v1.5.1500 alpha";
+        const string version = "v2.0.0059 beta";
         const string info = "RogueMath" + " " + version;
 
         //прописываем настройки консоли
@@ -34,43 +36,46 @@ static class Program
         Console.Title = info;
 
         //задаём комнату(ы) вручную через список
-        List<Room> manual_rooms1 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<Room> manual_rooms2 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<Room> manual_rooms3 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<Room> manual_rooms4 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<Room> manual_rooms5 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<List<Room>> level_prefs = new() { manual_rooms1, manual_rooms2, manual_rooms3, manual_rooms4, manual_rooms5 };
-
-        foreach (List<Room> manual_rooms in level_prefs)
+        int i = 1;
+        while(i<=6)
         {
             //задаём карту
-            Map map = new(consoleX, consoleY, edge, manual_rooms) { floor = level_prefs.IndexOf(manual_rooms) + 1};
-
-            //спавним игрока
-            Player player = new Player (Player.RaceOfPlayer(level_prefs.IndexOf(manual_rooms) + 1), ((2 * map.rooms[0].x) + map.rooms[0].wigth) / 2, ((2 * map.rooms[0].y) + map.rooms[0].height) / 2);
-            map.AddChange(new(player.x, player.y, player.sign));
+            Map map = new(consoleX, consoleY, edge) { floor = i };
 
             //генерируем карту
-            map.Create(player);
+            map.Create(5);
+
+            //спавним игрока
+            int index = 0;
+            if (i == 6)
+            {
+                if (map.Win())
+                {
+                    i = 1;
+                    foreach (Room room in map.rooms)
+                    {
+                        if (room.roomType == RoomType.Spawn) { index = map.rooms.IndexOf(room); room.isExplored = true; map.floor = i; break; }
+                    }
+                }
+            }
+
+            foreach (Room room in map.rooms)
+            {
+                if (room.roomType == RoomType.Spawn) { index = map.rooms.IndexOf(room); room.isExplored = true; map.floor = i; break; }
+            }
+
+            Player player = new Player(map, index);
+            
+            map.AddEnemies(player);
+            map.AddChange(new(player.x, player.y, player.sign));
 
             //выводим первоначальную карту и спавним игрока
             map.Update();
 
             //процесс игры
-            while (true)
-            {
-                player.Advenchuring(map);
-            }
+            while (player.Advenchuring(map)) { }
+            if (player.dead) i = 1;
+            else i++;
         }
     }
 }

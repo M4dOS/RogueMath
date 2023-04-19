@@ -16,8 +16,6 @@ namespace RogueMath
 {
     internal class Inventory
     {
-
-
         public int pockets_max;
         public int pockets_free;
         public Health_Cons hp_potions;
@@ -58,7 +56,7 @@ namespace RogueMath
                     }
                 }
             }
-            else Inventory.Notification("не получилось взять предмет", map);
+            else this.Notification("не получилось взять предмет", map);
         }
 
         //выбрать рандомный арт из предложеного списка(pool), которого нет в инвентаре (arts_equiped)
@@ -74,7 +72,7 @@ namespace RogueMath
             }
             else
             {
-                Inventory.Notification("Не получилось взять ранд. артефакт", map);
+                this.Notification("Не получилось взять ранд. артефакт", map);
                 return null;
             }
         }
@@ -145,7 +143,7 @@ namespace RogueMath
             int choise = Convert.ToInt32(key)-48;
             if (choise > max_pockets)
             {
-                Inventory.Notification("Не получилось выбрать", map);
+                this.Notification("Не получилось выбрать", map);
                 end = true;
                 return null;
             }
@@ -160,7 +158,7 @@ namespace RogueMath
         //удалить выбранный арт (без подтверждения)
         public void RemoveSelectedArt(List<Artefact> bag, Player p, Map map)
         {
-            Inventory.Notification("Выберете предмет", map);
+            this.Notification("Выберете предмет", map);
             Artefact art = SelectArt(bag, map);
             RemoveArt(art, p);
         }
@@ -180,17 +178,17 @@ namespace RogueMath
         }
 
         //почитать описание арта из инвенторя(после выбора выходит из метода: можно потом доработать, чтобы выходил после нажатой клавиши выхода)
-        public void LookArt(List<Item> items,List<Artefact> bag, Player p, Map map)
+        public void LookArt(List<Artefact> bag, Player p, Map map)
         {
            // Console.WriteLine("Для выхода из меню инвентaря выберете номер несуществующей ячейки инвенторя");
            // Show_Inventory(items);
-            Inventory.Notification("Выберете предмет", map);
+            this.Notification("Выберете предмет", map);
             Artefact art = SelectArt(bag, map);
             if (art != null)
             {
                 Console.WriteLine();
                 InfoArt(art, map);
-                Inventory.Notification("Для выхода нажмите лютую клавишу", map);
+                this.Notification("Для выхода нажмите любую клавишу", map);
                 Console.ReadKey(false);
             }
         }
@@ -289,10 +287,12 @@ namespace RogueMath
 
         static List<CellInfo> notifBufer = new();
         static List<CellInfo> infoBufer = new();
-        public static void Notification(string text, Map map)
-        {
-            ClearNotification();
 
+        public int countOfStepsToClear=0;
+        public void Notification(string text, Map map)
+        {
+            this.ClearNotification();
+            countOfStepsToClear = 0;
             int maxX = map.maxX;
             int maxY = map.maxY;
 
@@ -340,20 +340,19 @@ namespace RogueMath
 
             Console.SetCursorPosition(dotAX+1+1, dotAY+1);
             Console.Write(text);
-
+            
         }
-
         
-        public static void ClearNotification()
+        public  void ClearNotification()
         {
-            foreach(CellInfo cell in notifBufer)
+            countOfStepsToClear = 0;
+            foreach (CellInfo cell in notifBufer)
             {
                 Console.SetCursorPosition(cell.x, cell.y);
                 Console.Write((char)cell.cellID);
             }
             notifBufer.Clear();
         }
-
 
         public static void CustomClear(List<CellInfo> changes)
         {
@@ -365,7 +364,7 @@ namespace RogueMath
             changes.Clear();
         }
 
-        //печать инфы об арте (по хорошему, мне потом нужно добавить полезное описание (что арт прибавляет) )
+        //печать инфы об арте
         public void InfoArt(Artefact art, Map map)
         {
             int dotAX = map.maxX / 2 + 25;
@@ -531,7 +530,7 @@ namespace RogueMath
                         PrintAtCenter(j + 1 + arts_equiped.Count + $")__________", dotAX, dotBX, Console.CursorTop);
                 }
 
-                
+                /*int rest = 100;*/
 
                 switch (Console.ReadKey(false).Key)
                 {
@@ -560,13 +559,85 @@ namespace RogueMath
                         Thread.Sleep(rest);
                         break;
 
-                    case ConsoleKey.D7:
+                   case ConsoleKey.D7:
+                        static List<Effect> ReadEffects(string filename)
+                        {
+                            StreamReader sr = new StreamReader(filename);
+                            List<Effect> effects = new List<Effect>();
+
+                            string line;
+                            // Read and display lines from the file until the end of
+                            // the file is reached.
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                string[] effectArray = line.Split("|");
+
+                                if (effectArray.Length == 4)
+                                {
+                                    PermanentEffect effect = new PermanentEffect(
+                                        Convert.ToInt32(effectArray[0]),
+                                        effectArray[1],
+                                        Convert.ToInt32(effectArray[2]),
+                                        effectArray[3]
+                                    );
+                                    effects.Add(effect);
+                                }
+                            }
+
+                            return effects;
+                        }
+                        static List<Artefact> ReadArtefacts(string filename)
+                        {
+                            StreamReader sr = new StreamReader(filename);
+                            List<Artefact> artefacts = new List<Artefact>();
+
+                            List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
+
+                            string line;
+                            // Read and display lines from the file until the end of
+                            // the file is reached.
+                            while ((line = sr.ReadLine()) != null)
+                            {
+                                string[] artLine = line.Split("|");
+
+                                if (artLine.Length == 6)
+                                {
+                                    Artefact art = new Artefact(
+                                        Convert.ToInt32(artLine[0]),
+                                        Convert.ToInt32(artLine[1]),
+                                        artLine[2],
+                                        artLine[3],
+                                        Convert.ToInt32(artLine[4])
+                                    );
+
+                                    string[] artEffects = artLine[5].Split(",");
+
+                                    for (int i = 0; i < artEffects.Length; i++)
+                                    {
+                                        foreach (Effect effect in effects)
+                                        {
+                                            if (effect.Id_effect == Convert.ToInt32(artEffects[i]))
+                                            {
+                                                art.AddEffect(effect);
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    artefacts.Add(art);
+                                }
+                            }
+
+                            return artefacts;
+                        }
+                        /*List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
+                        List<Artefact> all_art = ReadArtefacts("Item_Pack/Arts.txt");*/
                         bag.AddArt_Random(map, player, arts_equiped, all_art);
                         Thread.Sleep(rest);
                         break;
 
                     case ConsoleKey.D8:
-                        bag.LookArt(items, arts_equiped, player, map);
+                        bag.LookArt(arts_equiped, player, map);
                         Thread.Sleep(rest);
                         CustomClear(infoBufer);
                         break;
