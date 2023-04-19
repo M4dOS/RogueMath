@@ -56,7 +56,7 @@ namespace RogueMath
                     }
                 }
             }
-            else Inventory.Notification("не получилось взять предмет", map);
+            else this.Notification("не получилось взять предмет", map);
         }
 
         //выбрать рандомный арт из предложеного списка(pool), которого нет в инвентаре (arts_equiped)
@@ -530,7 +530,7 @@ namespace RogueMath
                         PrintAtCenter(j + 1 + arts_equiped.Count + $")__________", dotAX, dotBX, Console.CursorTop);
                 }
 
-                int rest = 100;
+                /*int rest = 100;*/
 
                 switch (Console.ReadKey(false).Key)
                 {
@@ -630,8 +630,8 @@ namespace RogueMath
 
                             return artefacts;
                         }
-                        List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
-                        List<Artefact> all_art = ReadArtefacts("Item_Pack/Arts.txt");
+                        /*List<Effect> effects = ReadEffects("Item_Pack/Const_Effects.txt");
+                        List<Artefact> all_art = ReadArtefacts("Item_Pack/Arts.txt");*/
                         bag.AddArt_Random(map, player, arts_equiped, all_art);
                         Thread.Sleep(rest);
                         break;

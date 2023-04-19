@@ -218,15 +218,16 @@ namespace RogueMath
 
                 foreach (Enemy enemy in enemies)
                 {
-                    if (enemy.dead) { map.AddChange(new(enemy.x, enemy.y, CellID.None)); }
+                    if (enemy.dead) 
+                    {
+                        if (enemy.r == Race.Math) map.AddChange(new(enemy.x, enemy.y, CellID.None));
+                        else if (enemy.r == Race.Mather) map.AddChange(new(this.x + this.wigth/2, this.y + this.height/2, CellID.Teleport));
+                    }
                     else map.AddChange(new(enemy.x, enemy.y, enemy.sign));
                 }
 
                 isExplored = false;
             }
-
-            
-
         }
     }
 }

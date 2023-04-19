@@ -11,6 +11,7 @@ static class Program
     {
         //задаём кодировку
         Console.OutputEncoding = Encoding.Unicode;
+        Console.InputEncoding = Encoding.Unicode;
 
         //задаём неизменные параметры
         const int consoleX = 165;
@@ -24,7 +25,7 @@ static class Program
         //const int fontSize = 16;
 
         //для верхней панели
-        const string version = "v1.6.2140 alpha";
+        const string version = "v2.0.0059 beta";
         const string info = "RogueMath" + " " + version;
 
         //прописываем настройки консоли
@@ -35,34 +36,46 @@ static class Program
         Console.Title = info;
 
         //задаём комнату(ы) вручную через список
-
-        for(int i = 1; i<=5; i++)
+        int i = 1;
+        while(i<=6)
         {
             //задаём карту
-            Map map = new(consoleX, consoleY, edge);
+            Map map = new(consoleX, consoleY, edge) { floor = i };
 
             //генерируем карту
-            map.Create(/*player*/);
+            map.Create(5);
 
             //спавним игрока
             int index = 0;
-            foreach(Room room in map.rooms)
+            if (i == 6)
             {
-                if(room.roomType == RoomType.Spawn) { index = map.rooms.IndexOf(room); room.isExplored = true ; break; }
+                if (map.Win())
+                {
+                    i = 1;
+                    foreach (Room room in map.rooms)
+                    {
+                        if (room.roomType == RoomType.Spawn) { index = map.rooms.IndexOf(room); room.isExplored = true; map.floor = i; break; }
+                    }
+                }
             }
-            Player player = new Player(Race.Human, map, index);
+
+            foreach (Room room in map.rooms)
+            {
+                if (room.roomType == RoomType.Spawn) { index = map.rooms.IndexOf(room); room.isExplored = true; map.floor = i; break; }
+            }
+
+            Player player = new Player(map, index);
             
             map.AddEnemies(player);
-            map.AddChange(new(player.x, player.y, CellID.Player));
+            map.AddChange(new(player.x, player.y, player.sign));
 
             //выводим первоначальную карту и спавним игрока
             map.Update();
 
             //процесс игры
-            while (true)
-            {
-                player.Advenchuring(map);
-            }
+            while (player.Advenchuring(map)) { }
+            if (player.dead) i = 1;
+            else i++;
         }
     }
 }

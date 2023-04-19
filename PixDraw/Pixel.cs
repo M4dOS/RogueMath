@@ -5,7 +5,7 @@ namespace RogueMath
     {
         private const char PixelChar = '█';
 
-        private const char PixelType1 = (char)CellID.Player; //Заочник
+        private const char PixelType1 = (char)CellID.Student; //Заочник
         private const char PixelType2 = (char)CellID.СoffeeLover; //Кофеман
         private const char PixelType3 = (char)CellID.Deadline; //дедлайн
 
@@ -56,6 +56,11 @@ namespace RogueMath
             Console.SetCursorPosition(X, Y);
             Console.Write(PixelEnemy1);
         }
+        public void DrawEnemy2_d()
+        {
+            Console.SetCursorPosition(X, Y);
+            Console.Write(PixelEnemy2);
+        }
         private const int MapWidth = 165;
         private const int MapHeight = 55;
 
@@ -91,7 +96,7 @@ namespace RogueMath
 
                 new Pixel(17 - 1, i, CharaColor).Draw();
             }
-            new Pixel(12, 5, CharaColor).Draw/*Type1*/();
+            new Pixel(12, 5, CharaColor).DrawType1_d();
 
         }
         public static void DrawType2()
@@ -108,7 +113,7 @@ namespace RogueMath
 
                 new Pixel(17 - 1, i, CharaColor).Draw();
             }
-            new Pixel(12, 5, CharaColor).Draw/*Type2*/();
+            new Pixel(12, 5, CharaColor).DrawType2_d();
 
         }
         public static void DrawType3()
@@ -125,7 +130,7 @@ namespace RogueMath
 
                 new Pixel(17 - 1, i, CharaColor).Draw();
             }
-            new Pixel(12, 5, CharaColor).Draw/*Type3*/();
+            new Pixel(12, 5, CharaColor).DrawType3_d();
 
         }
 
@@ -1646,23 +1651,23 @@ namespace RogueMath
         {
             for (int i = 140; i < 152; i++)
             {
-                new Pixel(i, 43, CharaColor).Draw();
-                new Pixel(i, 49, CharaColor).Draw();
+                new Pixel(i, 43-1, CharaColor).Draw();
+                new Pixel(i, 49-1, CharaColor).Draw();
             }
             for (int i = 43; i < 49; i++)
             {
-                new Pixel(140, i, CharaColor).Draw();
-                new Pixel(152 - 1, i + 1, CharaColor).Draw();
+                new Pixel(140, i-1, CharaColor).Draw();
+                new Pixel(152 - 1, i + 1-1, CharaColor).Draw();
             }
             for (int i = 144; i < 148; i++)
             {
-                new Pixel(i, 46, CharaColor).Draw();
+                new Pixel(i, 46-1, CharaColor).Draw();
             }
-            new Pixel(143, 45, CharaColor).Draw();
-            new Pixel(142, 44, CharaColor).Draw();
+            new Pixel(143, 45-1, CharaColor).Draw();
+            new Pixel(142, 44-1, CharaColor).Draw();
 
-            new Pixel(148, 45, CharaColor).Draw();
-            new Pixel(149, 44, CharaColor).Draw();
+            new Pixel(148, 45-1, CharaColor).Draw();
+            new Pixel(149, 44-1, CharaColor).Draw();
         }
         public static void DrawEnemy1()
         {
@@ -1678,7 +1683,24 @@ namespace RogueMath
 
                 new Pixel(159 - 1, i, CharaColor).Draw();
             }
-            new Pixel(154, 5, CharaColor).Draw/*Enemy1*/();
+            new Pixel(154, 5, CharaColor).DrawEnemy1_d();
+
+        }
+        public static void DrawEnemy2()
+        {
+            for (int i = 150; i < 159; i++)
+            {
+                new Pixel(i, 3, CharaColor).Draw();
+                new Pixel(i, 7, CharaColor).Draw();
+
+            }
+            for (int i = 3; i < 7; i++)
+            {
+                new Pixel(150, i, CharaColor).Draw();
+
+                new Pixel(159 - 1, i, CharaColor).Draw();
+            }
+            new Pixel(154, 5, CharaColor).DrawEnemy2_d();
 
         }
         public static void DrawEnemyX()
@@ -1704,6 +1726,29 @@ namespace RogueMath
             for (int i = 20; i < 40; i++)
             {
                 new Pixel(111, i, CharaColor).Draw();
+            }
+        }
+        //это сам интегралл
+        public static void DrawEnemyINT()
+        {
+            //vertical
+            for (int i = 15; i < 40; i++)
+            {
+                new Pixel(115, i, CharaColor).Draw();
+            }
+            for (int i = 15; i < 40; i++)
+            {
+                new Pixel(119, i, CharaColor).Draw();
+            }
+            //left
+            for (int i = 105; i < 120; i++)
+            {
+                new Pixel(i, 40, CharaColor).Draw();
+            }
+            //right
+            for (int i = 115; i < 134; i++)
+            {
+                new Pixel(i, 15, CharaColor).Draw();
             }
         }
 
