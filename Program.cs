@@ -24,7 +24,7 @@ static class Program
         //const int fontSize = 16;
 
         //для верхней панели
-        const string version = "v1.4.0448 alpha";
+        const string version = "v1.6.2140 alpha";
         const string info = "RogueMath" + " " + version;
 
         //прописываем настройки консоли
@@ -35,34 +35,25 @@ static class Program
         Console.Title = info;
 
         //задаём комнату(ы) вручную через список
-        List<Room> manual_rooms1 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
 
-        List<Room> manual_rooms2 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<Room> manual_rooms3 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<Room> manual_rooms4 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<Room> manual_rooms5 = new() { new Room((consoleX / 2) - 11, (consoleY / 2) - 6, 23, 13, RoomType.Spawn) { isExplored = true },
-                                      new Room((consoleX / 4) - 11, (consoleY / 4) - 6, 23, 13, RoomType.Mather) { isExplored = false }};
-
-        List<List<Room>> level_prefs = new() { manual_rooms1, manual_rooms2, manual_rooms3, manual_rooms4, manual_rooms5 };
-
-        foreach (List<Room> manual_rooms in level_prefs)
+        for(int i = 1; i<=5; i++)
         {
             //задаём карту
-            Map map = new(consoleX, consoleY, edge, manual_rooms);
-
-            //спавним игрока
-            Player player = new Player(Race.Human, ((2 * map.rooms[0].x) + map.rooms[0].wigth) / 2, ((2 * map.rooms[0].y) + map.rooms[0].height) / 2);
-            map.AddChange(new(player.x, player.y, CellID.Player));
+            Map map = new(consoleX, consoleY, edge);
 
             //генерируем карту
-            map.Create(player);
+            map.Create(/*player*/);
+
+            //спавним игрока
+            int index = 0;
+            foreach(Room room in map.rooms)
+            {
+                if(room.roomType == RoomType.Spawn) { index = map.rooms.IndexOf(room); room.isExplored = true ; break; }
+            }
+            Player player = new Player(Race.Human, map, index);
+            
+            map.AddEnemies(player);
+            map.AddChange(new(player.x, player.y, CellID.Player));
 
             //выводим первоначальную карту и спавним игрока
             map.Update();
@@ -75,7 +66,7 @@ static class Program
         }
     }
 
-    //считывание эффектов с файла
+ /*   //считывание эффектов с файла
     public static List<Effect> ReadEffects(string filename)
     {
         StreamReader sr = new StreamReader(filename);
@@ -146,5 +137,5 @@ static class Program
         }
 
         return artefacts;
-    }
+    }*/
 }

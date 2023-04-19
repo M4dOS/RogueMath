@@ -10,6 +10,7 @@ using RogueMath.Item_Pack;
 using System.Collections.Concurrent;
 using Windows.Networking.Sockets;
 using Windows.Foundation.Diagnostics;
+using System.Reflection;
 
 namespace RogueMath
 {
@@ -240,6 +241,35 @@ namespace RogueMath
             phase = Phase.Adventure;
             this.inventory = new Inventory(6, hp_potions, en_potions, arts_equiped);
         }
+
+        public Player(Race r, Map map, int index)
+        {
+            //this.inventory = new Inventory();
+            Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
+            Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
+            List<Item> items = new List<Item>();
+            List<Artefact> arts_equiped = new List<Artefact>();
+            switch (r) //добавить потом ещё расс врагов
+            {
+                case Race.Human:
+                    _lvl = 1;
+                    _hp = 50;
+                    _maxHp = 100;
+                    _energy = 50;
+                    _maxEnergy = 100;
+                    _atk = 20;
+                    _def = 0;
+                    _exp = 0;
+                    _gold = 0;
+                    break;
+            }
+            this.x = ((2 * map.rooms[index].x) + map.rooms[index].wigth) / 2;
+            this.y = ((2 * map.rooms[index].y) + map.rooms[index].height) / 2;
+            battlingWith = -1;
+            map.rooms[index].Exploring(this, map);
+            phase = Phase.Adventure;
+            this.inventory = new Inventory(6, hp_potions, en_potions, arts_equiped);
+        }
         private int LvlUp(int _lvl) // опеределение кол-ва опыта для апа уровня
         {
             return _lvl * 10;
@@ -419,24 +449,24 @@ namespace RogueMath
                     {
                         player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
                         player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
-                        Inventory.Notification("Вы нашли две прикольные штучки", map);
+                        inventory.Notification("Вы нашли две прикольные штучки", map);
                         break;
                     }
                     case 2:
                     {
                         player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
-                        Inventory.Notification("Вы нашли мощный артефакт", map);
+                        inventory.Notification("Вы нашли мощный артефакт", map);
                         break;
                     } 
                     case 3:
                     {
-                        Inventory.Notification("Ты попался на кликбейт", map);
+                        inventory.Notification("Ты попался на кликбейт", map);
                         break;
                     }
                     case 4:
                     {
                         player._gold = +15;
-                        Inventory.Notification("С монстра выпало немало стипы", map);
+                        inventory.Notification("С монстра выпало немало стипы", map);
                         break;
                     }
                    case 5:
@@ -451,19 +481,19 @@ namespace RogueMath
                     }
                 case 7:
                     {
-                        Inventory.Notification("Звезды говорят: тот, кто нажмет на цифру '7' во время игры, станет лошком-пирожком", map);
+                        inventory.Notification("Звезды говорят: тот, кто нажмет на цифру '7' во время игры, станет лошком-пирожком", map);
                         break;
                     }
                 case 8:
                     {
                         player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
-                        Inventory.Notification("Вы нашли прикольную штуку", map);
+                        inventory.Notification("Вы нашли прикольную штуку", map);
                         break;
                     }
                 case 9:
                     {
                         player.inventory.AddArt_Random(map, player, player.inventory.arts_equiped, poor_pool);
-                        Inventory.Notification("Вы нашли прикольную штуку", map);
+                        inventory.Notification("Вы нашли прикольную штуку", map);
                         break;
                     }
                 default:
@@ -478,7 +508,8 @@ namespace RogueMath
             Stats(map);
 
             Player player = this;
-
+            player.inventory.countOfStepsToClear++;
+            if (this.inventory.countOfStepsToClear > 10) this.inventory.ClearNotification();
             if (player.phase == Player.Phase.Adventure)
             {
                 if (player._hp < player._maxHp) ++player._hp;

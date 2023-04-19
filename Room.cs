@@ -17,7 +17,13 @@ namespace RogueMath
         public List<CellInfo> objects; //список доп. обьектов на карте
         public bool manual; //создана ли вручную?
 
-        protected void ExitPlacer() //размещение выходов 
+        public Room()
+        {
+            exits = new();
+            objects = new();
+            enemies = new();
+        }
+            protected void ExitPlacer() //размещение выходов 
         {
             Random rand = new();
 
@@ -219,7 +225,7 @@ namespace RogueMath
                 isExplored = false;
             }
 
-
+            
 
         }
     }

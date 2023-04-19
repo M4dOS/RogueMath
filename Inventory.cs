@@ -72,7 +72,7 @@ namespace RogueMath
             }
             else
             {
-                Inventory.Notification("Не получилось взять ранд. артефакт", map);
+                this.Notification("Не получилось взять ранд. артефакт", map);
                 return null;
             }
         }
@@ -143,7 +143,7 @@ namespace RogueMath
             int choise = Convert.ToInt32(key)-48;
             if (choise > max_pockets)
             {
-                Inventory.Notification("Не получилось выбрать", map);
+                this.Notification("Не получилось выбрать", map);
                 end = true;
                 return null;
             }
@@ -158,7 +158,7 @@ namespace RogueMath
         //удалить выбранный арт (без подтверждения)
         public void RemoveSelectedArt(List<Artefact> bag, Player p, Map map)
         {
-            Inventory.Notification("Выберете предмет", map);
+            this.Notification("Выберете предмет", map);
             Artefact art = SelectArt(bag, map);
             RemoveArt(art, p);
         }
@@ -182,13 +182,13 @@ namespace RogueMath
         {
            // Console.WriteLine("Для выхода из меню инвентaря выберете номер несуществующей ячейки инвенторя");
            // Show_Inventory(items);
-            Inventory.Notification("Выберете предмет", map);
+            this.Notification("Выберете предмет", map);
             Artefact art = SelectArt(bag, map);
             if (art != null)
             {
                 Console.WriteLine();
                 InfoArt(art, map);
-                Inventory.Notification("Для выхода нажмите лютую клавишу", map);
+                this.Notification("Для выхода нажмите любую клавишу", map);
                 Console.ReadKey(false);
             }
         }
@@ -217,10 +217,12 @@ namespace RogueMath
 
         static List<CellInfo> notifBufer = new();
         static List<CellInfo> infoBufer = new();
-        public static void Notification(string text, Map map)
-        {
-            ClearNotification();
 
+        public int countOfStepsToClear=0;
+        public void Notification(string text, Map map)
+        {
+            this.ClearNotification();
+            countOfStepsToClear = 0;
             int maxX = map.maxX;
             int maxY = map.maxY;
 
@@ -268,12 +270,13 @@ namespace RogueMath
 
             Console.SetCursorPosition(dotAX+1+1, dotAY+1);
             Console.Write(text);
-
+            
         }
         
-        public static void ClearNotification()
+        public  void ClearNotification()
         {
-            foreach(CellInfo cell in notifBufer)
+            countOfStepsToClear = 0;
+            foreach (CellInfo cell in notifBufer)
             {
                 Console.SetCursorPosition(cell.x, cell.y);
                 Console.Write((char)cell.cellID);

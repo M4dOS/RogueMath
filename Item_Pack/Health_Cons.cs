@@ -28,16 +28,16 @@ namespace RogueMath.Item_Pack
                 {
                     player._hp = player._maxHp;
                 }
-                Inventory.Notification($"Вы покушали", map );
+                player.inventory.Notification($"Вы покушали", map );
 
             }
             else if (cur_health_stack > 0 && player._maxHp == player._hp)
             {
-                Inventory.Notification($"На ваше удивление, вы сейчас сыты", map);
+                player.inventory.Notification($"На ваше удивление, вы сейчас сыты", map);
             }
             else if (cur_health_stack <= 0)
             {
-                Inventory.Notification($"У вас нет еды", map);
+                player.inventory.Notification($"У вас нет еды", map);
             }
         }
         public void Sell_Cons(Map map, Player player)
@@ -46,12 +46,12 @@ namespace RogueMath.Item_Pack
             {
                 cur_health_stack--;
                 player._gold = player._gold + 10;
-                Inventory.Notification($"Вы отдали 1 вкусняху", map);
+                player.inventory.Notification($"Вы отдали 1 вкусняху", map);
 
             }
             else
             {
-                Inventory.Notification($"У вас нет еды", map);
+                player.inventory.Notification($"У вас нет еды", map);
             }
         }
         public void Get_Cons(Map map, Player player)
@@ -59,12 +59,12 @@ namespace RogueMath.Item_Pack
             if (cur_health_stack < max_health_stack)
             {
                 cur_health_stack++;
-                Inventory.Notification($"Вы нашли себе покушать", map);
+                player.inventory.Notification($"Вы нашли себе покушать", map);
 
             }
             else
             {
-                Inventory.Notification($"Все карманы для еды забиты", map);
+                player.inventory.Notification($"Все карманы для еды забиты", map);
             }
 
         }

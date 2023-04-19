@@ -26,7 +26,9 @@ namespace RogueMath
 
         public void TypePlacer() //распределение RoomType (сделать) 
         {
-
+            Random random = new Random();
+            rooms[random.Next(rooms.Count)].ChangeType(RoomType.Mather);
+            rooms[random.Next(rooms.Count)].ChangeType(RoomType.Spawn);
         }
         public void AddChange(CellInfo change)
         {
@@ -529,12 +531,13 @@ namespace RogueMath
             return true;
         }
 
-        public void Create(Player player) //создание карты 
+        public void Create(/*Player player*/) //создание карты 
         {
             RoomPlace();
+            TypePlacer();
             //CreateWeb();
             GenerateMap();
-            AddEnemies(player);
+            /*AddEnemies(player);*/
             Update();
             CalibrateRoomIDs();
             PrintMap();
