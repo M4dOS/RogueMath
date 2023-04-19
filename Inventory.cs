@@ -31,7 +31,7 @@ namespace RogueMath
         }
 
         //добавить арт в инвентарь
-        public void AddArt(Artefact art, Player p)
+        public void AddArt(Artefact art, Player p, Map map)
         {
             if (arts_equiped.Count < pockets_max)
             {
@@ -56,7 +56,7 @@ namespace RogueMath
                     }
                 }
             }
-            else Console.WriteLine("не получилось взять предмет");
+            else Inventory.Notification("не получилось взять предмет", map);
         }
 
         //выбрать рандомный арт из предложеного списка(pool), которого нет в инвентаре (arts_equiped)
@@ -81,7 +81,7 @@ namespace RogueMath
         public void AddArt_Random(Map map, Player p, List<Artefact> arts_equiped, List<Artefact> pool)
         {
             Artefact art = RandArt(map, arts_equiped, pool);
-            AddArt(art, p);
+            AddArt(art, p, map);
         }
 
         //убрать арт
@@ -124,12 +124,12 @@ namespace RogueMath
         }
 
         //купить арт
-        public void BuyArt(Artefact art, Player p)
+        public void BuyArt(Artefact art, Player p, Map map)
         {
             if (p._gold >= art.price_item)
             {
                 p._gold -= art.price_item;
-                AddArt(art, p);
+                AddArt(art, p, map);
             }
             else Console.WriteLine("Вам не хватает стипы");
         }
@@ -193,7 +193,77 @@ namespace RogueMath
             }
         }
 
-        //новый тест, с Player
+        //считывание эффектов с файла
+        public static List<Effect> ReadEffects(string filename)
+        {
+            StreamReader sr = new StreamReader(filename);
+            List<Effect> effects = new List<Effect>();
+
+            string line;
+            // Read and display lines from the file until the end of
+            // the file is reached.
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] effectArray = line.Split("|");
+
+                if (effectArray.Length == 4)
+                {
+                    PermanentEffect effect = new PermanentEffect(
+                        Convert.ToInt32(effectArray[0]),
+                        effectArray[1],
+                        Convert.ToInt32(effectArray[2]),
+                        effectArray[3]
+                    );
+                    effects.Add(effect);
+                }
+            }
+
+            return effects;
+        }
+        //считывание артов
+        public static List<Artefact> ReadArtefacts(string filename, List<Effect> effects)
+        {
+            StreamReader sr = new StreamReader(filename);
+            List<Artefact> artefacts = new List<Artefact>();
+
+
+            string line;
+            // Read and display lines from the file until the end of
+            // the file is reached.
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] artLine = line.Split("|");
+
+                if (artLine.Length == 6)
+                {
+                    Artefact art = new Artefact(
+                        Convert.ToInt32(artLine[0]),
+                        Convert.ToInt32(artLine[1]),
+                        artLine[2],
+                        artLine[3],
+                        Convert.ToInt32(artLine[4])
+                    );
+
+                    string[] artEffects = artLine[5].Split(",");
+
+                    for (int i = 0; i < artEffects.Length; i++)
+                    {
+                        foreach (Effect effect in effects)
+                        {
+                            if (effect.Id_effect == Convert.ToInt32(artEffects[i]))
+                            {
+                                art.AddEffect(effect);
+                                break;
+                            }
+                        }
+                    }
+
+                    artefacts.Add(art);
+                }
+            }
+
+            return artefacts;
+        }
 
         public void PrintAtCenter(string text, int aX, int bX, int y)
         {
@@ -355,9 +425,11 @@ namespace RogueMath
             }
         }
 
-        public void InventoryShow(Map map, Player player)
+        public void InventoryShow(Map map, Player player, List<Effect> effects, List<Artefact> all_art)
         {
             /*Console.Clear();*/ //ждёт красивую обёртку
+
+            int rest = 100;
 
             int dotAX = map.maxX / 2 - 25;
             int dotAY = map.maxY / 2 - 10;
@@ -393,16 +465,31 @@ namespace RogueMath
                 }
             }
 
-            Thread.Sleep(100);
+            Thread.Sleep(rest);
             Console.SetCursorPosition(map.maxX / 2 - 25 + 1, map.maxY / 2 - 10 + 1);
 
-            /*Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
+            Health_Cons hp_potions = new Health_Cons(15, 5, "вкусняхи");
             Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
             List<Item> items = new List<Item>();
-            List<Artefact> arts_equiped = new List<Artefact>();*/
+            List<Artefact> arts_equiped = new List<Artefact>();
 
-            Inventory bag = player.inventory;
-                /*new Inventory(6, hp_potions, en_potions, arts_equiped);*/
+
+            
+
+            //пул предметов нужен для более удачного рандома: он создаёт новые списки исходя из качества предметов, где 1 - плохо, 4 - имба
+            //но реализовать это я сейчас не успею
+
+            //poor - отстойные и средние арты: могут быть наградой за победу монстра/за зачистку комнаты, сундука, первых этажей
+            var poor_pool = all_art.Where(art => art.quality_art == 1 || art.quality_art == 2).ToList();
+            //good - средние и хорошие: для магаза и поздних этажей (на продажу выставить 2-4 предмета, т.к. таких предметов всего 10)
+            var good_pool = all_art.Where(art => art.quality_art == 2 || art.quality_art == 3).ToList();
+            //boss - эксклюзив, выпадает с босса
+            var boss_pool = all_art.Where(art => art.quality_art == 4).ToList();
+
+
+            Inventory bag = new Inventory(6, hp_potions, en_potions, arts_equiped);
+
+            
 
             bool cond = true;
             while (cond)

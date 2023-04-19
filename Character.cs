@@ -7,6 +7,7 @@ using System.Text;
 using System.Linq;
 using Windows.System.Threading.Core;
 using RogueMath.Item_Pack;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using Windows.Networking.Sockets;
 using Windows.Foundation.Diagnostics;
@@ -16,7 +17,7 @@ namespace RogueMath
 {
     internal class Character
     {
-        protected Race r;
+        public Race r;
         public int _maxHp;
         public int _hp;
         public int _def;
@@ -73,7 +74,10 @@ namespace RogueMath
         
         public void Bite(Character character)
         {
-            if (_atk - character._def < 1) --character._hp;
+            if (_atk - character._def < 1) 
+            { 
+                --character._hp; 
+            }
             else character._hp -= _atk - character._def;
         }
         public void ULTRABite(Character character)
@@ -113,6 +117,7 @@ namespace RogueMath
                     _exp = 5;
                     _gold = 5;
                     sign = CellID.Enemy;
+                    this.r = r;
                     break;
                 case Race.Mather:
                     this._lvl = 1;
@@ -125,6 +130,7 @@ namespace RogueMath
                     _exp = 20;
                     _gold = 20;
                     sign = CellID.Boss;
+                    this.r = r;
                     break;
             }
             this._lvl = _lvl;
@@ -163,12 +169,15 @@ namespace RogueMath
                     break;
                 default: break;
             }
-            if (map.cellMap[temp_x, temp_y].cellID == CellID.None && map.cellMap[temp_x, temp_y].cellID != CellID.Player)
+
+            List<CellID> players = new List<CellID>() { CellID.Player, CellID.СoffeeLover, CellID.Deadline };
+
+            if (map.cellMap[temp_x, temp_y].cellID == CellID.None && !players.Contains(map.cellMap[temp_x, temp_y].cellID))
             {
                 bool condition = true;
                 foreach (CellInfo check in map.changesForCellMap)
                 {
-                    if (check.cellID == CellID.Player)
+                    if (players.Contains(check.cellID) )
                     {
                         if (check.x == temp_x && check.y == temp_y) { condition = false; break; }
                     }
@@ -221,9 +230,35 @@ namespace RogueMath
             Energy_Cons en_potions = new Energy_Cons(10, 5, "кофе");
             List<Item> items = new List<Item>();
             List<Artefact> arts_equiped = new List<Artefact>();
-            switch (r) //добавить потом ещё расс врагов
+            this.r = r;
+            switch (this.r) //добавить потом ещё расс врагов
             {
-                case Race.Human:
+                case Race.Student:
+                    sign = CellID.Player;
+                    _lvl = 1;
+                    _hp = 1;
+                    _maxHp = 11;
+                    _energy = 1;
+                    _maxEnergy = 10;
+                    _atk = 5;
+                    _def = 0;
+                    _exp = 0;
+                    _gold = 0;
+                    break;
+                case Race.СoffeeLover:
+                    sign = CellID.СoffeeLover;
+                    _lvl = 1;
+                    _hp = 1;
+                    _maxHp = 11;
+                    _energy = 1;
+                    _maxEnergy = 10;
+                    _atk = 5;
+                    _def = 0;
+                    _exp = 0;
+                    _gold = 0;
+                    break;
+                case Race.Deadline:
+                    sign = CellID.Deadline;
                     _lvl = 1;
                     _hp = 50;
                     _maxHp = 100;
@@ -331,7 +366,10 @@ namespace RogueMath
                     break;
 
                 case ConsoleKey.Z:
-                    inventory.InventoryShow(map, this);
+
+                    List<Effect> effects = Inventory.ReadEffects("Item_Pack/Const_Effects.txt");
+                    List<Artefact> arts = Inventory.ReadArtefacts("Item_Pack/Arts.txt", effects);
+                    inventory.InventoryShow(map, this,  effects, arts);
                     break;
 
                 default: break;
@@ -347,7 +385,7 @@ namespace RogueMath
                 foreach (Room room in map.rooms) { room.Exploring(this, map); }
                 foreach (Tunel tunel in map.tunels) { tunel.Exploring(this, map); }
 
-                map.AddChange(new(x, y, CellID.Player));
+                map.AddChange(new(x, y, sign));
                 return true;
             }
             else return false;
@@ -502,10 +540,20 @@ namespace RogueMath
                     }
             }
         }
+        public void ViewFloor(Map map)
+        {
+            string floorText = $"Floor {map.floor}/5";
+            Map.Frame((map.maxX-floorText.Length)/2-1, 2, (map.maxX + floorText.Length) / 2+2, 2+2);
+            Console.SetCursorPosition(map.maxX / 2 - floorText.Length / 2 + 1, 2 + 1);
+            Console.Write(floorText);
+        }
+
         public void Advenchuring(Map map)
         {
 
             Stats(map);
+
+            ViewFloor(map);
 
             Player player = this;
             player.inventory.countOfStepsToClear++;
@@ -527,11 +575,44 @@ namespace RogueMath
                     map.Update();
                 }
                 player.battlingWith = player.EnemyCheck(map);
-                if (player.battlingWith > -1) player.phase = Player.Phase.Battle;
+                if (player.battlingWith > -1) player.phase = Player.Phase.Battle; 
             }
 
             else if (player.phase == Player.Phase.Battle)
             {
+                Console.Clear();
+                Pixel.DrawBorder();
+                Pixel.DrawAtack();
+                Pixel.DrawInvent();
+                Pixel.DrawUltraAtack();
+
+                switch (player.r)
+                {
+                    case Race.Student:
+                        Pixel.DrawType1();
+                        Pixel.Draw_1_Char/*_d*/();
+                        break;
+                    case Race.СoffeeLover:
+                        Pixel.DrawType2();
+                        Pixel.Draw_2_Char/*_d*/();
+                        break;
+                    case Race.Deadline:
+                        Pixel.DrawType3();
+                        Pixel.Draw_3_Char/*_d*/();
+                        break;
+                }
+
+
+                /*switch (map.rooms[player.roomIDin].enemies[player.battlingWith].r)
+                {
+                    case Race.Math:*/
+                        Pixel.DrawEnemyX();
+                        Pixel.DrawEnemy1();
+                        /*break;
+                    case Race.Mather:
+                        *//*жду код*//*
+                        break;
+                }*/
 
                 if (player.Battle(map.rooms[player.roomIDin].enemies[0]))
                 {
@@ -553,23 +634,79 @@ namespace RogueMath
                         /*код для дропа*/
                         GetArtLoot(player, map);
 
+                        map.PrintMap();
                         map.Update();
                     }
                 }
             }
 
         }
+
+        static public Race RaceOfPlayer(int floor)
+        {
+            switch (floor)
+            {
+                case 1:
+                    return Race.Student;
+                    break;
+                case 2:
+                case 3:
+                    return Race.СoffeeLover;
+                    break;
+                case 4:
+                case 5:
+                    return Race.Deadline;
+                    break;
+
+                default: return Race.Mather; break;
+            }
+        }
+
         public bool Battle(Enemy enemy) //фаза боя
         {
+            /*Pixel.DrawBorder();
+            Pixel.DrawType2();
+            Pixel.Draw_3_CharUltraBite();
+            Pixel.DrawAtack();
+            Pixel.DrawUltraAtack();
+            Pixel.DrawInvent();
+            Pixel.DrawEnemy1();
+            Pixel.DrawEnemyX();*/
+
+
             bool result = false;
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
             switch (consoleKey.Key)
             {
                 case ConsoleKey.E:
+                    switch (r)
+                    {
+                        case Race.Student:
+                            Pixel.Draw_1_CharBite/*_d*/();
+                            break;
+                        case Race.СoffeeLover:
+                            Pixel.Draw_2_CharBite/*_d*/();
+                            break;
+                        case Race.Deadline:
+                            Pixel.Draw_3_CharBite/*_d*/();
+                            break;
+                    }
                     Bite(enemy); //кусь
                     result = true;
                     break;
                 case ConsoleKey.Q:
+                    switch (r)
+                    {
+                        case Race.Student:
+                            Pixel.Draw_1_CharUltraBite/*_d*/();
+                            break;
+                        case Race.СoffeeLover:
+                            Pixel.Draw_2_CharUltraBite/*_d*/();
+                            break;
+                        case Race.Deadline:
+                            Pixel.Draw_3_CharUltraBite/*_d*/();
+                            break;
+                    }
                     ULTRABite(enemy);//УЛЬТРАКУСЬ
                     result = true;
                     break;
